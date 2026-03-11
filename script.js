@@ -1552,27 +1552,35 @@
         let size = 3;
         let lastX = 0, lastY = 0;
 
+        let canvasReady = false;
+
         function resizeCanvas() {
-            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            if (wrap.clientWidth === 0 || wrap.clientHeight === 0) return;
+            let img = null;
+            if (canvasReady && canvas.width > 0 && canvas.height > 0) {
+                try { img = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch(e) {}
+            }
             canvas.width = wrap.clientWidth;
             canvas.height = wrap.clientHeight;
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.putImageData(img, 0, 0);
+            if (img) ctx.putImageData(img, 0, 0);
+            canvasReady = true;
         }
 
-        // Initial resize
-        setTimeout(resizeCanvas, 100);
-        window.addEventListener('resize', resizeCanvas);
-
-        // Also resize when window is opened/maximized
-        const observer = new MutationObserver(() => {
-            setTimeout(resizeCanvas, 50);
-        });
+        // Resize when window becomes visible or changes size
         const paintWin = document.getElementById('window-paint');
+        const observer = new MutationObserver(() => {
+            if (paintWin && !paintWin.classList.contains('hidden')) {
+                setTimeout(resizeCanvas, 50);
+            }
+        });
         if (paintWin) {
             observer.observe(paintWin, { attributes: true, attributeFilter: ['class', 'style'] });
         }
+        window.addEventListener('resize', () => {
+            if (paintWin && !paintWin.classList.contains('hidden')) resizeCanvas();
+        });
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -1591,6 +1599,7 @@
         }
 
         function startPaint(e) {
+            e.stopPropagation();
             painting = true;
             const pos = getPos(e);
             lastX = pos.x;
