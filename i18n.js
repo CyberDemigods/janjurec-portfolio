@@ -1,5 +1,5 @@
 /* ===========================
-   TRANSLATIONS: EN / PL / tlhIngan Hol (Klingon)
+   TRANSLATIONS: EN / PL / tlhIngan Hol (Klingon) / עברית (Hebrew)
    =========================== */
 
 const TRANSLATIONS = {
@@ -257,6 +257,102 @@ const TRANSLATIONS = {
         'term-welcome-1': 'Jan Jurec yo\'SeH pat [mIw 2.1.37]',
         'term-welcome-2': '(C) 2024 Jan Jurec. Hoch chaw\' rarlu\'.',
         'term-welcome-3': '"help" yIghItlh. QaH DaSuqmeH.',
+    },
+
+    hebrew: {
+        // Desktop icons
+        'icon-about': 'אודותיי',
+        'icon-experience': 'ניסיון',
+        'icon-skills': 'כישורים',
+        'icon-projects': 'פרויקטים',
+        'icon-education': 'השכלה',
+        'icon-recommendations': 'המלצות',
+        'icon-contact': 'צור קשר',
+        'icon-terminal': 'טרמינל',
+
+        // Window titles
+        'title-about': 'אודותיי',
+        'title-experience': 'ניסיון',
+        'title-skills': 'מנהל התקנים – כישורים',
+        'title-projects': 'C:\\פרויקטים',
+        'title-education': 'השכלה',
+        'title-recommendations': 'המלצות – מה אומרים הקולגות',
+        'title-contact': 'צור קשר',
+        'title-terminal-win': 'C:\\WINDOWS\\system32\\cmd.exe',
+        'title-terminal-mac': 'Terminal — zsh',
+        'title-terminal-linux': 'jan@portfolio: ~',
+
+        // Menu bar
+        'menu-file': 'קובץ',
+        'menu-edit': 'עריכה',
+        'menu-view': 'תצוגה',
+        'menu-help': 'עזרה',
+        'menu-action': 'פעולה',
+        'menu-favorites': 'מועדפים',
+
+        // Start
+        'start': 'התחל',
+
+        // About content
+        'about-title': 'מהנדס DevOps בכיר | MLOps | Backend',
+        'about-location': '📍 גוז\'וב וילקופולסקי, פולין',
+        'about-tagline': '"Python, AWS, Linux. דברים מגניבים."',
+        'about-bio-1': 'מקצוען מנוסה ורב-תחומי, מצטיין הן ב-DevOps והן בהנדסת תוכנה. כישורים עיקריים: <strong>AWS</strong>, <strong>Python</strong> ו-<strong>DevOps</strong>, עם דגש על Infrastructure as Code באמצעות Terraform + CDK, וניהול CI/CD.',
+        'about-bio-2': 'עובד מרחוק מ-2018 (לפני שזה היה טרנדי). נלהב מפתרון בעיות מורכבות בגישה אנליטית. משגשג בצוותים קטנים שבהם האוטונומיה חשובה.',
+        'about-bio-3': 'מוביל יוזמות לשיפור יעילות, אמינות ופרודוקטיביות של מערכות. מספק הדרכה טכנית, מטפח תרבות איכות, ומוביל פרויקטים מהרעיון ועד להשקה.',
+        'about-status-1': '10+ שנות ניסיון',
+        'about-status-2': 'מרחוק מ-2018',
+
+        // Experience
+        'exp-status-1': '8 תפקידים',
+        'exp-status-2': '10+ שנים בהייטק',
+
+        // Skills
+        'skills-status-1': '35+ כישורים',
+        'skills-status-2': '4 מבחני LinkedIn עברו',
+        'cat-cloud': 'ענן ותשתיות',
+        'cat-lang': 'שפות ופריימוורקים',
+        'cat-devops': 'DevOps וכלים',
+        'cat-data': 'דאטה ו-ML',
+        'cat-testing': 'בדיקות ואיכות',
+        'cat-languages': 'שפות',
+
+        // Projects
+        'proj-workshops': 'סדנאות והרצאות @ TUI',
+        'proj-status-1': '15 רפוזיטוריז ציבוריים',
+        'proj-status-2': '148 ★ בפרויקט המוביל',
+
+        // Education
+        'edu-certs': 'הסמכות',
+        'edu-status-1': 'תואר שני + תואר ראשון',
+
+        // Recommendations
+        'rec-status-1': '10 המלצות בלינקדאין',
+        'rec-status-2': 'כולם קולגות מאומתים',
+
+        // Contact
+        'contact-remote': 'מרחוק מ-2018 – זמין בכל העולם',
+        'contact-status': 'פתוח להצעות',
+
+        // Context menu
+        'ctx-wallpaper': '🖼️ שנה טפט',
+        'ctx-about-os': 'ℹ️ אודות מערכת ההפעלה',
+
+        // Wallpaper picker
+        'wp-title': 'מאפייני תצוגה – טפט',
+        'wp-apply': 'החל',
+        'wp-cancel': 'ביטול',
+
+        // Theme labels
+        'theme-switch': ':החלף מערכת',
+
+        // Loading
+        'loading-text': '...מאתחל חלונות 98',
+
+        // Terminal
+        'term-welcome-1': 'Jan Jurec Portfolio OS [גרסה 2.1.37]',
+        'term-welcome-2': '(C) 2024 Jan Jurec. כל הזכויות שמורות.',
+        'term-welcome-3': 'הקלד "help" לרשימת פקודות.',
     }
 };
 

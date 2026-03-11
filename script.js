@@ -771,247 +771,303 @@
                 case 'serwerownia':
                     addLine('=== PASTA O SERWEROWNI WYKOPU ===', 'info');
                     addLine('');
-                    addLine('Michał Białek kończył nocną wartę w serwerowni wykopu. Za oknem');
+                    addLine('Bichał Miałek kończył nocną wartę w serwerowni wykopu. Za oknem');
                     addLine('zadłużonej willi poznańskie koziołki ocierały się częściami,');
-                    addLine('których Białek wolałby nigdy nie mieć. Przypomniał sobie o żonie,');
+                    addLine('których Miałek wolałby nigdy nie mieć. Przypomniał sobie o żonie,');
                     addLine('którą widywał głównie w niedzielne poranki.');
                     addLine('');
-                    addLine('Stękanie ćwiczącego lewicę Kinera dobiegało zza rzędu wykopowych');
-                    addLine('monitorów. Białek automatycznie podłożył ociekające potem dźwięki');
-                    addLine('pod obraz żony osadzonej na knadze Kinera. Intuicja podpowiadała');
+                    addLine('Stękanie ćwiczącego lewicę Rinka dobiegało zza rzędu wykopowych');
+                    addLine('monitorów. Miałek automatycznie podłożył ociekające potem dźwięki');
+                    addLine('pod obraz żony osadzonej na knadze Rinka. Intuicja podpowiadała');
                     addLine('mu, że lekko otyły kolega z pracy przebiera palcami po najkrótszej');
-                    addLine('części ciała oglądając zdjęcia białkowej połowicy na fejsbuku.');
+                    addLine('części ciała oglądając zdjęcia miałkowej połowicy na fejsbuku.');
                     addLine('Nie mylił się. Czuł jednak dziwaczną dumę połączoną z rozbawieniem,');
                     addLine('które przyniosła mu owa wizja.');
                     addLine('');
                     addLine(',,Puk puk".');
-                    addLine('Pierwsza myśl - Elfik32. Kurwiszcze, które zrobiłoby wszystko za');
+                    addLine('Pierwsza myśl - Kifle23. Kurwiszcze, które zrobiłoby wszystko za');
                     addLine('status moderatora w serwisie.');
                     addLine('');
-                    addLine('Białek poczuł się ważny. Myśl o zdradzie żony przerodziła się');
+                    addLine('Miałek poczuł się ważny. Myśl o zdradzie żony przerodziła się');
                     addLine('w pewność, że w tę sobotnią noc powstaje dziecko, na które po');
                     addLine('badaniach DNA nie musiałby wyłożyć ani grosza. Zatliła się w jego');
                     addLine('biednym umyśle żądza zemsty. Ocknąwszy się wstał i nonszalancko');
                     addLine('otworzył drzwi.');
                     addLine('');
-                    addLine('Elfik32. Czarna owca rodu Steckich stała w progu oparta o framugę');
+                    addLine('Kifle23. Czarna owca rodu Kickesch stała w progu oparta o framugę');
                     addLine('ze swoim kurewskim uśmieszkiem woźnej. Baletki, krótka spódniczka');
                     addLine('i motzno zarysowany dekolt jaśniały kontrastującą z nocnym');
-                    addLine('krajobrazem bielą. - wstawiona jak zwykle - pomyślał Białek.');
+                    addLine('krajobrazem bielą. - wstawiona jak zwykle - pomyślał Miałek.');
                     addLine('');
-                    addLine('Elfik położyła palec na ustach. Białek domyślił się, że');
-                    addLine('odseparowany od świata zewnętrznego Kiner nie usłyszał pukania');
+                    addLine('Kifle położyła palec na ustach. Miałek domyślił się, że');
+                    addLine('odseparowany od świata zewnętrznego Rinek nie usłyszał pukania');
                     addLine('aktywnej wykopowiczki, która właśnie przyniosła im kanapki.');
                     addLine('Spod granicy niemieckiej.');
                     addLine('');
-                    addLine('Elfik sprawnie zzuła obuwie i figlarnie mrugając ruszyła w stronę');
-                    addLine('Kinera. Białek podążał wzrokiem za opalonymi stópkami zmierzającymi');
-                    addLine('w stronę McKinera, nie mogąc powstrzymać wewnętrznego rozbawienia.');
+                    addLine('Kifle sprawnie zzuła obuwie i figlarnie mrugając ruszyła w stronę');
+                    addLine('Rinka. Miałek podążał wzrokiem za opalonymi stópkami zmierzającymi');
+                    addLine('w stronę McRinka, nie mogąc powstrzymać wewnętrznego rozbawienia.');
                     addLine('Za chwilę miał wyjść na jaw fakt, którego nikt z pracowników');
                     addLine('wykopu osobiście nie widział, choć był świadom jego istnienia.');
-                    addLine('Fakt, który miał zburzyć spokój Kinera na zawsze.');
+                    addLine('Fakt, który miał zburzyć spokój Rinka na zawsze.');
                     addLine('');
-                    addLine('Elfik wczołgała się pod biurko i sprawnie wyskoczyła po drugiej');
-                    addLine('stronie. Kiner wybałuszył oczy i odskoczył w tył z naprężonym');
+                    addLine('Kifle wczołgała się pod biurko i sprawnie wyskoczyła po drugiej');
+                    addLine('stronie. Rinek wybałuszył oczy i odskoczył w tył z naprężonym');
                     addLine('kutasem w ręku. - Ale...');
                     addLine('');
-                    addLine('Spojrzenia Białka i Kinera spotkały się. Kiner był zażenowany całą');
+                    addLine('Spojrzenia Miałka i Rinka spotkały się. Rinek był zażenowany całą');
                     addLine('sytuacją, o czym świadczył wyraźny rumieniec na jego aryjskiej');
                     addLine('twarzy.');
                     addLine('');
-                    addLine('Śmiech Elfika rozniósł się po pomieszczeniu.');
-                    addLine('- Mała pała jak na administratora. - powiedziała Elfik, ledwie');
-                    addLine('powstrzymując śmiech. Kiner spąsowiał bardziej. Ręce machinalnie');
-                    addLine('powędrowały w stronę rozporka, gdy podchmielona Elfik rzuciła się');
+                    addLine('Śmiech Kifla rozniósł się po pomieszczeniu.');
+                    addLine('- Mała pała jak na administratora. - powiedziała Kifle, ledwie');
+                    addLine('powstrzymując śmiech. Rinek spąsowiał bardziej. Ręce machinalnie');
+                    addLine('powędrowały w stronę rozporka, gdy podchmielona Kifle rzuciła się');
                     addLine('w tę samą stronę.');
                     addLine('- Zostaw. - powiedziała stanowczo.');
                     addLine('');
-                    addLine('Zaskoczony Kiner wypuścił pytonga z ręki. Dziesięciocentymetrowy');
-                    addLine('organ bezwładnie opadł lekko kołysząc się na boki, gdy Elfik');
+                    addLine('Zaskoczony Rinek wypuścił pytonga z ręki. Dziesięciocentymetrowy');
+                    addLine('organ bezwładnie opadł lekko kołysząc się na boki, gdy Kifle');
                     addLine('doskoczyła do sparaliżowanego grubaska niczym wygłodniała kura');
                     addLine('i stanowczym ruchem opuściła nieco za duże spodnie. Od czasu');
-                    addLine('nieudanego eksperymentu z rurkami Kiner powrócił bowiem do starych');
+                    addLine('nieudanego eksperymentu z rurkami Rinek powrócił bowiem do starych');
                     addLine('nawyków, co ułatwiło wykopowiczce zadanie.');
                     addLine('');
-                    addLine('- Jesteś pijana. - wystękał, gdy Elfik chwyciła go za lekko');
-                    addLine('przywiędniętą pałę i chichocząc zaczęła prowadzić w stronę Białka,');
+                    addLine('- Jesteś pijana. - wystękał, gdy Kifle chwyciła go za lekko');
+                    addLine('przywiędniętą pałę i chichocząc zaczęła prowadzić w stronę Miałka,');
                     addLine('który obserwował sytuację z zaciekawieniem. Programista nie');
                     addLine('protestował jednak zbyt zaciekle. Był to pierwszy raz, kiedy');
                     addLine('kobieca ręka spoczęła na jego wypustce. Było to niewątpliwie');
-                    addLine('ciekawe doznanie, gdyż sam Kiner zdawał się zapomnieć o dziwnych');
+                    addLine('ciekawe doznanie, gdyż sam Rinek zdawał się zapomnieć o dziwnych');
                     addLine('okolicznościach, w jakich doszło do tego przełomowego momentu.');
                     addLine('');
-                    addLine('Białek nie mógł już powstrzymać rozbawienia, obserwując');
-                    addLine('zesztywniałego Kinera kroczącego za dzierżącą jego orzeszek');
-                    addLine('Elfikiem. Wybuchnął serdecznym śmiechem, mimowolnie puszczając');
+                    addLine('Miałek nie mógł już powstrzymać rozbawienia, obserwując');
+                    addLine('zesztywniałego Rinka kroczącego za dzierżącą jego orzeszek');
+                    addLine('Kiflem. Wybuchnął serdecznym śmiechem, mimowolnie puszczając');
                     addLine('krótkiego bąka o dosyć wysokiej tonacji.');
                     addLine('');
-                    addLine('- Przepraszam, - rzekł Białek przez łzy - ale nie bardzo rozumiem');
+                    addLine('- Przepraszam, - rzekł Miałek przez łzy - ale nie bardzo rozumiem');
                     addLine('sytuację.');
                     addLine('');
-                    addLine('Elfik puściła kinerowe przyrodzenie i kołysząc biodrami powoli');
+                    addLine('Kifle puściła rinkowe przyrodzenie i kołysząc biodrami powoli');
                     addLine('podeszła do administratora o podkrążonych od pracoholizmu oczach,');
                     addLine('zalotnie kręcąc loczek wydłubany spod natapirowanej burzy blond');
                     addLine('włosów.');
                     addLine('');
                     addLine('- Nie planowałam tego. Zawsze byłam spontaniczna. - wyszeptała');
                     addLine('prowokacyjnie, gmerając już teraz palcami w okolicy guzików');
-                    addLine('różowej koszuli Białka.');
+                    addLine('różowej koszuli Miałka.');
                     addLine('');
-                    addLine('Kiner zastygł jak posąg w centrum serwerowni. Nie zdawał sobie');
+                    addLine('Rinek zastygł jak posąg w centrum serwerowni. Nie zdawał sobie');
                     addLine('sprawy, jak komicznie wyglądał z opuszczonymi do kostek spodniami');
                     addLine('kupionymi przez mamę w second-handzie, z włosami łonowymi');
                     addLine('w nieładzie i zaczerwienioną od uścisku knagą smętnie zwisającą');
                     addLine('między otłuszczonymi udami. Poczuł ukłucie zazdrości widząc');
                     addLine('pierwszą kobietę, której pozwolił się dotknąć, z zapałem liżącą');
-                    addLine('opalony tors Białka. To on powinien być na jej miejscu.');
+                    addLine('opalony tors Miałka. To on powinien być na jej miejscu.');
                     addLine('');
-                    addLine('Białek zamknął oczy, czując wilgotne pociągnięcia elfikowego');
+                    addLine('Miałek zamknął oczy, czując wilgotne pociągnięcia kiflowego');
                     addLine('języka po swojej klacie. Nie była to zdrada, był to gwałt. Stąd');
                     addLine('też, domyślając się dalszego przebiegu sytuacji, nie miał żadnych');
                     addLine('wyrzutów sumienia. Aby jednak im zapobiec, wyobraził sobie że');
                     addLine('jego żona jest właśnie posuwana przez murzyna. ,,Co za kurwa"');
                     addLine('- pomyślał. Czuł się całkowicie oczyszczony z zarzutów.');
                     addLine('');
-                    addLine('Elfik przeszła do lizania twarzy, by w końcu zbliżyć się do ucha');
-                    addLine('Białka.');
+                    addLine('Kifle przeszła do lizania twarzy, by w końcu zbliżyć się do ucha');
+                    addLine('Miałka.');
                     addLine('- Wiesz, do czego tasował twój kolega? - szeptnęła, po kurewsku');
                     addLine('przenosząc wzrok na jego twarz. - Do zdjęć twoich przeróbek');
                     addLine('zrobionych przez...');
-                    addLine('- Nie kończ. - przerwał jej Białek. Nie chciał by słowo codziennie');
+                    addLine('- Nie kończ. - przerwał jej Miałek. Nie chciał by słowo codziennie');
                     addLine('odmieniane przez przypadki w miejscu jego pracy ostudziło');
                     addLine('podniecenie. Na moment jednak otrzeźwiał i odepchnął rozpaloną');
-                    addLine('Stecką od siebie.');
+                    addLine('Kickesch od siebie.');
                     addLine('');
                     addLine('- Czego tak właściwie chcesz, hm? - zapytał, badawczo spoglądając');
-                    addLine('na Elfika. Nie doczekał jednak odpowiedzi, gdyż Kiner');
+                    addLine('na Kifla. Nie doczekał jednak odpowiedzi, gdyż Rinek');
                     addLine('niespodziewanie zwinnie, biorąc pod uwagę jego warunki fizyczne,');
-                    addLine('chwycił drukarkę Samsunga i ogłuszył Elfika celnym uderzeniem');
-                    addLine('w tył głowy. Elfik bezwładnie osunęła się na ziemię, potwierdzając');
-                    addLine('swoją renomę kobiety upadłej. W sekundę później Kiner stanął');
-                    addLine('z roznegliżowanym Białkiem twarzą w twarz, oko w oko.');
-                    addLine('Ich chuje również były całkiem blisko. Zszokowany Białek nie');
+                    addLine('chwycił drukarkę Samsunga i ogłuszył Kifla celnym uderzeniem');
+                    addLine('w tył głowy. Kifle bezwładnie osunęła się na ziemię, potwierdzając');
+                    addLine('swoją renomę kobiety upadłej. W sekundę później Rinek stanął');
+                    addLine('z roznegliżowanym Miałkiem twarzą w twarz, oko w oko.');
+                    addLine('Ich chuje również były całkiem blisko. Zszokowany Miałek nie');
                     addLine('rozpoznawał nieśmiałego dotąd kolegi. Coś w nim zdecydowanie');
                     addLine('pękło, a w spojrzeniu programisty była niewidoczna dotąd');
                     addLine('determinacja.');
                     addLine('');
-                    addLine('- Zerżnij mnie. - wycedził Kiner. - Zerżnij mnie motzno w odbyt.');
+                    addLine('- Zerżnij mnie. - wycedził Rinek. - Zerżnij mnie motzno w odbyt.');
                     addLine('- powtórzył. Powieka nawet nie drgnęła podczas wypowiadania tych');
                     addLine('słów.');
                     addLine('');
-                    addLine('Białek w swoim zaskoczeniu wydał niezidentyfikowany dźwięk, lecz');
-                    addLine('Kiner natychmiast położył mu palec na ustach.');
-                    addLine('- Nikt się nie dowie. Ta kurwa Elfik i tak ci już powiedziała.');
+                    addLine('Miałek w swoim zaskoczeniu wydał niezidentyfikowany dźwięk, lecz');
+                    addLine('Rinek natychmiast położył mu palec na ustach.');
+                    addLine('- Nikt się nie dowie. Ta kurwa Kifle i tak ci już powiedziała.');
                     addLine('Nie mam nic do stracenia. - powiedział. Nie czekając na reakcję');
-                    addLine('Białka, przeszedł od słów do czynów.');
+                    addLine('Miałka, przeszedł od słów do czynów.');
                     addLine('');
-                    addLine('Świat Białka wywrócił się do góry nogami, starał się jednak');
+                    addLine('Świat Miałka wywrócił się do góry nogami, starał się jednak');
                     addLine('chłodno kalkulować, jak wiele nieoczekiwana przygoda gejowska');
                     addLine('mogła zmienić w imidżu samca alfa, na który tak ciężko pracował.');
-                    addLine('A Kiner nie żartował. Był silniejszy od niego, co potwierdził');
-                    addLine('brutalnie atakując Elfika kilkanaście sekund wcześniej. Setki');
+                    addLine('A Rinek nie żartował. Był silniejszy od niego, co potwierdził');
+                    addLine('brutalnie atakując Kifla kilkanaście sekund wcześniej. Setki');
                     addLine('podobnych myśli przelatywały mu przez głowę, gdy rudawy');
                     addLine('programista delikatnie rozchylił mu wargi, by włożyć mięciutki');
                     addLine('palec do ust i wymusić odruch ssania.');
                     addLine('');
-                    addLine('Patrząc odważnie w oczy Białka, Kiner zrobił kilka kroków w tył');
+                    addLine('Patrząc odważnie w oczy Miałka, Rinek zrobił kilka kroków w tył');
                     addLine('i zdjął t-shirt jednym pewnym ruchem. Biała delikatna skóra');
-                    addLine('i puchate sutki Kinera były dziwacznie atrakcyjne, choć jeszcze');
+                    addLine('i puchate sutki Rinka były dziwacznie atrakcyjne, choć jeszcze');
                     addLine('kilka minut wcześniej podobna myśl nie miała szans pojawić się');
-                    addLine('w umyśle Białka.');
+                    addLine('w umyśle Miałka.');
                     addLine('');
                     addLine('- Maciek, ty tak na serio? Oddasz mi się? - zapytał');
-                    addLine('z niedowierzaniem. Kiner skinął głową i oswobodził się ze spodni,');
+                    addLine('z niedowierzaniem. Rinek skinął głową i oswobodził się ze spodni,');
                     addLine('które aż do tej chwili pętały mu kostki. Odwrócił się i ułożył');
                     addLine('w pozycji tylnej, która byłaby dla większości mężczyzn');
                     addLine('upokarzająca. Ciasna dziurka programisty zachęcająco przezierała');
                     addLine('przez gąszcz delikatnych włosków, aż prosząc się o rozepchanie.');
-                    addLine('Penis Białka zareagował na ten widok od razu, ciekawie wynurzając');
-                    addLine('się z rozpiętych jeszcze przez Elfika spodni. - Raz się żyje');
-                    addLine('- pomyślał Białek. Wyruchanie kolegi z pracy mogło się okazać');
+                    addLine('Penis Miałka zareagował na ten widok od razu, ciekawie wynurzając');
+                    addLine('się z rozpiętych jeszcze przez Kifla spodni. - Raz się żyje');
+                    addLine('- pomyślał Miałek. Wyruchanie kolegi z pracy mogło się okazać');
                     addLine('bardziej męskie, niż przypuszczał. To on miał przecież być stroną');
                     addLine('dominującą.');
                     addLine('');
-                    addLine('Białek pozbył się resztek odzienia i pewnym krokiem podszedł do');
-                    addLine('wypiętego Kinera. Postanowił zaatakować znienacka. Napluł na rękę');
+                    addLine('Miałek pozbył się resztek odzienia i pewnym krokiem podszedł do');
+                    addLine('wypiętego Rinka. Postanowił zaatakować znienacka. Napluł na rękę');
                     addLine('i jednym ruchem wbił naprężonego kutasa w miękki odbyt');
                     addLine('programisty. Sięgnął ręką do podbrzusza, by przekonać się, że');
-                    addLine('i chuj Kinera był tak nabrzmiały, jakby miał eksplodować. Dodało');
+                    addLine('i chuj Rinka był tak nabrzmiały, jakby miał eksplodować. Dodało');
                     addLine('mu to siły i pewności siebie. Poczuł się atrakcyjny.');
                     addLine('');
-                    addLine('Pierwsze ruchy były jeszcze dość powolne, lecz Kiner starał się');
+                    addLine('Pierwsze ruchy były jeszcze dość powolne, lecz Rinek starał się');
                     addLine('przyjąć jak najwięcej pomimo słabego nawilżenia. Kolejne');
-                    addLine('centymetry napiętej pały Białka znikały w czeluściach jego');
-                    addLine('odbytu, a zwierzęce sapanie Kinera tylko podniecało właściciela');
-                    addLine('dość dużej jak na polskie warunki kutangi. Białek złapał Kinera');
+                    addLine('centymetry napiętej pały Miałka znikały w czeluściach jego');
+                    addLine('odbytu, a zwierzęce sapanie Rinka tylko podniecało właściciela');
+                    addLine('dość dużej jak na polskie warunki kutangi. Miałek złapał Rinka');
                     addLine('za biodra i przyciągnął do siebie. - Chciałeś rżnięcia? To masz.');
                     addLine('- wycedził i zaczął miarowo, całym ciężarem napierać na puszyste');
-                    addLine('ciałko kolegi. - Pierdol mnie, Michał! - krzyknął resztkami sił');
-                    addLine('Kiner, uginając się do samej podłogi, a odgłosy największego');
-                    addLine('rżnięcia w historii firmy ocuciły omdlałego Elfika, leżącego');
+                    addLine('ciałko kolegi. - Pierdol mnie, Bichał! - krzyknął resztkami sił');
+                    addLine('Rinek, uginając się do samej podłogi, a odgłosy największego');
+                    addLine('rżnięcia w historii firmy ocuciły omdlałego Kifla, leżącego');
                     addLine('od dwa metry dalej.');
                     addLine('');
-                    addLine('Elfik wstała i zataczając się podeszła do sapiącego Białka.');
+                    addLine('Kifle wstała i zataczając się podeszła do sapiącego Miałka.');
                     addLine('- Hej, chłopakii... - z ust dziewczyny wychodził pijacki bełkot,');
                     addLine('który trudno było rozszyfrować. - mogę się przyłączyć?');
-                    addLine('- Wypierdalaj stąd! - wrzasnął Białek i odtrącił rękę Elfika,');
+                    addLine('- Wypierdalaj stąd! - wrzasnął Miałek i odtrącił rękę Kifla,');
                     addLine('która zaczęła mierzwić jego włosy.');
                     addLine('');
-                    addLine('Elfik prychnęła i odeszła na kilka kroków. Udawała obrażoną, choć');
-                    addLine('ciekawie zerkała na Białka, który bez opamiętania pierdolił');
-                    addLine('Kinera jak maszyna. Sam Kiner odwrócił się w jej stronę i złośliwie');
+                    addLine('Kifle prychnęła i odeszła na kilka kroków. Udawała obrażoną, choć');
+                    addLine('ciekawie zerkała na Miałka, który bez opamiętania pierdolił');
+                    addLine('Rinka jak maszyna. Sam Rinek odwrócił się w jej stronę i złośliwie');
                     addLine('wystawił język na wierzch. Wygrał tę partię.');
                     addLine('');
                     addLine('Poszukiwania piersiówki w torebce w panterkę okazały się owocne.');
-                    addLine('Elfik pociągnęła resztkę bimbru dla kurażu i postanowiła nie');
+                    addLine('Kifle pociągnęła resztkę bimbru dla kurażu i postanowiła nie');
                     addLine('rezygnować z szansy zostania moderatorką swojego ulubionego');
-                    addLine('serwisu. Stanęła na wysokości oczu Białka i ostentacyjnie');
+                    addLine('serwisu. Stanęła na wysokości oczu Miałka i ostentacyjnie');
                     addLine('rozpoczęła striptiz. Na pierwszy ogień poszła spódniczka. Dopiero');
                     addLine('w tym świetle znać było ślady spermy i wymiocin, które pokrywały');
-                    addLine('jasny materiał. Elfik zaplątała się w bluzkę, lecz niezrażona tym');
+                    addLine('jasny materiał. Kifle zaplątała się w bluzkę, lecz niezrażona tym');
                     addLine('faktem wciąż starała się wyglądać seksi. Będąc już w samej');
-                    addLine('bieliźnie odwróciła się i wypięła prosto przed twarzą Kinera,');
+                    addLine('bieliźnie odwróciła się i wypięła prosto przed twarzą Rinka,');
                     addLine('który niewiele myśląc splunął prosto na naddarty materiał');
-                    addLine('elfikowych majtek. Elfik wybuchnęła śmiechem. Po zdjęciu stanika');
+                    addLine('kiflowych majtek. Kifle wybuchnęła śmiechem. Po zdjęciu stanika');
                     addLine('ułożyła się na podłodze i uchyliła majtki, pokazując nieco');
                     addLine('zarośniętą cipkę o wyraźnie zarysowanych wargach. - Nudzi mi się.');
-                    addLine('- powiedziała. - Długo jeszcze będziecie się pierdolić?. Białek');
+                    addLine('- powiedziała. - Długo jeszcze będziecie się pierdolić?. Miałek');
                     addLine('jednak nie odpowiedział, zbyt zaaferowany stanem');
                     addLine('przedorgazmicznym, który sobie zafundował.');
                     addLine('');
                     addLine('Największa kurewna wykopu postanowiła zabawić się sama. Sięgnęła');
                     addLine('ręką po trzonek od łopaty, która była maskotką serwisu i zaczęła');
                     addLine('nim jeździć po wargach sromowych. Śluz gęsto skapywał na podłogę,');
-                    addLine('a Elfik pociągała się za sutki, wijąc się jak piskorz po tanich');
-                    addLine('panelach. Trzonek wszedł w luźną jamę Elfika jak w masło.');
+                    addLine('a Kifle pociągała się za sutki, wijąc się jak piskorz po tanich');
+                    addLine('panelach. Trzonek wszedł w luźną jamę Kifla jak w masło.');
                     addLine('Prawdopodobnie nie czuła niczego, a choć starała się zwrócić na');
-                    addLine('siebie uwagę przez jęki i udawane podniecenie, Białek i Kiner');
+                    addLine('siebie uwagę przez jęki i udawane podniecenie, Miałek i Rinek');
                     addLine('byli zajęci sobą. Spojeni w jedność dochodzili właśnie razem,');
                     addLine('o czym obwieścił światu pierwotny ryk rudego programisty.');
-                    addLine('Zmęczony m__b od razu wyszedł z Kinera, racząc się widokiem');
+                    addLine('Zmęczony b__m od razu wyszedł z Rinka, racząc się widokiem');
                     addLine('ciepłego jeszcze ciasteczka z kremem. Na pożegnanie przytulił się');
                     addLine('do mięciutkiego tyłeczka kolegi, który dostarczył mu wiele');
                     addLine('satysfakcji. I - jak podpowiadała mu intuicja - miał dostarczyć');
-                    addLine('jeszcze nieraz. Kutas Białka pokryty był lekko kałem, lecz Kiner');
+                    addLine('jeszcze nieraz. Kutas Miałka pokryty był lekko kałem, lecz Rinek');
                     addLine('sprawnie sobie z tym poradził, naprędce zlizując brązową maź');
                     addLine('z mięknącego już chuja administratora wykopu. - Byłeś zajebisty,');
                     addLine('nikt mnie jeszcze tak nie jebał. - powtarzał zmęczonym głosem');
-                    addLine('Kiner. - Zdejmij skarpetki, chcę ci podziękować jeszcze bardziej.');
+                    addLine('Rinek. - Zdejmij skarpetki, chcę ci podziękować jeszcze bardziej.');
                     addLine('');
-                    addLine('Zdziwiony Białek zsunął białe stopki z nóg, po czym Kiner rzucił');
-                    addLine('się do ssania dużego palca. Znudzona Elfik naprędce znalazła się');
+                    addLine('Zdziwiony Miałek zsunął białe stopki z nóg, po czym Rinek rzucił');
+                    addLine('się do ssania dużego palca. Znudzona Kifle naprędce znalazła się');
                     addLine('obok niego, próbując zmieścić w ustach jeszcze więcej palców, by');
-                    addLine('zyskać sobie przychylność Białka. Ten zaś był w siódmym niebie.');
+                    addLine('zyskać sobie przychylność Miałka. Ten zaś był w siódmym niebie.');
                     addLine('Nie spieszyło mu się już do domu tak, jak kilka godzin wcześniej.');
-                    addLine('Kiner wykorzystał rozmarzenie kolegi, by na koniec usiąść mu na');
-                    addLine('twarzy i zmusić go do ssania swoich kulek. W oczach Białka');
+                    addLine('Rinek wykorzystał rozmarzenie kolegi, by na koniec usiąść mu na');
+                    addLine('twarzy i zmusić go do ssania swoich kulek. W oczach Miałka');
                     addLine('pojawiły się pierwsze ślady przywiązania, co bardzo Maćka');
-                    addLine('wzruszyło. Nie zepsuło tej chwili nawet faux-pas Elfika, która');
-                    addLine('odepchnięta zapachem stóp Białka zwymiotowała na jego nogi.');
+                    addLine('wzruszyło. Nie zepsuło tej chwili nawet faux-pas Kifla, która');
+                    addLine('odepchnięta zapachem stóp Miałka zwymiotowała na jego nogi.');
                     addLine('');
                     addLine('Życie w serwisie już nigdy nie miało być takie samo.');
                     addLine('');
                     addLine('                              ~ fin ~', 'info');
+                    addLine('');
+                    // Animated Poznań goats butting heads
+                    const goatFrames = [
+                        [
+                            '    \\\\       //',
+                            '     ))     (( ',
+                            '    //       \\\\',
+                            '   ||         ||',
+                            '   ^^         ^^',
+                        ],
+                        [
+                            '     \\\\     // ',
+                            '      ))   ((  ',
+                            '     //     \\\\ ',
+                            '    ||       || ',
+                            '    ^^       ^^ ',
+                        ],
+                        [
+                            '      \\\\   //  ',
+                            '       )) ((   ',
+                            '      //   \\\\  ',
+                            '     ||     ||  ',
+                            '     ^^     ^^  ',
+                        ],
+                        [
+                            '       \\\\ //   ',
+                            '        )X(    ',
+                            '       // \\\\   ',
+                            '      ||   ||   ',
+                            '      ^^   ^^   ',
+                        ],
+                        [
+                            '      \\\\ * //  ',
+                            '       )X(  *  ',
+                            '    * // \\\\    ',
+                            '      ||   ||   ',
+                            '      ^^   ^^   ',
+                        ],
+                    ];
+                    addLine('  🐐 Poznańskie koziołki 🐐', 'info');
+                    const goatContainer = document.createElement('pre');
+                    goatContainer.className = 'terminal-line';
+                    goatContainer.style.whiteSpace = 'pre';
+                    goatContainer.textContent = goatFrames[0].join('\n');
+                    output.appendChild(goatContainer);
+                    let gFrame = 0;
+                    const goatInterval = setInterval(() => {
+                        gFrame++;
+                        if (gFrame >= goatFrames.length) {
+                            clearInterval(goatInterval);
+                            goatContainer.textContent = goatFrames[goatFrames.length - 1].join('\n');
+                            addLine('  💥 STUK! 💥', 'info');
+                            return;
+                        }
+                        goatContainer.textContent = goatFrames[gFrame].join('\n');
+                    }, 500);
                     break;
 
                 case 'matrix':
@@ -1125,15 +1181,33 @@
         function startMatrix() {
             let matrixCount = 0;
             const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ01234567890ABCDEF';
+            // Hidden hints embedded in matrix rain
+            const hints = [
+                'try 2137 for a holy surprise',
+                'the fisherman sings at sea',
+                'achilles knows the way out',
+                'servers have stories to tell',
+                'bark at the moon or the terminal',
+            ];
+            let hintShown = 0;
             const interval = setInterval(() => {
                 let line = '';
-                for (let i = 0; i < 60; i++) {
-                    line += chars[Math.floor(Math.random() * chars.length)];
+                // Occasionally embed a hint in the noise
+                if (matrixCount > 5 && hintShown < hints.length && Math.random() < 0.25) {
+                    const hint = hints[hintShown++];
+                    const pad = Math.floor((60 - hint.length) / 2);
+                    for (let i = 0; i < pad; i++) line += chars[Math.floor(Math.random() * chars.length)];
+                    line += hint;
+                    for (let i = 0; i < 60 - pad - hint.length; i++) line += chars[Math.floor(Math.random() * chars.length)];
+                } else {
+                    for (let i = 0; i < 60; i++) {
+                        line += chars[Math.floor(Math.random() * chars.length)];
+                    }
                 }
                 addLine(line, 'success');
                 scrollTerminal();
                 matrixCount++;
-                if (matrixCount > 20) {
+                if (matrixCount > 25) {
                     clearInterval(interval);
                     addLine('');
                     addLine('Wake up, Jan...', 'info');
@@ -1477,12 +1551,25 @@
 
     // ===== LANGUAGE =====
     function initLanguageSwitcher() {
+        const toggle = document.getElementById('langToggle');
+        const dropdown = document.getElementById('langDropdown');
+
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', () => {
+            dropdown.classList.add('hidden');
+        });
+
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const lang = btn.dataset.lang;
                 currentLang = lang;
                 localStorage.setItem('jan-portfolio-lang', lang);
                 applyLanguage(lang);
+                dropdown.classList.add('hidden');
             });
         });
         updateActiveLangBtn(currentLang);
@@ -1492,6 +1579,10 @@
         document.querySelectorAll('.lang-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.lang === lang);
         });
+        // Update toggle button text
+        const toggle = document.getElementById('langToggle');
+        const labels = { en: 'EN', pl: 'PL', klingon: 'tlh', hebrew: 'עבר' };
+        if (toggle) toggle.textContent = labels[lang] || lang.toUpperCase();
     }
 
     function applyLanguage(lang) {

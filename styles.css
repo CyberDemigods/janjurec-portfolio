@@ -115,11 +115,10 @@
    LANGUAGE SWITCHER
    =========================== */
 .lang-switcher-tray {
-    display: flex;
-    gap: 2px;
+    position: relative;
 }
-.lang-btn {
-    padding: 2px 5px;
+.lang-toggle {
+    padding: 2px 6px;
     border: 1px solid var(--tray-btn-border-color, #888);
     background: var(--tray-btn-bg, transparent);
     color: var(--tray-btn-color, #000);
@@ -127,7 +126,39 @@
     font-size: 9px;
     font-weight: bold;
     border-radius: 2px;
-    text-transform: uppercase;
+}
+.lang-toggle:hover {
+    background: var(--tray-btn-hover, rgba(255,255,255,0.3));
+}
+.lang-dropdown {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 4px;
+    background: var(--window-bg, #c0c0c0);
+    border: var(--window-border, 2px outset #d4d0c8);
+    box-shadow: var(--window-shadow, 2px 2px 0 #000);
+    border-radius: var(--window-radius, 0);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 10001;
+}
+.lang-dropdown.hidden {
+    display: none;
+}
+.lang-btn {
+    padding: 4px 10px;
+    border: 1px solid var(--tray-btn-border-color, #888);
+    background: var(--tray-btn-bg, transparent);
+    color: var(--tray-btn-color, #000);
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 2px;
+    text-align: left;
+    white-space: nowrap;
 }
 .lang-btn:hover {
     background: var(--tray-btn-hover, rgba(255,255,255,0.3));
