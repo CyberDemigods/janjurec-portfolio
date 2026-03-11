@@ -1633,10 +1633,6 @@
 
             lastX = pos.x;
             lastY = pos.y;
-
-            // Update coords
-            const coordsEl = document.getElementById('paintCoords');
-            if (coordsEl) coordsEl.textContent = Math.floor(pos.x) + ', ' + Math.floor(pos.y);
         }
 
         function stopPaint() {
@@ -1699,27 +1695,34 @@
         canvas.addEventListener('touchmove', (e) => { e.preventDefault(); paint(e); }, { passive: false });
         canvas.addEventListener('touchend', stopPaint);
 
-        // Tool buttons
+        const fgColorEl = document.getElementById('paintFgColor');
+
+        function updateFgColor() {
+            if (fgColorEl) fgColorEl.style.background = color;
+        }
+
+        // Tool buttons (sidebar)
         document.querySelectorAll('.paint-tool[data-tool]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const t = btn.dataset.tool;
-
-                if (t === 'clear') {
-                    ctx.fillStyle = '#fff';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    document.getElementById('paintStatus').textContent = 'Canvas cleared';
-                    return;
-                }
-
-                if (t === 'save') {
-                    savePainting();
-                    return;
-                }
-
                 tool = t;
                 document.querySelectorAll('.paint-tool').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 canvas.style.cursor = t === 'eraser' ? 'cell' : t === 'fill' ? 'crosshair' : 'crosshair';
+            });
+        });
+
+        // Menu bar (File: Save, Edit: Clear)
+        document.querySelectorAll('.paint-menu-item[data-tool]').forEach(item => {
+            item.addEventListener('click', () => {
+                const t = item.dataset.tool;
+                if (t === 'clear') {
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    document.getElementById('paintStatus').textContent = 'Canvas cleared';
+                } else if (t === 'save') {
+                    savePainting();
+                }
             });
         });
 
@@ -1729,18 +1732,17 @@
                 color = swatch.dataset.color;
                 document.querySelectorAll('.paint-color').forEach(s => s.classList.remove('active'));
                 swatch.classList.add('active');
+                updateFgColor();
             });
         });
 
         // Custom color picker
-        const customBtn = document.querySelector('.custom-color-btn');
         const customPicker = document.getElementById('customColorPicker');
-        if (customBtn && customPicker) {
-            customBtn.addEventListener('click', () => customPicker.click());
+        if (customPicker) {
             customPicker.addEventListener('input', (e) => {
                 color = e.target.value;
                 document.querySelectorAll('.paint-color').forEach(s => s.classList.remove('active'));
-                customBtn.classList.add('active');
+                updateFgColor();
             });
         }
 
@@ -1753,6 +1755,13 @@
                 if (sizeLabel) sizeLabel.textContent = size;
             });
         }
+
+        // Track coords in statusbar
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getPos(e);
+            const coordsEl = document.getElementById('paintCoords');
+            if (coordsEl) coordsEl.textContent = Math.floor(pos.x) + ', ' + Math.floor(pos.y);
+        });
 
         function savePainting() {
             const dataUrl = canvas.toDataURL('image/png', 0.8);

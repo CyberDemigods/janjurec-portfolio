@@ -735,11 +735,11 @@
         </div>
 
         <!-- ==================== PAINT WINDOW ==================== -->
-        <div class="window hidden" id="window-paint" style="width:700px;height:500px;top:40px;left:80px;">
+        <div class="window hidden" id="window-paint" style="width:640px;height:480px;top:40px;left:80px;">
             <div class="window-titlebar">
                 <div class="window-title">
                     <span class="window-title-icon">🎨</span>
-                    <span data-i18n="title-paint">untitled - Paint</span>
+                    <span class="window-title-text" data-i18n="title-paint">untitled - Paint</span>
                 </div>
                 <div class="window-controls">
                     <button class="win-btn minimize" data-action="minimize">_</button>
@@ -747,47 +747,67 @@
                     <button class="win-btn close" data-action="close">×</button>
                 </div>
             </div>
+            <div class="paint-menubar">
+                <span class="paint-menu-item" data-tool="save">File: Save</span>
+                <span class="paint-menu-item" data-tool="clear">Edit: Clear</span>
+            </div>
             <div class="window-body paint-body">
-                <div class="paint-toolbar">
-                    <button class="paint-tool active" data-tool="pencil" title="Pencil">✏️</button>
-                    <button class="paint-tool" data-tool="brush" title="Brush">🖌️</button>
-                    <button class="paint-tool" data-tool="eraser" title="Eraser">🧹</button>
-                    <button class="paint-tool" data-tool="fill" title="Fill">🪣</button>
-                    <div class="paint-separator"></div>
-                    <button class="paint-tool" data-tool="clear" title="Clear">🗑️</button>
-                    <button class="paint-tool" data-tool="save" title="Save to gallery">💾</button>
-                    <div class="paint-separator"></div>
-                    <div class="paint-size-group">
-                        <label>Size:</label>
-                        <input type="range" id="paintSize" min="1" max="30" value="3" class="paint-size-slider">
+                <div class="paint-sidebar">
+                    <button class="paint-tool active" data-tool="pencil" title="Pencil">
+                        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M12.1 1.5l2.4 2.4-9 9H3.1v-2.4l9-9z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                    </button>
+                    <button class="paint-tool" data-tool="brush" title="Brush">
+                        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 10c0 2 1 4 5 4s5-2 5-4-2-2-5-2-5 0-5 2z" fill="currentColor" opacity="0.3"/><path d="M7 2l4 6H5z" fill="currentColor"/></svg>
+                    </button>
+                    <button class="paint-tool" data-tool="eraser" title="Eraser">
+                        <svg viewBox="0 0 16 16" width="16" height="16"><rect x="3" y="6" width="10" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="9" width="10" height="4" rx="1" fill="#ffaaaa"/></svg>
+                    </button>
+                    <button class="paint-tool" data-tool="fill" title="Fill">
+                        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M4 13l5-10 3 3-5 10z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M13 9c1 1.5 0 3-1 3s-1-1.5 0-3l1-1z" fill="#4488ff"/></svg>
+                    </button>
+                    <div class="paint-separator-h"></div>
+                    <div class="paint-size-box">
+                        <input type="range" id="paintSize" min="1" max="30" value="3" class="paint-size-slider" orient="vertical">
                         <span id="paintSizeLabel">3</span>
                     </div>
                 </div>
-                <div class="paint-canvas-wrap">
-                    <canvas id="paintCanvas"></canvas>
-                </div>
-                <div class="paint-palette">
-                    <div class="paint-color active" data-color="#000000" style="background:#000000"></div>
-                    <div class="paint-color" data-color="#ffffff" style="background:#ffffff;border:1px solid #ccc"></div>
-                    <div class="paint-color" data-color="#ff0000" style="background:#ff0000"></div>
-                    <div class="paint-color" data-color="#00aa00" style="background:#00aa00"></div>
-                    <div class="paint-color" data-color="#0000ff" style="background:#0000ff"></div>
-                    <div class="paint-color" data-color="#ffff00" style="background:#ffff00"></div>
-                    <div class="paint-color" data-color="#ff6600" style="background:#ff6600"></div>
-                    <div class="paint-color" data-color="#9900cc" style="background:#9900cc"></div>
-                    <div class="paint-color" data-color="#00cccc" style="background:#00cccc"></div>
-                    <div class="paint-color" data-color="#ff69b4" style="background:#ff69b4"></div>
-                    <div class="paint-color" data-color="#8B4513" style="background:#8B4513"></div>
-                    <div class="paint-color" data-color="#808080" style="background:#808080"></div>
-                    <div class="paint-color" data-color="#c0c0c0" style="background:#c0c0c0;border:1px solid #999"></div>
-                    <div class="paint-color" data-color="#000080" style="background:#000080"></div>
-                    <div class="paint-color custom-color-btn" title="Custom color">🌈</div>
-                    <input type="color" id="customColorPicker" style="display:none" value="#000000">
+                <div class="paint-main">
+                    <div class="paint-canvas-wrap">
+                        <canvas id="paintCanvas"></canvas>
+                    </div>
+                    <div class="paint-palette">
+                        <div class="paint-current-colors">
+                            <div class="paint-fg-color" id="paintFgColor" style="background:#000000"></div>
+                        </div>
+                        <div class="paint-color-grid">
+                            <div class="paint-color active" data-color="#000000" style="background:#000000"></div>
+                            <div class="paint-color" data-color="#808080" style="background:#808080"></div>
+                            <div class="paint-color" data-color="#800000" style="background:#800000"></div>
+                            <div class="paint-color" data-color="#808000" style="background:#808000"></div>
+                            <div class="paint-color" data-color="#008000" style="background:#008000"></div>
+                            <div class="paint-color" data-color="#008080" style="background:#008080"></div>
+                            <div class="paint-color" data-color="#000080" style="background:#000080"></div>
+                            <div class="paint-color" data-color="#800080" style="background:#800080"></div>
+                            <div class="paint-color" data-color="#ffffff" style="background:#ffffff"></div>
+                            <div class="paint-color" data-color="#c0c0c0" style="background:#c0c0c0"></div>
+                            <div class="paint-color" data-color="#ff0000" style="background:#ff0000"></div>
+                            <div class="paint-color" data-color="#ffff00" style="background:#ffff00"></div>
+                            <div class="paint-color" data-color="#00ff00" style="background:#00ff00"></div>
+                            <div class="paint-color" data-color="#00ffff" style="background:#00ffff"></div>
+                            <div class="paint-color" data-color="#0000ff" style="background:#0000ff"></div>
+                            <div class="paint-color" data-color="#ff00ff" style="background:#ff00ff"></div>
+                            <div class="paint-color" data-color="#ff6600" style="background:#ff6600"></div>
+                            <div class="paint-color" data-color="#ff69b4" style="background:#ff69b4"></div>
+                            <div class="paint-color" data-color="#8B4513" style="background:#8B4513"></div>
+                            <div class="paint-color" data-color="#00cc99" style="background:#00cc99"></div>
+                        </div>
+                        <input type="color" id="customColorPicker" class="paint-custom-color" value="#000000" title="Custom color">
+                    </div>
                 </div>
             </div>
             <div class="window-statusbar">
+                <span id="paintCoords">&nbsp;</span>
                 <span id="paintStatus">Ready</span>
-                <span id="paintCoords"></span>
             </div>
         </div>
 
