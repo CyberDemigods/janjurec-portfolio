@@ -158,12 +158,18 @@
             document.addEventListener('touchend', stopDrag);
         }
 
+        function getTaskbarHeight() {
+            const tb = document.querySelector('.taskbar');
+            return tb ? tb.offsetHeight : 36;
+        }
+
         function onDrag(e) {
             if (!dragTarget) return;
             let x = e.clientX - offsetX;
             let y = e.clientY - offsetY;
+            const maxY = window.innerHeight - getTaskbarHeight() - 40;
             x = Math.max(-dragTarget.offsetWidth + 100, Math.min(window.innerWidth - 100, x));
-            y = Math.max(0, Math.min(window.innerHeight - 60, y));
+            y = Math.max(0, Math.min(maxY, y));
             dragTarget.style.left = x + 'px';
             dragTarget.style.top = y + 'px';
         }
@@ -174,8 +180,9 @@
             const touch = e.touches[0];
             let x = touch.clientX - offsetX;
             let y = touch.clientY - offsetY;
+            const maxY = window.innerHeight - getTaskbarHeight() - 40;
             x = Math.max(-dragTarget.offsetWidth + 100, Math.min(window.innerWidth - 100, x));
-            y = Math.max(0, Math.min(window.innerHeight - 60, y));
+            y = Math.max(0, Math.min(maxY, y));
             dragTarget.style.left = x + 'px';
             dragTarget.style.top = y + 'px';
         }

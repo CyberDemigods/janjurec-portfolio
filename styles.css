@@ -344,6 +344,7 @@ a:hover {
 /* Window body */
 .window-body {
     flex: 1;
+    min-height: 0;
     padding: 16px;
     overflow: auto;
     background: var(--window-body-bg, #fff);
@@ -1090,10 +1091,11 @@ a:hover {
     padding: 8px 12px !important;
     display: flex;
     flex-direction: column;
-    min-height: 350px;
+    min-height: 0;
 }
 .terminal-output {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     margin-bottom: 4px;
 }
