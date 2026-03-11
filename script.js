@@ -528,7 +528,7 @@
                     processCommand(cmd);
                 }
                 input.value = '';
-                output.scrollTop = output.scrollHeight;
+                scrollTerminal();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (historyIndex < cmdHistory.length - 1) {
@@ -547,11 +547,17 @@
             }
         });
 
+        function scrollTerminal() {
+            output.scrollTop = output.scrollHeight;
+            input.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
         function addLine(text, className) {
             const pre = document.createElement('pre');
             pre.className = 'terminal-line' + (className ? ' ' + className : '');
             pre.textContent = text;
             output.appendChild(pre);
+            scrollTerminal();
         }
 
         function addHTML(html, className) {
@@ -559,6 +565,7 @@
             pre.className = 'terminal-line' + (className ? ' ' + className : '');
             pre.innerHTML = html;
             output.appendChild(pre);
+            scrollTerminal();
         }
 
         function processCommand(cmd) {
@@ -1124,7 +1131,7 @@
                     line += chars[Math.floor(Math.random() * chars.length)];
                 }
                 addLine(line, 'success');
-                output.scrollTop = output.scrollHeight;
+                scrollTerminal();
                 matrixCount++;
                 if (matrixCount > 20) {
                     clearInterval(interval);
