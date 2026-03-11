@@ -13,6 +13,7 @@ const TRANSLATIONS = {
         'icon-recommendations': 'Reviews',
         'icon-contact': 'Contact',
         'icon-terminal': 'Terminal',
+        'icon-paint': 'Paint',
 
         // Window titles
         'title-about': 'About Me',
@@ -22,6 +23,7 @@ const TRANSLATIONS = {
         'title-education': 'Education',
         'title-recommendations': 'Reviews \u2013 What colleagues say',
         'title-contact': 'Contact',
+        'title-paint': 'untitled - Paint',
         'title-terminal-win': 'C:\\WINDOWS\\system32\\cmd.exe',
         'title-terminal-mac': 'Terminal \u2014 zsh',
         'title-terminal-linux': 'jan@portfolio: ~',
@@ -108,6 +110,7 @@ const TRANSLATIONS = {
         'icon-recommendations': 'Opinie',
         'icon-contact': 'Kontakt',
         'icon-terminal': 'Terminal',
+        'icon-paint': 'Paint',
 
         'title-about': 'O mnie',
         'title-experience': 'Do\u015bwiadczenie',
@@ -116,6 +119,7 @@ const TRANSLATIONS = {
         'title-education': 'Wykszta\u0142cenie',
         'title-recommendations': 'Opinie \u2013 Co m\u00f3wi\u0105 wsp\u00f3\u0142pracownicy',
         'title-contact': 'Kontakt',
+        'title-paint': 'bez tytu\u0142u - Paint',
         'title-terminal-win': 'C:\\WINDOWS\\system32\\cmd.exe',
         'title-terminal-mac': 'Terminal \u2014 zsh',
         'title-terminal-linux': 'jan@portfolio: ~',
@@ -188,6 +192,7 @@ const TRANSLATIONS = {
         'icon-recommendations': 'naD',
         'icon-contact': 'QumwI\'',
         'icon-terminal': 'De\'wI\'',
+        'icon-paint': 'rItlh',
 
         'title-about': 'jIH - SuvwI\' nughI\'',
         'title-experience': 'may\' ta \u2013 noH mIw',
@@ -196,6 +201,7 @@ const TRANSLATIONS = {
         'title-education': 'ghojmoH \u2013 DuSaQ',
         'title-recommendations': 'naD mu\' \u2013 pIn\'a\' jatlh',
         'title-contact': 'QumwI\' \u2013 jIHvaD yIjatlh',
+        'title-paint': 'pagh - rItlh',
         'title-terminal-win': 'C:\\QIN\\ra\'ghom\\Qum.exe',
         'title-terminal-mac': 'De\'wI\' \u2014 tlhIngan Shell',
         'title-terminal-linux': 'jan@yo\'SeH: ~',
@@ -269,6 +275,7 @@ const TRANSLATIONS = {
         'icon-recommendations': 'המלצות',
         'icon-contact': 'צור קשר',
         'icon-terminal': 'טרמינל',
+        'icon-paint': 'צייר',
 
         // Window titles
         'title-about': 'אודותיי',
@@ -278,6 +285,7 @@ const TRANSLATIONS = {
         'title-education': 'השכלה',
         'title-recommendations': 'המלצות – מה אומרים הקולגות',
         'title-contact': 'צור קשר',
+        'title-paint': 'ללא שם - צייר',
         'title-terminal-win': 'C:\\WINDOWS\\system32\\cmd.exe',
         'title-terminal-mac': 'Terminal — zsh',
         'title-terminal-linux': 'jan@portfolio: ~',

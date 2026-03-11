@@ -1,0 +1,7 @@
+name = "janjurec-logger"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "PORTFOLIO_LOGS"
+id = "621a7b7d330b4ec0ad0a839c8b2becaf"

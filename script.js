@@ -570,6 +570,7 @@
 
         function processCommand(cmd) {
             const lower = cmd.toLowerCase().trim();
+            logSession('terminal', { command: cmd });
 
             // === EASTER EGG: 2137 ===
             if (lower === '2137') {
@@ -1522,6 +1523,269 @@
         }
     }
 
+    // ===== SESSION LOGGING =====
+    const SESSION_LOG_URL = 'https://janjurec-logger.achillesgrek.workers.dev';
+    const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+    function logSession(type, data) {
+        if (!SESSION_LOG_URL) return;
+        try {
+            navigator.sendBeacon(SESSION_LOG_URL, JSON.stringify({
+                session: sessionId,
+                type: type,
+                data: data,
+                timestamp: new Date().toISOString()
+            }));
+        } catch(e) { /* silent */ }
+    }
+
+    // ===== PAINT =====
+    function initPaint() {
+        const canvas = document.getElementById('paintCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const wrap = canvas.parentElement;
+
+        let painting = false;
+        let tool = 'pencil';
+        let color = '#000000';
+        let size = 3;
+        let lastX = 0, lastY = 0;
+
+        function resizeCanvas() {
+            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            canvas.width = wrap.clientWidth;
+            canvas.height = wrap.clientHeight;
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(img, 0, 0);
+        }
+
+        // Initial resize
+        setTimeout(resizeCanvas, 100);
+        window.addEventListener('resize', resizeCanvas);
+
+        // Also resize when window is opened/maximized
+        const observer = new MutationObserver(() => {
+            setTimeout(resizeCanvas, 50);
+        });
+        const paintWin = document.getElementById('window-paint');
+        if (paintWin) {
+            observer.observe(paintWin, { attributes: true, attributeFilter: ['class', 'style'] });
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        function startPaint(e) {
+            painting = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+
+            if (tool === 'fill') {
+                floodFill(Math.floor(pos.x), Math.floor(pos.y), color);
+                painting = false;
+                return;
+            }
+
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, getToolSize() / 2, 0, Math.PI * 2);
+            ctx.fillStyle = tool === 'eraser' ? '#ffffff' : color;
+            ctx.fill();
+        }
+
+        function paint(e) {
+            if (!painting) return;
+            e.preventDefault();
+            const pos = getPos(e);
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.strokeStyle = tool === 'eraser' ? '#ffffff' : color;
+            ctx.lineWidth = getToolSize();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            lastX = pos.x;
+            lastY = pos.y;
+
+            // Update coords
+            const coordsEl = document.getElementById('paintCoords');
+            if (coordsEl) coordsEl.textContent = Math.floor(pos.x) + ', ' + Math.floor(pos.y);
+        }
+
+        function stopPaint() {
+            painting = false;
+        }
+
+        function getToolSize() {
+            if (tool === 'pencil') return Math.max(1, size * 0.5);
+            if (tool === 'eraser') return size * 3;
+            return size;
+        }
+
+        // Flood fill
+        function floodFill(startX, startY, fillColor) {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const idx = (startY * w + startX) * 4;
+            const targetR = data[idx], targetG = data[idx+1], targetB = data[idx+2];
+
+            const hex = fillColor.replace('#', '');
+            const fillR = parseInt(hex.substr(0,2), 16);
+            const fillG = parseInt(hex.substr(2,2), 16);
+            const fillB = parseInt(hex.substr(4,2), 16);
+
+            if (targetR === fillR && targetG === fillG && targetB === fillB) return;
+
+            const stack = [[startX, startY]];
+            const visited = new Set();
+
+            while (stack.length > 0) {
+                const [x, y] = stack.pop();
+                if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                const key = y * w + x;
+                if (visited.has(key)) continue;
+
+                const i = key * 4;
+                if (Math.abs(data[i] - targetR) > 10 || Math.abs(data[i+1] - targetG) > 10 || Math.abs(data[i+2] - targetB) > 10) continue;
+
+                visited.add(key);
+                data[i] = fillR;
+                data[i+1] = fillG;
+                data[i+2] = fillB;
+                data[i+3] = 255;
+
+                stack.push([x+1, y], [x-1, y], [x, y+1], [x, y-1]);
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // Canvas events
+        canvas.addEventListener('mousedown', startPaint);
+        canvas.addEventListener('mousemove', paint);
+        canvas.addEventListener('mouseup', stopPaint);
+        canvas.addEventListener('mouseleave', stopPaint);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startPaint(e); }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); paint(e); }, { passive: false });
+        canvas.addEventListener('touchend', stopPaint);
+
+        // Tool buttons
+        document.querySelectorAll('.paint-tool[data-tool]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const t = btn.dataset.tool;
+
+                if (t === 'clear') {
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    document.getElementById('paintStatus').textContent = 'Canvas cleared';
+                    return;
+                }
+
+                if (t === 'save') {
+                    savePainting();
+                    return;
+                }
+
+                tool = t;
+                document.querySelectorAll('.paint-tool').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                canvas.style.cursor = t === 'eraser' ? 'cell' : t === 'fill' ? 'crosshair' : 'crosshair';
+            });
+        });
+
+        // Color palette
+        document.querySelectorAll('.paint-color[data-color]').forEach(swatch => {
+            swatch.addEventListener('click', () => {
+                color = swatch.dataset.color;
+                document.querySelectorAll('.paint-color').forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+            });
+        });
+
+        // Custom color picker
+        const customBtn = document.querySelector('.custom-color-btn');
+        const customPicker = document.getElementById('customColorPicker');
+        if (customBtn && customPicker) {
+            customBtn.addEventListener('click', () => customPicker.click());
+            customPicker.addEventListener('input', (e) => {
+                color = e.target.value;
+                document.querySelectorAll('.paint-color').forEach(s => s.classList.remove('active'));
+                customBtn.classList.add('active');
+            });
+        }
+
+        // Size slider
+        const sizeSlider = document.getElementById('paintSize');
+        const sizeLabel = document.getElementById('paintSizeLabel');
+        if (sizeSlider) {
+            sizeSlider.addEventListener('input', () => {
+                size = parseInt(sizeSlider.value);
+                if (sizeLabel) sizeLabel.textContent = size;
+            });
+        }
+
+        function savePainting() {
+            const dataUrl = canvas.toDataURL('image/png', 0.8);
+            const statusEl = document.getElementById('paintStatus');
+
+            // Log to session
+            logSession('painting', { image: dataUrl.slice(0, 200) + '...[truncated]' });
+
+            // Try to save to backend
+            if (SESSION_LOG_URL) {
+                fetch(SESSION_LOG_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session: sessionId,
+                        type: 'painting_save',
+                        image: dataUrl,
+                        timestamp: new Date().toISOString()
+                    })
+                }).then(r => {
+                    if (r.ok) {
+                        if (statusEl) statusEl.textContent = 'Saved to gallery!';
+                    } else {
+                        downloadPainting(dataUrl, statusEl);
+                    }
+                }).catch(() => {
+                    downloadPainting(dataUrl, statusEl);
+                });
+            } else {
+                downloadPainting(dataUrl, statusEl);
+            }
+        }
+
+        function downloadPainting(dataUrl, statusEl) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'jan-jurec-paint-' + Date.now() + '.png';
+            a.click();
+            if (statusEl) statusEl.textContent = 'Downloaded!';
+        }
+    }
+
     function initAfterBoot() {
         initDesktopIcons();
         initWindowControls();
@@ -1533,6 +1797,7 @@
         initTerminal();
         initContextMenu();
         initWallpapers();
+        initPaint();
         initLanguageSwitcher();
         applyLanguage(currentLang);
 
