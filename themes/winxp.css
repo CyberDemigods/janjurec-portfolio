@@ -1,0 +1,141 @@
+/* ===========================
+   WINDOWS XP THEME (Luna Blue)
+   =========================== */
+[data-theme="winxp"] {
+    /* Fonts */
+    --font-main: 'Trebuchet MS', Tahoma, 'Segoe UI', sans-serif;
+    --font-size: 13px;
+
+    /* Desktop - managed by JS wallpaper system */
+    --desktop-bg: #3a6ea5;
+
+    /* Colors */
+    --text-color: #000;
+    --heading-color: #003399;
+    --accent-color: #003399;
+    --link-color: #0066cc;
+    --highlight-bg: #fff8dc;
+    --tag-bg: #ecf4ff;
+
+    /* Window */
+    --window-bg: #ece9d8;
+    --window-border: 1px solid #0054e3;
+    --window-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    --window-radius: 8px 8px 0 0;
+    --window-body-bg: #fff;
+    --window-body-color: #000;
+
+    /* Titlebar */
+    --titlebar-bg: linear-gradient(180deg, #a0c0f0, #6699cc);
+    --titlebar-bg-active: linear-gradient(180deg, #0054e3, #0a246a, #0054e3);
+    --titlebar-color: #fff;
+    --titlebar-padding: 3px 6px;
+    --titlebar-height: 28px;
+    --titlebar-font-size: 13px;
+
+    /* Window buttons */
+    --win-btn-size: 20px;
+    --win-btn-border: 1px solid rgba(0,0,0,0.3);
+    --win-btn-bg: linear-gradient(180deg, #ece9d8, #c8d8f0);
+    --win-btn-color: #000;
+    --win-btn-font-size: 12px;
+    --win-btn-hover-bg: linear-gradient(180deg, #fff, #ddeeff);
+    --win-btn-close-hover: linear-gradient(180deg, #ff6060, #cc0000);
+    --win-btn-radius: 3px;
+    --win-btn-gap: 2px;
+
+    /* Menu bar */
+    --menubar-bg: #ece9d8;
+    --menubar-border: 1px solid #adb2b5;
+    --menu-hover-bg: #316ac5;
+    --menu-hover-color: #fff;
+    --menu-item-radius: 3px;
+
+    /* Status bar */
+    --statusbar-bg: #ece9d8;
+    --statusbar-border: 1px solid #adb2b5;
+    --statusbar-color: #333;
+
+    /* Taskbar */
+    --taskbar-height: 36px;
+    --taskbar-bg: linear-gradient(180deg, #3168d5, #1941a5);
+    --taskbar-border: 1px solid #0a246a;
+
+    /* Start button */
+    --start-btn-bg: linear-gradient(180deg, #3faa3c, #2a7e19);
+    --start-btn-border: 1px solid #1a5e0a;
+    --start-btn-color: #fff;
+    --start-btn-padding: 2px 10px;
+    --start-btn-font-size: 13px;
+    --start-btn-radius: 6px;
+    --start-btn-hover-bg: linear-gradient(180deg, #4cbf48, #36932a);
+    --start-btn-active-bg: linear-gradient(180deg, #2a7e19, #1a5e0a);
+
+    /* Start menu */
+    --start-menu-bg: #fff;
+    --start-menu-border: 2px solid #0054e3;
+    --start-menu-shadow: 3px -3px 10px rgba(0,0,0,0.3);
+    --start-menu-radius: 6px 6px 0 0;
+    --start-menu-header-bg: linear-gradient(180deg, #0054e3, #0a246a);
+    --start-menu-item-color: #000;
+    --start-menu-item-hover: #316ac5;
+    --start-menu-item-hover-color: #fff;
+    --start-menu-footer-bg: #d3e5fa;
+    --start-menu-footer-border: 1px solid #adb2b5;
+
+    /* Taskbar buttons */
+    --taskbar-btn-bg: linear-gradient(180deg, #4b8fe2, #2960c0);
+    --taskbar-btn-border: 1px solid #1a3f80;
+    --taskbar-btn-color: #fff;
+    --taskbar-btn-radius: 3px;
+    --taskbar-btn-hover-bg: linear-gradient(180deg, #6aafff, #3878d8);
+    --taskbar-btn-active-bg: linear-gradient(180deg, #1a3f80, #0a246a);
+
+    /* Tray */
+    --tray-border: 1px solid #0a246a;
+    --tray-btn-border-color: #1a3f80;
+    --tray-btn-bg: transparent;
+    --tray-btn-color: #fff;
+    --tray-btn-hover: rgba(255,255,255,0.2);
+    --tray-btn-active: #3faa3c;
+    --clock-color: #fff;
+
+    /* Icons */
+    --icon-hover-bg: rgba(49, 106, 197, 0.3);
+    --icon-active-bg: rgba(49, 106, 197, 0.5);
+    --icon-text-color: #fff;
+    --icon-text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    --icon-radius: 4px;
+
+    /* Avatar */
+    --avatar-radius: 6px;
+    --avatar-border: 2px solid #0054e3;
+
+    /* Skills */
+    --skill-header-bg: #ecf4ff;
+    --skill-header-border: 1px solid #c0d8f0;
+    --skill-header-hover: #d3e5fa;
+    --badge-bg: #ecf4ff;
+
+    /* Recommendations */
+    --rec-bg: #f5f9ff;
+    --rec-border: 1px solid #c0d8f0;
+    --rec-radius: 4px;
+
+    /* Files */
+    --file-hover-bg: #d3e5fa;
+    --file-hover-border: #316ac5;
+    --file-item-radius: 4px;
+
+    /* Scrollbar */
+    --scrollbar-track: #ecf4ff;
+    --scrollbar-thumb: #a0b8d8;
+    --scrollbar-thumb-border: 1px solid #6699cc;
+
+    /* Theme buttons */
+    --theme-btn-bg: #d3e5fa;
+    --theme-btn-border: 1px solid #6699cc;
+    --theme-btn-hover: #a0c0f0;
+    --theme-btn-active: #0054e3;
+    --theme-btn-radius: 3px;
+}

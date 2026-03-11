@@ -1,0 +1,192 @@
+/* ===========================
+   macOS / iOS THEME
+   =========================== */
+[data-theme="macos"] {
+    /* Fonts */
+    --font-main: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    --font-size: 13px;
+
+    /* Desktop - managed by JS wallpaper system */
+    --desktop-bg: #1a1a2e;
+
+    /* Colors */
+    --text-color: #1d1d1f;
+    --heading-color: #1d1d1f;
+    --accent-color: #007aff;
+    --link-color: #007aff;
+    --highlight-bg: #fff3cd;
+    --tag-bg: #f5f5f7;
+
+    /* Window */
+    --window-bg: rgba(246, 246, 246, 0.95);
+    --window-border: 1px solid rgba(0,0,0,0.12);
+    --window-shadow: 0 10px 40px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.1);
+    --window-radius: 12px;
+    --window-body-bg: #fff;
+    --window-body-color: #1d1d1f;
+
+    /* Titlebar */
+    --titlebar-bg: linear-gradient(180deg, #e8e8e8, #d4d4d4);
+    --titlebar-bg-active: linear-gradient(180deg, #f6f6f6, #e0e0e0);
+    --titlebar-color: #333;
+    --titlebar-padding: 0 12px;
+    --titlebar-height: 32px;
+    --titlebar-font-size: 13px;
+
+    /* Window buttons - traffic lights */
+    --win-btn-size: 14px;
+    --win-btn-border: none;
+    --win-btn-bg: #ccc;
+    --win-btn-color: transparent;
+    --win-btn-font-size: 0;
+    --win-btn-hover-bg: #ccc;
+    --win-btn-close-hover: #ff5f57;
+    --win-btn-radius: 50%;
+    --win-btn-gap: 8px;
+
+    /* Menu bar */
+    --menubar-bg: #f6f6f6;
+    --menubar-border: 1px solid #e0e0e0;
+    --menu-hover-bg: #007aff;
+    --menu-hover-color: #fff;
+    --menu-item-radius: 4px;
+
+    /* Status bar */
+    --statusbar-bg: #f6f6f6;
+    --statusbar-border: 1px solid #e0e0e0;
+    --statusbar-color: #86868b;
+
+    /* Taskbar (Dock style) */
+    --taskbar-height: 56px;
+    --taskbar-bg: rgba(30, 30, 30, 0.65);
+    --taskbar-border: 1px solid rgba(255,255,255,0.15);
+
+    /* Start button */
+    --start-btn-bg: rgba(255,255,255,0.12);
+    --start-btn-border: 1px solid rgba(255,255,255,0.2);
+    --start-btn-color: #fff;
+    --start-btn-padding: 4px 14px;
+    --start-btn-font-size: 13px;
+    --start-btn-radius: 8px;
+    --start-btn-hover-bg: rgba(255,255,255,0.2);
+    --start-btn-active-bg: rgba(255,255,255,0.1);
+
+    /* Start menu */
+    --start-menu-bg: rgba(40, 40, 40, 0.9);
+    --start-menu-border: 1px solid rgba(255,255,255,0.15);
+    --start-menu-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    --start-menu-radius: 12px;
+    --start-menu-header-bg: linear-gradient(180deg, rgba(0,122,255,0.8), rgba(0,64,221,0.8));
+    --start-menu-item-color: #fff;
+    --start-menu-item-hover: rgba(255,255,255,0.15);
+    --start-menu-item-hover-color: #fff;
+    --start-menu-footer-bg: rgba(30,30,30,0.9);
+    --start-menu-footer-border: 1px solid rgba(255,255,255,0.1);
+
+    /* Taskbar buttons */
+    --taskbar-btn-bg: rgba(255,255,255,0.1);
+    --taskbar-btn-border: 1px solid rgba(255,255,255,0.15);
+    --taskbar-btn-color: #fff;
+    --taskbar-btn-radius: 8px;
+    --taskbar-btn-hover-bg: rgba(255,255,255,0.2);
+    --taskbar-btn-active-bg: rgba(0,122,255,0.4);
+
+    /* Tray */
+    --tray-border: 1px solid rgba(255,255,255,0.1);
+    --tray-btn-border-color: rgba(255,255,255,0.2);
+    --tray-btn-bg: transparent;
+    --tray-btn-color: #fff;
+    --tray-btn-hover: rgba(255,255,255,0.2);
+    --tray-btn-active: #007aff;
+    --clock-color: #fff;
+
+    /* Icons */
+    --icon-hover-bg: rgba(255,255,255,0.1);
+    --icon-active-bg: rgba(255,255,255,0.2);
+    --icon-text-color: #fff;
+    --icon-text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    --icon-radius: 8px;
+
+    /* Avatar */
+    --avatar-radius: 50%;
+    --avatar-border: 3px solid #007aff;
+
+    /* Skills */
+    --skill-header-bg: #f5f5f7;
+    --skill-header-border: 1px solid #e0e0e0;
+    --skill-header-hover: #eee;
+    --badge-bg: #f5f5f7;
+
+    /* Recommendations */
+    --rec-bg: #f5f5f7;
+    --rec-border: 1px solid #e0e0e0;
+    --rec-radius: 10px;
+
+    /* Files */
+    --file-hover-bg: #e8f0fe;
+    --file-hover-border: #007aff;
+    --file-item-radius: 8px;
+
+    /* Scrollbar */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(0,0,0,0.2);
+    --scrollbar-thumb-border: none;
+
+    /* Theme buttons */
+    --theme-btn-bg: rgba(255,255,255,0.1);
+    --theme-btn-border: 1px solid rgba(255,255,255,0.2);
+    --theme-btn-hover: rgba(255,255,255,0.2);
+    --theme-btn-active: #007aff;
+    --theme-btn-radius: 6px;
+}
+
+/* macOS specific: traffic light buttons */
+[data-theme="macos"] .window-controls {
+    order: -1;
+    margin-right: 12px;
+}
+[data-theme="macos"] .window-title {
+    flex: 1;
+    justify-content: center;
+}
+[data-theme="macos"] .btn-close {
+    background: #ff5f57;
+}
+[data-theme="macos"] .btn-minimize {
+    background: #ffbd2e;
+}
+[data-theme="macos"] .btn-maximize {
+    background: #28c840;
+}
+[data-theme="macos"] .window.active .btn-close { background: #ff5f57; }
+[data-theme="macos"] .window.active .btn-minimize { background: #ffbd2e; }
+[data-theme="macos"] .window.active .btn-maximize { background: #28c840; }
+[data-theme="macos"] .btn-close:hover { background: #ff3b30 !important; }
+[data-theme="macos"] .btn-minimize:hover { background: #f5a623 !important; }
+[data-theme="macos"] .btn-maximize:hover { background: #1fb934 !important; }
+
+/* Glassmorphism on windows */
+[data-theme="macos"] .window {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Dock-style taskbar */
+[data-theme="macos"] .taskbar {
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 16px 16px 0 0;
+}
+
+/* Hide menubar text on macOS (optional, cleaner look) */
+[data-theme="macos"] .window-menubar {
+    display: none;
+}
+
+/* Rounded scrollbar */
+[data-theme="macos"] .window-body::-webkit-scrollbar {
+    width: 8px;
+}
+[data-theme="macos"] .window-body::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+}

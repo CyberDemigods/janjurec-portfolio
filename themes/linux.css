@@ -1,0 +1,207 @@
+/* ===========================
+   LINUX THEME (Terminal / Ubuntu-inspired)
+   =========================== */
+[data-theme="linux"] {
+    /* Fonts */
+    --font-main: 'Ubuntu Mono', 'Fira Code', 'Courier New', monospace;
+    --font-size: 13px;
+
+    /* Desktop - managed by JS wallpaper system */
+    --desktop-bg: #2c001e;
+
+    /* Colors */
+    --text-color: #eeeeec;
+    --heading-color: #8ae234;
+    --accent-color: #8ae234;
+    --link-color: #729fcf;
+    --highlight-bg: rgba(138, 226, 52, 0.1);
+    --tag-bg: rgba(255,255,255,0.08);
+
+    /* Window */
+    --window-bg: #2d2d2d;
+    --window-border: 1px solid #555;
+    --window-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    --window-radius: 6px 6px 0 0;
+    --window-body-bg: #1e1e1e;
+    --window-body-color: #eeeeec;
+
+    /* Titlebar */
+    --titlebar-bg: #3c3c3c;
+    --titlebar-bg-active: #4a4a4a;
+    --titlebar-color: #ccc;
+    --titlebar-padding: 0 8px;
+    --titlebar-height: 30px;
+    --titlebar-font-size: 13px;
+
+    /* Window buttons */
+    --win-btn-size: 14px;
+    --win-btn-border: none;
+    --win-btn-bg: #555;
+    --win-btn-color: transparent;
+    --win-btn-font-size: 0;
+    --win-btn-hover-bg: #666;
+    --win-btn-close-hover: #cc575d;
+    --win-btn-radius: 50%;
+    --win-btn-gap: 8px;
+
+    /* Menu bar */
+    --menubar-bg: #2d2d2d;
+    --menubar-border: 1px solid #444;
+    --menu-hover-bg: #555;
+    --menu-hover-color: #fff;
+    --menu-item-radius: 3px;
+
+    /* Status bar */
+    --statusbar-bg: #2d2d2d;
+    --statusbar-border: 1px solid #444;
+    --statusbar-color: #888;
+
+    /* Taskbar (Panel) */
+    --taskbar-height: 32px;
+    --taskbar-bg: #2d2d2d;
+    --taskbar-border: 1px solid #444;
+
+    /* Start button (Activities) */
+    --start-btn-bg: #e95420;
+    --start-btn-border: 1px solid #c13d0e;
+    --start-btn-color: #fff;
+    --start-btn-padding: 2px 12px;
+    --start-btn-font-size: 12px;
+    --start-btn-radius: 4px;
+    --start-btn-hover-bg: #f07040;
+    --start-btn-active-bg: #c13d0e;
+
+    /* Start menu */
+    --start-menu-bg: #2d2d2d;
+    --start-menu-border: 1px solid #555;
+    --start-menu-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    --start-menu-radius: 6px;
+    --start-menu-header-bg: linear-gradient(180deg, #e95420, #c13d0e);
+    --start-menu-item-color: #eeeeec;
+    --start-menu-item-hover: rgba(233, 84, 32, 0.3);
+    --start-menu-item-hover-color: #fff;
+    --start-menu-footer-bg: #333;
+    --start-menu-footer-border: 1px solid #444;
+
+    /* Taskbar buttons */
+    --taskbar-btn-bg: #3c3c3c;
+    --taskbar-btn-border: 1px solid #555;
+    --taskbar-btn-color: #ccc;
+    --taskbar-btn-radius: 3px;
+    --taskbar-btn-hover-bg: #4a4a4a;
+    --taskbar-btn-active-bg: #e95420;
+
+    /* Tray */
+    --tray-border: 1px solid #444;
+    --tray-btn-border-color: #555;
+    --tray-btn-bg: transparent;
+    --tray-btn-color: #ccc;
+    --tray-btn-hover: rgba(255,255,255,0.1);
+    --tray-btn-active: #e95420;
+    --clock-color: #ccc;
+
+    /* Icons */
+    --icon-hover-bg: rgba(233, 84, 32, 0.2);
+    --icon-active-bg: rgba(233, 84, 32, 0.4);
+    --icon-text-color: #eeeeec;
+    --icon-text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    --icon-radius: 4px;
+
+    /* Avatar */
+    --avatar-radius: 50%;
+    --avatar-border: 2px solid #8ae234;
+
+    /* Skills */
+    --skill-header-bg: #333;
+    --skill-header-border: 1px solid #555;
+    --skill-header-hover: #3c3c3c;
+    --badge-bg: #444;
+    --badge-color: #8ae234;
+
+    /* Recommendations */
+    --rec-bg: #2a2a2a;
+    --rec-border: 1px solid #444;
+    --rec-radius: 4px;
+
+    /* Files */
+    --file-hover-bg: rgba(233, 84, 32, 0.15);
+    --file-hover-border: #e95420;
+    --file-item-radius: 4px;
+
+    /* Scrollbar */
+    --scrollbar-track: #1e1e1e;
+    --scrollbar-thumb: #555;
+    --scrollbar-thumb-border: none;
+
+    /* Theme buttons */
+    --theme-btn-bg: #3c3c3c;
+    --theme-btn-border: 1px solid #555;
+    --theme-btn-hover: #4a4a4a;
+    --theme-btn-active: #e95420;
+    --theme-btn-radius: 3px;
+}
+
+/* Linux specific: terminal-style prompt in status bar */
+[data-theme="linux"] .window-statusbar::before {
+    content: "jan@portfolio:~$ ";
+    color: #8ae234;
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+/* Linux: GNOME-style close on left */
+[data-theme="linux"] .window-controls {
+    order: -1;
+    margin-right: 12px;
+}
+[data-theme="linux"] .window-title {
+    flex: 1;
+    justify-content: center;
+}
+[data-theme="linux"] .btn-close {
+    background: #cc575d;
+}
+[data-theme="linux"] .window.active .btn-close { background: #cc575d; }
+[data-theme="linux"] .btn-close:hover { background: #e05656 !important; }
+
+/* Terminal-style text rendering */
+[data-theme="linux"] .window-body {
+    font-family: 'Ubuntu Mono', 'Fira Code', monospace;
+}
+
+/* Green headings for terminal feel */
+[data-theme="linux"] .exp-company {
+    color: #8ae234;
+}
+[data-theme="linux"] .exp-details li::before {
+    content: "$ ";
+    color: #8ae234;
+}
+
+/* Cursor blink on title */
+[data-theme="linux"] .about-info h1::after {
+    content: "█";
+    animation: blink 1s step-end infinite;
+    color: #8ae234;
+    margin-left: 4px;
+}
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* Rec text not italic in terminal */
+[data-theme="linux"] .rec-text {
+    font-style: normal;
+    color: #eeeeec;
+}
+[data-theme="linux"] .rec-text::before {
+    content: "> ";
+    color: #8ae234;
+}
+
+/* Scrollbar thin */
+[data-theme="linux"] .window-body::-webkit-scrollbar {
+    width: 8px;
+}
+[data-theme="linux"] .window-body::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+}

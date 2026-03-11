@@ -1,0 +1,148 @@
+/* ===========================
+   WINDOWS 98 THEME
+   =========================== */
+[data-theme="win98"] {
+    /* Fonts */
+    --font-main: 'MS Sans Serif', 'Microsoft Sans Serif', Tahoma, Geneva, sans-serif;
+    --font-size: 12px;
+
+    /* Desktop - managed by JS wallpaper system */
+    --desktop-bg: #008080;
+
+    /* Colors */
+    --text-color: #000;
+    --heading-color: #000;
+    --accent-color: #000080;
+    --link-color: #0000ff;
+    --highlight-bg: #ffffcc;
+    --tag-bg: #d4d0c8;
+
+    /* Window */
+    --window-bg: #d4d0c8;
+    --window-border: 2px outset #d4d0c8;
+    --window-shadow: 2px 2px 0 #000;
+    --window-radius: 0;
+    --window-body-bg: #fff;
+    --window-body-color: #000;
+
+    /* Titlebar */
+    --titlebar-bg: linear-gradient(90deg, #808080, #a0a0a0);
+    --titlebar-bg-active: linear-gradient(90deg, #000080, #1084d0);
+    --titlebar-color: #fff;
+    --titlebar-padding: 2px 3px;
+    --titlebar-height: 22px;
+    --titlebar-font-size: 12px;
+
+    /* Window buttons */
+    --win-btn-size: 16px;
+    --win-btn-border: 1px outset #d4d0c8;
+    --win-btn-bg: #d4d0c8;
+    --win-btn-color: #000;
+    --win-btn-font-size: 10px;
+    --win-btn-hover-bg: #e0dcd4;
+    --win-btn-close-hover: #d4d0c8;
+    --win-btn-radius: 0;
+    --win-btn-gap: 1px;
+
+    /* Menu bar */
+    --menubar-bg: #d4d0c8;
+    --menubar-border: 1px solid #808080;
+    --menu-hover-bg: #000080;
+    --menu-hover-color: #fff;
+    --menu-item-radius: 0;
+
+    /* Status bar */
+    --statusbar-bg: #d4d0c8;
+    --statusbar-border: 1px inset #d4d0c8;
+    --statusbar-color: #000;
+
+    /* Taskbar */
+    --taskbar-height: 32px;
+    --taskbar-bg: #d4d0c8;
+    --taskbar-border: 2px outset #d4d0c8;
+
+    /* Start button */
+    --start-btn-bg: #d4d0c8;
+    --start-btn-border: 2px outset #d4d0c8;
+    --start-btn-color: #000;
+    --start-btn-padding: 2px 6px;
+    --start-btn-font-size: 12px;
+    --start-btn-radius: 0;
+    --start-btn-hover-bg: #e0dcd4;
+
+    /* Start menu */
+    --start-menu-bg: #d4d0c8;
+    --start-menu-border: 2px outset #d4d0c8;
+    --start-menu-shadow: 2px -2px 0 #000;
+    --start-menu-radius: 0;
+    --start-menu-header-bg: linear-gradient(180deg, #000080, #1084d0);
+    --start-menu-item-color: #000;
+    --start-menu-item-hover: #000080;
+    --start-menu-item-hover-color: #fff;
+    --start-menu-footer-bg: #d4d0c8;
+    --start-menu-footer-border: 1px solid #808080;
+
+    /* Taskbar buttons */
+    --taskbar-btn-bg: #d4d0c8;
+    --taskbar-btn-border: 2px outset #d4d0c8;
+    --taskbar-btn-color: #000;
+    --taskbar-btn-radius: 0;
+    --taskbar-btn-hover-bg: #e0dcd4;
+    --taskbar-btn-active-bg: #bdb9b0;
+
+    /* Tray */
+    --tray-border: 2px inset #d4d0c8;
+    --tray-btn-border-color: #808080;
+    --tray-btn-bg: #d4d0c8;
+    --tray-btn-color: #000;
+    --tray-btn-hover: #e0dcd4;
+    --tray-btn-active: #000080;
+    --clock-color: #000;
+
+    /* Icons */
+    --icon-hover-bg: rgba(0, 0, 128, 0.3);
+    --icon-active-bg: rgba(0, 0, 128, 0.5);
+    --icon-text-color: #fff;
+    --icon-text-shadow: 1px 1px 0 #000;
+    --icon-radius: 0;
+
+    /* Avatar */
+    --avatar-radius: 0;
+    --avatar-border: 2px inset #d4d0c8;
+
+    /* Skills */
+    --skill-header-bg: #d4d0c8;
+    --skill-header-border: 1px solid #808080;
+    --skill-header-hover: #e0dcd4;
+    --badge-bg: #d4d0c8;
+
+    /* Recommendations */
+    --rec-bg: #ffffee;
+    --rec-border: 1px solid #d4d0c8;
+    --rec-radius: 0;
+
+    /* Files */
+    --file-hover-bg: #000080;
+    --file-hover-border: #000080;
+    --file-item-radius: 0;
+
+    /* Scrollbar */
+    --scrollbar-track: #d4d0c8;
+    --scrollbar-thumb: #c0c0c0;
+    --scrollbar-thumb-border: 1px outset #d4d0c8;
+
+    /* Theme buttons */
+    --theme-btn-bg: #d4d0c8;
+    --theme-btn-border: 1px outset #d4d0c8;
+    --theme-btn-hover: #e0dcd4;
+    --theme-btn-active: #000080;
+    --theme-btn-radius: 0;
+}
+
+/* Win98 specific: file item text color on hover */
+[data-theme="win98"] .file-item:hover,
+[data-theme="win98"] .file-item:hover .file-name,
+[data-theme="win98"] .file-item:hover .file-desc,
+[data-theme="win98"] .file-item:hover .file-lang {
+    color: #fff;
+}
