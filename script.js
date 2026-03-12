@@ -2446,8 +2446,7 @@
     }
 
     function showBrowserLoading() {
-        var type = getBrowserType();
-        if (type === 'tor') return; // Tor loads instantly
+        if (getBrowserType() !== 'ie') return; // Only IE needs loading time
         var loadingEl = document.getElementById('browserLoading');
         var noNet = document.getElementById('browserNoNet');
         var canvas = document.getElementById('nosaczCanvas');
