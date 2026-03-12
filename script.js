@@ -2051,6 +2051,7 @@
         }
 
         function startGame() {
+            if (frameId) { cancelAnimationFrame(frameId); frameId = null; }
             noNet.classList.add('hidden');
             canvas.classList.remove('hidden');
             scoreEl.classList.remove('hidden');
