@@ -13,7 +13,7 @@
     let selectedWallpaperCss = null;
 
     // Singleton windows (have JS state, only one instance)
-    const SINGLETON_WINDOWS = ['terminal', 'paint'];
+    const SINGLETON_WINDOWS = ['terminal', 'paint', 'winamp'];
     // Instance counter for cascading offset
     let instanceCounter = 0;
     const CASCADE_OFFSET = 30;
@@ -865,6 +865,13 @@
                     addLine('');
                     addLine('🔊 Playing...', 'success');
                     playBarka();
+                    // Unlock Barka in Winamp
+                    if (!localStorage.getItem('jan-portfolio-barka')) {
+                        localStorage.setItem('jan-portfolio-barka', 'true');
+                        addLine('');
+                        addLine('🎶 Barka unlocked in Winamp!', 'success');
+                        unlockWinampBarka();
+                    }
                     break;
 
                 case 'serwerownia':
@@ -1621,6 +1628,489 @@
         }
     }
 
+    // ===== WINAMP PLAYER =====
+    let winampAc = null;
+    let winampPlaying = false;
+    let winampCurrentTrack = 'rickroll';
+    let winampScheduledOscs = [];
+    let winampStartTime = 0;
+    let winampDuration = 0;
+    let winampAnimFrame = null;
+
+    function unlockWinampBarka() {
+        const barkaEl = document.getElementById('winampBarka');
+        if (barkaEl) {
+            barkaEl.classList.remove('locked');
+            barkaEl.innerHTML = '2. Barka - Pan kiedyś stanął nad brzegiem [8bit]';
+        }
+    }
+
+    function initWinamp() {
+        // Check if barka already unlocked
+        if (localStorage.getItem('jan-portfolio-barka') === 'true') {
+            unlockWinampBarka();
+        }
+
+        const playBtn = document.getElementById('winampPlay');
+        const pauseBtn = document.getElementById('winampPause');
+        const stopBtn = document.getElementById('winampStop');
+        const prevBtn = document.getElementById('winampPrev');
+        const nextBtn = document.getElementById('winampNext');
+        const volSlider = document.getElementById('winampVolume');
+        const ticker = document.getElementById('winampTicker');
+        const timeDisplay = document.getElementById('winampTime');
+        const seekFill = document.getElementById('winampSeekFill');
+        const viz = document.getElementById('winampViz');
+        const playlist = document.getElementById('winampPlaylist');
+
+        // Create viz bars
+        for (let i = 0; i < 20; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'winamp-viz-bar';
+            viz.appendChild(bar);
+        }
+
+        function getVolume() {
+            return (parseInt(volSlider.value) / 100) * 0.3;
+        }
+
+        function stopPlayback() {
+            winampPlaying = false;
+            winampScheduledOscs.forEach(o => { try { o.stop(); } catch(e){} });
+            winampScheduledOscs = [];
+            if (winampAc) { winampAc.close(); winampAc = null; }
+            if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
+            playBtn.textContent = '▶';
+            timeDisplay.textContent = '0:00';
+            seekFill.style.width = '0%';
+            viz.querySelectorAll('.winamp-viz-bar').forEach(b => b.style.height = '2px');
+        }
+
+        function updateDisplay() {
+            if (!winampPlaying || !winampAc) return;
+            const elapsed = winampAc.currentTime - winampStartTime;
+            if (elapsed >= winampDuration) {
+                // Track ended - play next or loop
+                stopPlayback();
+                return;
+            }
+            const mins = Math.floor(elapsed / 60);
+            const secs = Math.floor(elapsed % 60);
+            timeDisplay.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+            seekFill.style.width = ((elapsed / winampDuration) * 100) + '%';
+
+            // Fake visualizer
+            viz.querySelectorAll('.winamp-viz-bar').forEach(bar => {
+                const h = winampPlaying ? (Math.random() * 18 + 2) : 2;
+                bar.style.height = h + 'px';
+            });
+
+            winampAnimFrame = requestAnimationFrame(updateDisplay);
+        }
+
+        function playTrack(trackId) {
+            stopPlayback();
+            winampCurrentTrack = trackId;
+
+            // Update playlist highlight
+            playlist.querySelectorAll('.winamp-track').forEach(t => t.classList.remove('active'));
+            const trackEl = playlist.querySelector(`[data-track="${trackId}"]`);
+            if (trackEl) trackEl.classList.add('active');
+
+            winampAc = new (window.AudioContext || window.webkitAudioContext)();
+            winampPlaying = true;
+            playBtn.textContent = '▶';
+
+            if (trackId === 'rickroll') {
+                ticker.textContent = 'Rick Astley - Never Gonna Give You Up [8bit]';
+                playRickRoll8bit(winampAc, getVolume());
+            } else if (trackId === 'barka') {
+                ticker.textContent = 'Barka - Pan kiedyś stanął nad brzegiem [8bit]';
+                playBarka8bit(winampAc, getVolume());
+            }
+
+            winampStartTime = winampAc.currentTime;
+            updateDisplay();
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (winampPlaying) return;
+            playTrack(winampCurrentTrack);
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            if (!winampAc) return;
+            if (winampAc.state === 'running') {
+                winampAc.suspend();
+                playBtn.textContent = '▶';
+            } else if (winampAc.state === 'suspended') {
+                winampAc.resume();
+                playBtn.textContent = '▶';
+                updateDisplay();
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            stopPlayback();
+            ticker.textContent = 'Stopped';
+        });
+
+        prevBtn.addEventListener('click', () => {
+            const tracks = getAvailableTracks();
+            const idx = tracks.indexOf(winampCurrentTrack);
+            const prev = tracks[(idx - 1 + tracks.length) % tracks.length];
+            playTrack(prev);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const tracks = getAvailableTracks();
+            const idx = tracks.indexOf(winampCurrentTrack);
+            const next = tracks[(idx + 1) % tracks.length];
+            playTrack(next);
+        });
+
+        // Playlist click
+        playlist.addEventListener('click', (e) => {
+            const trackEl = e.target.closest('.winamp-track');
+            if (!trackEl || trackEl.classList.contains('locked')) return;
+            playTrack(trackEl.dataset.track);
+        });
+
+        // Volume change while playing
+        volSlider.addEventListener('input', () => {
+            // Volume will apply on next play
+        });
+
+        function getAvailableTracks() {
+            const tracks = ['rickroll'];
+            if (localStorage.getItem('jan-portfolio-barka') === 'true') tracks.push('barka');
+            return tracks;
+        }
+    }
+
+    // 8-bit Rick Roll - "Never Gonna Give You Up" melody
+    function playRickRoll8bit(ac, vol) {
+        const b = 0.22; // fast 8-bit tempo
+
+        // Note frequencies
+        const C4=261.63, D4=293.66, E4=329.63, F4=349.23, G4=392.00, A4=440.00, B4=493.88;
+        const C5=523.25, D5=587.33, E5=659.25;
+        const G3=196.00, A3=220.00, B3=246.94, F3=174.61;
+
+        // "Never Gonna Give You Up" main melody (intro + verse + chorus)
+        const melody = [
+            // Intro riff: D E G E  B A
+            { f: D4, s: 0,     d: b },
+            { f: E4, s: b,     d: b },
+            { f: G4, s: b*2,   d: b*1.5 },
+            { f: E4, s: b*3.5, d: b },
+            //
+            { f: B4, s: b*5,   d: b*2 },
+            { f: B4, s: b*7,   d: b },
+            { f: A4, s: b*8,   d: b*3 },
+
+            // repeat riff
+            { f: D4, s: b*12,  d: b },
+            { f: E4, s: b*13,  d: b },
+            { f: G4, s: b*14,  d: b*1.5 },
+            { f: E4, s: b*15.5,d: b },
+            //
+            { f: A4, s: b*17,  d: b*2 },
+            { f: A4, s: b*19,  d: b },
+            { f: G4, s: b*20,  d: b*1.5 },
+            { f: E4, s: b*21.5,d: b*1.5 },
+
+            // "We're no strangers to love"
+            { f: A4, s: b*24,  d: b*1.5 },
+            { f: B4, s: b*25.5,d: b },
+            { f: G4, s: b*26.5,d: b*1.5 },
+            { f: G4, s: b*28,  d: b },
+            { f: E4, s: b*29,  d: b },
+            { f: D4, s: b*30,  d: b*2 },
+
+            // "You know the rules and so do I"
+            { f: A4, s: b*33,  d: b*1.5 },
+            { f: B4, s: b*34.5,d: b },
+            { f: D5, s: b*35.5,d: b },
+            { f: A4, s: b*36.5,d: b*1.5 },
+            { f: G4, s: b*38,  d: b },
+            { f: E4, s: b*39,  d: b*2 },
+
+            // "A full commitment's what I'm thinking of"
+            { f: A4, s: b*42,  d: b*1.5 },
+            { f: B4, s: b*43.5,d: b },
+            { f: G4, s: b*44.5,d: b*1.5 },
+            { f: G4, s: b*46,  d: b },
+            { f: E4, s: b*47,  d: b },
+            { f: A4, s: b*48,  d: b*2 },
+
+            // Chorus: "Never gonna give you up"
+            { f: A4, s: b*52,  d: b },
+            { f: G4, s: b*53,  d: b },
+            { f: E4, s: b*54,  d: b*2 },
+            { f: E4, s: b*56,  d: b },
+            { f: A4, s: b*57,  d: b*2 },
+            { f: D5, s: b*59,  d: b*2 },
+
+            // "Never gonna let you down"
+            { f: A4, s: b*62,  d: b },
+            { f: G4, s: b*63,  d: b },
+            { f: E4, s: b*64,  d: b*2 },
+            { f: E4, s: b*66,  d: b },
+            { f: G4, s: b*67,  d: b },
+            { f: A4, s: b*68,  d: b },
+            { f: G4, s: b*69,  d: b*2 },
+
+            // "Never gonna run around and desert you"
+            { f: A4, s: b*72,  d: b },
+            { f: G4, s: b*73,  d: b },
+            { f: E4, s: b*74,  d: b*2 },
+            { f: E4, s: b*76,  d: b },
+            { f: A4, s: b*77,  d: b },
+            { f: B4, s: b*78,  d: b },
+            { f: A4, s: b*79,  d: b },
+            { f: G4, s: b*80,  d: b },
+            { f: E4, s: b*81,  d: b },
+            { f: D4, s: b*82,  d: b*2.5 },
+
+            // "Never gonna make you cry"
+            { f: A4, s: b*86,  d: b },
+            { f: G4, s: b*87,  d: b },
+            { f: E4, s: b*88,  d: b*2 },
+            { f: E4, s: b*90,  d: b },
+            { f: A4, s: b*91,  d: b*2 },
+            { f: D5, s: b*93,  d: b*2 },
+
+            // "Never gonna say goodbye"
+            { f: A4, s: b*96,  d: b },
+            { f: G4, s: b*97,  d: b },
+            { f: E4, s: b*98,  d: b*2 },
+            { f: E4, s: b*100, d: b },
+            { f: G4, s: b*101, d: b },
+            { f: A4, s: b*102, d: b },
+            { f: G4, s: b*103, d: b*2 },
+
+            // "Never gonna tell a lie and hurt you"
+            { f: A4, s: b*106, d: b },
+            { f: G4, s: b*107, d: b },
+            { f: E4, s: b*108, d: b*2 },
+            { f: E4, s: b*110, d: b },
+            { f: A4, s: b*111, d: b },
+            { f: B4, s: b*112, d: b },
+            { f: A4, s: b*113, d: b },
+            { f: G4, s: b*114, d: b },
+            { f: E4, s: b*115, d: b },
+            { f: D4, s: b*116, d: b*3 },
+        ];
+
+        winampDuration = b * 120;
+
+        // 8-bit square wave melody
+        melody.forEach(n => {
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0, ac.currentTime + n.s);
+            gain.gain.linearRampToValueAtTime(vol * 0.6, ac.currentTime + n.s + 0.01);
+            gain.gain.setValueAtTime(vol * 0.5, ac.currentTime + n.s + n.d * 0.8);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(ac.currentTime + n.s);
+            osc.stop(ac.currentTime + n.s + n.d + 0.02);
+            winampScheduledOscs.push(osc);
+        });
+
+        // 8-bit bass line
+        const bassNotes = [
+            { f: A3, s: 0,     d: b*4 },
+            { f: B3, s: b*5,   d: b*3 },
+            { f: A3, s: b*12,  d: b*4 },
+            { f: G3, s: b*17,  d: b*4 },
+            // verse
+            { f: F3, s: b*24,  d: b*3 },
+            { f: G3, s: b*27,  d: b*3 },
+            { f: A3, s: b*30,  d: b*3 },
+            { f: F3, s: b*33,  d: b*3 },
+            { f: G3, s: b*36,  d: b*3 },
+            { f: A3, s: b*39,  d: b*3 },
+            { f: F3, s: b*42,  d: b*3 },
+            { f: G3, s: b*45,  d: b*3 },
+            { f: A3, s: b*48,  d: b*3 },
+            // chorus bass
+            { f: F3, s: b*52,  d: b*4 },
+            { f: G3, s: b*56,  d: b*3 },
+            { f: A3, s: b*59,  d: b*3 },
+            { f: F3, s: b*62,  d: b*4 },
+            { f: G3, s: b*66,  d: b*3 },
+            { f: A3, s: b*69,  d: b*3 },
+            { f: F3, s: b*72,  d: b*4 },
+            { f: G3, s: b*76,  d: b*4 },
+            { f: A3, s: b*80,  d: b*4 },
+            { f: F3, s: b*86,  d: b*4 },
+            { f: G3, s: b*90,  d: b*3 },
+            { f: A3, s: b*93,  d: b*3 },
+            { f: F3, s: b*96,  d: b*4 },
+            { f: G3, s: b*100, d: b*3 },
+            { f: A3, s: b*103, d: b*3 },
+            { f: F3, s: b*106, d: b*4 },
+            { f: G3, s: b*110, d: b*4 },
+            { f: A3, s: b*114, d: b*5 },
+        ];
+
+        bassNotes.forEach(n => {
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0, ac.currentTime + n.s);
+            gain.gain.linearRampToValueAtTime(vol * 0.35, ac.currentTime + n.s + 0.01);
+            gain.gain.setValueAtTime(vol * 0.25, ac.currentTime + n.s + n.d * 0.7);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(ac.currentTime + n.s);
+            osc.stop(ac.currentTime + n.s + n.d + 0.02);
+            winampScheduledOscs.push(osc);
+        });
+
+        // Simple 8-bit drums (noise bursts)
+        for (let i = 0; i < 120; i += 2) {
+            const t = b * i;
+            if (t > winampDuration) break;
+            // kick on beat
+            const kickOsc = ac.createOscillator();
+            const kickGain = ac.createGain();
+            kickOsc.type = 'square';
+            kickOsc.frequency.setValueAtTime(150, ac.currentTime + t);
+            kickOsc.frequency.exponentialRampToValueAtTime(30, ac.currentTime + t + 0.08);
+            kickGain.gain.setValueAtTime(vol * 0.4, ac.currentTime + t);
+            kickGain.gain.linearRampToValueAtTime(0, ac.currentTime + t + 0.1);
+            kickOsc.connect(kickGain);
+            kickGain.connect(ac.destination);
+            kickOsc.start(ac.currentTime + t);
+            kickOsc.stop(ac.currentTime + t + 0.12);
+            winampScheduledOscs.push(kickOsc);
+
+            // snare on offbeat
+            if (i + 1 < 120) {
+                const st = b * (i + 1);
+                const snOsc = ac.createOscillator();
+                const snGain = ac.createGain();
+                snOsc.type = 'sawtooth';
+                snOsc.frequency.value = 200 + Math.random() * 300;
+                snGain.gain.setValueAtTime(vol * 0.15, ac.currentTime + st);
+                snGain.gain.linearRampToValueAtTime(0, ac.currentTime + st + 0.06);
+                snOsc.connect(snGain);
+                snGain.connect(ac.destination);
+                snOsc.start(ac.currentTime + st);
+                snOsc.stop(ac.currentTime + st + 0.08);
+                winampScheduledOscs.push(snOsc);
+            }
+        }
+    }
+
+    // 8-bit Barka for Winamp
+    function playBarka8bit(ac, vol) {
+        const b = 0.35;
+
+        const C4=261.63, D4=293.66, E4=329.63, F4=349.23;
+        const G4=392.00, A4=440.00, B4=493.88, C5=523.25;
+        const A2=110.00, C3=130.81, D2=73.42, F2=87.31, G2=98.00;
+
+        // Reuse same melody as playBarka but in 8-bit square wave style
+        const melody = [
+            { f: E4, s: 0,         d: b*2.5 },
+            { f: D4, s: b*2.5,     d: b*0.5 },
+            { f: E4, s: b*3,       d: b*0.5 },
+            { f: F4, s: b*3.5,     d: b*0.5 },
+            { f: E4, s: b*4,       d: b*0.5 },
+            { f: D4, s: b*4.5,     d: b*0.5 },
+            { f: C4, s: b*5,       d: b*1.5 },
+            { f: C4, s: b*7,       d: b*2   },
+            { f: D4, s: b*9,       d: b*1   },
+            { f: E4, s: b*10,      d: b*0.5 },
+            { f: F4, s: b*10.5,    d: b*1.5 },
+            { f: F4, s: b*12.5,    d: b*2   },
+            { f: F4, s: b*14.5,    d: b*0.5 },
+            { f: F4, s: b*15,      d: b*0.75},
+            { f: E4, s: b*15.75,   d: b*0.5 },
+            { f: D4, s: b*16.25,   d: b*1.5 },
+            { f: D4, s: b*18,      d: b*2   },
+            { f: C4, s: b*20,      d: b*0.75},
+            { f: D4, s: b*20.75,   d: b*0.5 },
+            { f: E4, s: b*21.25,   d: b*2.5 },
+            // Refrain
+            { f: A4, s: b*25,      d: b*1.5 },
+            { f: A4, s: b*26.5,    d: b*1.5 },
+            { f: A4, s: b*28,      d: b*0.5 },
+            { f: B4, s: b*28.5,    d: b*1   },
+            { f: B4, s: b*29.5,    d: b*0.5 },
+            { f: A4, s: b*30,      d: b*0.5 },
+            { f: G4, s: b*30.5,    d: b*1.5 },
+            { f: G4, s: b*32.5,    d: b*1.5 },
+            { f: F4, s: b*34,      d: b*0.75},
+            { f: E4, s: b*34.75,   d: b*0.5 },
+            { f: F4, s: b*35.25,   d: b*1.5 },
+            { f: F4, s: b*37,      d: b*0.75},
+            { f: G4, s: b*37.75,   d: b*0.5 },
+            { f: A4, s: b*38.25,   d: b*0.5 },
+            { f: G4, s: b*38.75,   d: b*0.5 },
+            { f: F4, s: b*39.25,   d: b*0.5 },
+            { f: E4, s: b*39.75,   d: b*2   },
+            { f: C4, s: b*42,      d: b*2.5 },
+        ];
+
+        winampDuration = b * 46;
+
+        melody.forEach(n => {
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0, ac.currentTime + n.s);
+            gain.gain.linearRampToValueAtTime(vol * 0.5, ac.currentTime + n.s + 0.01);
+            gain.gain.setValueAtTime(vol * 0.4, ac.currentTime + n.s + n.d * 0.8);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(ac.currentTime + n.s);
+            osc.stop(ac.currentTime + n.s + n.d + 0.02);
+            winampScheduledOscs.push(osc);
+        });
+
+        // Bass
+        const bass = [
+            { f: A2,   s: 0,      d: b*7  },
+            { f: F2,   s: b*7,    d: b*5  },
+            { f: D2,   s: b*12.5, d: b*5.5},
+            { f: C3,   s: b*18,   d: b*6  },
+            { f: A2,   s: b*25,   d: b*3.5},
+            { f: G2,   s: b*28.5, d: b*3.5},
+            { f: F2,   s: b*32.5, d: b*4  },
+            { f: C3,   s: b*37,   d: b*3  },
+            { f: A2,   s: b*40,   d: b*3  },
+            { f: C3,   s: b*43,   d: b*3  },
+        ];
+
+        bass.forEach(n => {
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0, ac.currentTime + n.s);
+            gain.gain.linearRampToValueAtTime(vol * 0.3, ac.currentTime + n.s + 0.01);
+            gain.gain.setValueAtTime(vol * 0.2, ac.currentTime + n.s + n.d * 0.7);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(ac.currentTime + n.s);
+            osc.stop(ac.currentTime + n.s + n.d + 0.02);
+            winampScheduledOscs.push(osc);
+        });
+    }
+
     // ===== SESSION LOGGING =====
     const SESSION_LOG_URL = 'https://janjurec-logger.achillesgrek.workers.dev';
     const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -1914,6 +2404,7 @@
         initContextMenu();
         initWallpapers();
         initPaint();
+        initWinamp();
         initLanguageSwitcher();
         applyLanguage(currentLang);
 

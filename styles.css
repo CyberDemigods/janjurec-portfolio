@@ -1272,6 +1272,191 @@ a:hover {
 }
 
 /* ===========================
+   WINAMP
+   =========================== */
+.winamp-titlebar {
+    background: #1e1e1e !important;
+}
+.winamp-body {
+    background: #2a2a2a;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #00ff00;
+    user-select: none;
+}
+.winamp-display {
+    background: #0a1628;
+    margin: 4px;
+    padding: 6px 8px;
+    border: 1px inset #111;
+    border-radius: 2px;
+}
+.winamp-display-top {
+    display: flex;
+    gap: 10px;
+    font-size: 9px;
+    color: #00cc66;
+    margin-bottom: 4px;
+}
+.winamp-ticker {
+    color: #00ff88;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+.winamp-time {
+    color: #00ff00;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 6px #00ff0066;
+    margin-bottom: 4px;
+}
+.winamp-viz {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 20px;
+}
+.winamp-viz-bar {
+    flex: 1;
+    background: #00cc00;
+    height: 2px;
+    min-width: 3px;
+    transition: height 0.08s ease;
+    border-radius: 1px 1px 0 0;
+}
+.winamp-viz-bar:nth-child(odd) { background: #00ff44; }
+.winamp-seek {
+    padding: 2px 4px;
+}
+.winamp-seek-bar {
+    height: 6px;
+    background: #111;
+    border: 1px inset #333;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.winamp-seek-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00aa00, #00ff00);
+    width: 0%;
+    transition: width 0.2s linear;
+}
+.winamp-volume {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    font-size: 9px;
+    color: #999;
+}
+.winamp-vol-label {
+    color: #00cc66;
+    font-size: 9px;
+}
+.winamp-vol-slider {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #333;
+    border-radius: 2px;
+    outline: none;
+}
+.winamp-vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 14px;
+    background: #888;
+    border: 1px outset #aaa;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.winamp-controls {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px;
+}
+.winamp-btn {
+    width: 36px;
+    height: 24px;
+    background: #3a3a3a;
+    border: 1px outset #555;
+    color: #ddd;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+}
+.winamp-btn:hover {
+    background: #4a4a4a;
+    color: #fff;
+}
+.winamp-btn:active {
+    border-style: inset;
+    background: #2a2a2a;
+}
+.winamp-btn.winamp-play {
+    background: #2a5a2a;
+    color: #00ff00;
+}
+.winamp-btn.winamp-play:hover {
+    background: #3a6a3a;
+}
+.winamp-playlist {
+    background: #1a1a2e;
+    margin: 0 4px 4px;
+    border: 1px inset #111;
+    max-height: 120px;
+    overflow-y: auto;
+}
+.winamp-playlist-header {
+    background: #2a2a4a;
+    color: #8888cc;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #333;
+}
+.winamp-track {
+    padding: 3px 6px;
+    font-size: 10px;
+    color: #00cc00;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.winamp-track:hover {
+    background: #2a2a4a;
+}
+.winamp-track.active {
+    background: #0a0a3a;
+    color: #00ff66;
+    font-weight: bold;
+}
+.winamp-track.locked {
+    color: #666;
+    cursor: not-allowed;
+    font-style: italic;
+}
+.winamp-unlock-hint {
+    color: #555;
+    font-size: 9px;
+}
+.winamp-playlist::-webkit-scrollbar { width: 6px; }
+.winamp-playlist::-webkit-scrollbar-track { background: #111; }
+.winamp-playlist::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+/* ===========================
    TERMINAL
    =========================== */
 .terminal-body {

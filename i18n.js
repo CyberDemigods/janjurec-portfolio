@@ -14,8 +14,10 @@ const TRANSLATIONS = {
         'icon-contact': 'Contact',
         'icon-terminal': 'Terminal',
         'icon-paint': 'Paint',
+        'icon-winamp': 'Winamp',
 
         // Window titles
+        'title-winamp': 'Winamp',
         'title-about': 'About Me',
         'title-experience': 'Experience',
         'title-skills': 'Device Manager \u2013 Skills',
@@ -111,7 +113,9 @@ const TRANSLATIONS = {
         'icon-contact': 'Kontakt',
         'icon-terminal': 'Terminal',
         'icon-paint': 'Paint',
+        'icon-winamp': 'Winamp',
 
+        'title-winamp': 'Winamp',
         'title-about': 'O mnie',
         'title-experience': 'Do\u015bwiadczenie',
         'title-skills': 'Mened\u017cer urz\u0105dze\u0144 \u2013 Umiej\u0119tno\u015bci',
@@ -193,7 +197,9 @@ const TRANSLATIONS = {
         'icon-contact': 'QumwI\'',
         'icon-terminal': 'De\'wI\'',
         'icon-paint': 'rItlh',
+        'icon-winamp': 'QoQ muchHom',
 
+        'title-winamp': 'QoQ muchHom',
         'title-about': 'jIH - SuvwI\' nughI\'',
         'title-experience': 'may\' ta \u2013 noH mIw',
         'title-skills': 'nuH pat \u2013 laH',
@@ -276,8 +282,10 @@ const TRANSLATIONS = {
         'icon-contact': 'צור קשר',
         'icon-terminal': 'טרמינל',
         'icon-paint': 'צייר',
+        'icon-winamp': 'ווינאמפ',
 
         // Window titles
+        'title-winamp': 'ווינאמפ',
         'title-about': 'אודותיי',
         'title-experience': 'ניסיון',
         'title-skills': 'מנהל התקנים – כישורים',
