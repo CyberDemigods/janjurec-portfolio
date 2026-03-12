@@ -12,6 +12,12 @@
     let jp2Unlocked = localStorage.getItem('jan-portfolio-jp2') === 'true';
     let selectedWallpaperCss = null;
 
+    // Singleton windows (have JS state, only one instance)
+    const SINGLETON_WINDOWS = ['terminal', 'paint'];
+    // Instance counter for cascading offset
+    let instanceCounter = 0;
+    const CASCADE_OFFSET = 30;
+
     // init is defined at the bottom of the file
 
     // ===== DESKTOP ICONS =====
@@ -36,21 +42,134 @@
 
     // ===== WINDOW MANAGEMENT =====
     function openWindow(name) {
-        const win = document.getElementById('window-' + name);
-        if (!win) return;
-        win.classList.remove('hidden');
-        bringToFront(win);
-        updateTaskbarButtons();
-
         // Close start menu
         document.getElementById('startMenu').classList.add('hidden');
+
+        // Singletons: just show existing window
+        if (SINGLETON_WINDOWS.includes(name)) {
+            const win = document.getElementById('window-' + name);
+            if (!win) return;
+            win.classList.remove('hidden');
+            bringToFront(win);
+            updateTaskbarButtons();
+            return;
+        }
+
+        // Multi-instance: clone the template window
+        const template = document.getElementById('window-' + name);
+        if (!template) return;
+
+        instanceCounter++;
+        const clone = template.cloneNode(true);
+        const instanceId = name + '-inst-' + instanceCounter;
+        clone.id = 'window-' + instanceId;
+        clone.classList.remove('hidden');
+        clone.dataset.baseName = name;
+
+        // Cascade position
+        const baseTop = parseInt(template.style.top) || 60;
+        const baseLeft = parseInt(template.style.left) || 80;
+        const offset = (instanceCounter % 10) * CASCADE_OFFSET;
+        clone.style.top = (baseTop + offset) + 'px';
+        clone.style.left = (baseLeft + offset) + 'px';
+
+        // Update button data-window attributes for this instance
+        clone.querySelectorAll('.btn-close').forEach(b => b.dataset.window = instanceId);
+        clone.querySelectorAll('.btn-minimize').forEach(b => b.dataset.window = instanceId);
+        clone.querySelectorAll('.btn-maximize').forEach(b => b.dataset.window = instanceId);
+
+        // Attach control handlers
+        attachWindowControls(clone, instanceId);
+
+        // Add to desktop
+        document.querySelector('.desktop').appendChild(clone);
+        bringToFront(clone);
+        updateTaskbarButtons();
+    }
+
+    function attachWindowControls(win, instanceId) {
+        win.querySelectorAll('.btn-close').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeWindow(instanceId);
+            });
+        });
+        win.querySelectorAll('.btn-minimize').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                minimizeWindow(instanceId);
+            });
+        });
+        win.querySelectorAll('.btn-maximize').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMaximize(instanceId);
+            });
+        });
+        win.addEventListener('mousedown', () => bringToFront(win));
+
+        // Dragging for this instance
+        const titlebar = win.querySelector('.window-titlebar');
+        if (titlebar) {
+            titlebar.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.win-btn')) return;
+                if (win.classList.contains('maximized')) return;
+                initInstanceDrag(win, e.clientX, e.clientY);
+            });
+            titlebar.addEventListener('touchstart', (e) => {
+                if (e.target.closest('.win-btn')) return;
+                if (win.classList.contains('maximized')) return;
+                const touch = e.touches[0];
+                initInstanceDrag(win, touch.clientX, touch.clientY, true);
+            }, { passive: false });
+        }
+    }
+
+    function initInstanceDrag(win, startX, startY, isTouch) {
+        const rect = win.getBoundingClientRect();
+        let offsetX = startX - rect.left;
+        let offsetY = startY - rect.top;
+        bringToFront(win);
+
+        function getTaskbarHeight() {
+            const tb = document.querySelector('.taskbar');
+            return tb ? tb.offsetHeight : 36;
+        }
+
+        function onMove(e) {
+            const cx = isTouch ? e.touches[0].clientX : e.clientX;
+            const cy = isTouch ? e.touches[0].clientY : e.clientY;
+            if (isTouch) e.preventDefault();
+            let x = cx - offsetX;
+            let y = cy - offsetY;
+            const maxY = window.innerHeight - getTaskbarHeight() - 40;
+            x = Math.max(-win.offsetWidth + 100, Math.min(window.innerWidth - 100, x));
+            y = Math.max(0, Math.min(maxY, y));
+            win.style.left = x + 'px';
+            win.style.top = y + 'px';
+        }
+
+        function onUp() {
+            document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', onMove);
+            document.removeEventListener(isTouch ? 'touchend' : 'mouseup', onUp);
+        }
+
+        document.addEventListener(isTouch ? 'touchmove' : 'mousemove', onMove, isTouch ? { passive: false } : undefined);
+        document.addEventListener(isTouch ? 'touchend' : 'mouseup', onUp);
     }
 
     function closeWindow(name) {
         const win = document.getElementById('window-' + name);
         if (!win) return;
-        win.classList.add('hidden');
-        win.classList.remove('maximized');
+
+        // Cloned instances: remove from DOM entirely
+        if (win.dataset.baseName) {
+            win.remove();
+        } else {
+            // Singleton: just hide
+            win.classList.add('hidden');
+            win.classList.remove('maximized');
+        }
         if (windowStates[name]) {
             delete windowStates[name];
         }
@@ -96,6 +215,7 @@
     }
 
     function initWindowControls() {
+        // Only attach to singleton/template windows
         document.querySelectorAll('.btn-close').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -218,53 +338,31 @@
         const container = document.getElementById('taskbarWindows');
         container.innerHTML = '';
 
+        // Show all visible windows + minimized instances in taskbar
         document.querySelectorAll('.window').forEach(win => {
+            // Skip hidden template windows (non-singleton originals)
             const name = win.id.replace('window-', '');
+            const isClone = !!win.dataset.baseName;
+            const isSingleton = SINGLETON_WINDOWS.includes(name);
+
+            // Template windows that are hidden and not singletons: skip
+            if (!isClone && !isSingleton && win.classList.contains('hidden')) return;
+            // Singleton windows that are hidden: skip
+            if (isSingleton && win.classList.contains('hidden')) return;
+
             const title = win.querySelector('.window-title span:last-child');
             if (!title) return;
 
-            const isOpen = !win.classList.contains('hidden');
-            // Always show in taskbar if not hidden, or was minimized
             const btn = document.createElement('button');
-            btn.className = 'taskbar-window-btn' + (isOpen && win.classList.contains('active') ? ' active' : '');
+            const isMinimized = win.classList.contains('hidden');
+            btn.className = 'taskbar-window-btn' + (!isMinimized && win.classList.contains('active') ? ' active' : '');
             btn.textContent = title.textContent;
-            btn.style.display = isOpen || windowStates[name] ? '' : 'none';
-
-            if (!isOpen) {
-                // minimized
-                btn.style.display = '';
-                btn.classList.remove('active');
-            }
 
             btn.addEventListener('click', () => {
                 if (win.classList.contains('hidden')) {
                     win.classList.remove('hidden');
                     bringToFront(win);
                 } else if (win.classList.contains('active')) {
-                    minimizeWindow(name);
-                } else {
-                    bringToFront(win);
-                }
-                updateTaskbarButtons();
-            });
-
-            if (isOpen || !win.classList.contains('hidden') || btn.style.display !== 'none') {
-                container.appendChild(btn);
-            }
-        });
-
-        // Simpler approach: show buttons for all non-hidden windows
-        container.innerHTML = '';
-        document.querySelectorAll('.window:not(.hidden)').forEach(win => {
-            const name = win.id.replace('window-', '');
-            const title = win.querySelector('.window-title span:last-child');
-            if (!title) return;
-
-            const btn = document.createElement('button');
-            btn.className = 'taskbar-window-btn' + (win.classList.contains('active') ? ' active' : '');
-            btn.textContent = title.textContent;
-            btn.addEventListener('click', () => {
-                if (win.classList.contains('active')) {
                     minimizeWindow(name);
                 } else {
                     bringToFront(win);
