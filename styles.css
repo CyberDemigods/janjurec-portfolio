@@ -1467,6 +1467,39 @@ a:hover {
     border: 1px outset #aaa;
     cursor: pointer;
 }
+.winamp-vol-error {
+    position: absolute;
+    bottom: 60px;
+    right: 5px;
+    background: #d4d0c8;
+    border: 2px outset #fff;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: #000;
+    font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+    line-height: 1.5;
+    z-index: 100;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    min-width: 200px;
+}
+.winamp-vol-error b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+.winamp-vol-error button {
+    display: block;
+    margin: 8px auto 0;
+    padding: 2px 20px;
+    background: #d4d0c8;
+    border: 2px outset #fff;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+}
+.winamp-vol-error button:active {
+    border-style: inset;
+}
 .winamp-playlist {
     background: #0a0a1e;
     margin: 2px 3px 3px;

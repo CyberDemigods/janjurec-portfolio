@@ -1844,7 +1844,30 @@
         }
 
         function getVol() {
+            var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+            if (theme === 'win98' || theme === 'winxp') {
+                // Volume doesn't work on Windows lol
+                return 0.3;
+            }
             return (parseInt(volSlider.value) / 100) * 0.3;
+        }
+
+        // Volume slider on Windows: show error popup
+        if (volSlider) {
+            volSlider.addEventListener('input', function() {
+                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                if (theme === 'win98' || theme === 'winxp') {
+                    volSlider.value = 75;
+                    var err = document.getElementById('winampVolError');
+                    if (!err) {
+                        err = document.createElement('div');
+                        err.id = 'winampVolError';
+                        err.className = 'winamp-vol-error';
+                        err.innerHTML = '<b>&#9888; Winamp</b><br>Sterownik audio nie odpowiada.<br>Zainstaluj sterowniki dla Windows.<br><button onclick="this.parentElement.remove()">OK</button>';
+                        volSlider.parentElement.appendChild(err);
+                    }
+                }
+            });
         }
 
         function doStop() {
