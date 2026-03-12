@@ -80,6 +80,13 @@
             win.classList.remove('hidden');
             bringToFront(win);
             updateTaskbarButtons();
+            // Autoplay Rick when Winamp opens
+            if (name === 'winamp' && !winampPlaying) {
+                setTimeout(function() {
+                    var playBtn = document.getElementById('winampPlay');
+                    if (playBtn) playBtn.click();
+                }, 200);
+            }
             return;
         }
 
@@ -1135,7 +1142,11 @@
                         line += chars[Math.floor(Math.random() * chars.length)];
                     }
                 }
-                addLine(line, 'success');
+                var matLine = document.createElement('pre');
+                matLine.className = 'terminal-line success';
+                matLine.style.textAlign = 'right';
+                matLine.textContent = line;
+                output.appendChild(matLine);
                 scrollTerminal();
                 matrixCount++;
                 if (matrixCount > 25) {
