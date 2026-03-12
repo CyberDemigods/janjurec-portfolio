@@ -2102,9 +2102,12 @@
         document.addEventListener('keydown', function(e) {
             if (e.code === 'Space' && browserWin && !browserWin.classList.contains('hidden')) {
                 e.preventDefault();
+                e.stopPropagation();
                 jump();
             }
         });
+        // Prevent any scroll on the game area
+        canvas.parentElement.addEventListener('scroll', function() { this.scrollTop = 0; this.scrollLeft = 0; });
         // Tap on canvas for mobile
         canvas.addEventListener('click', jump);
         canvas.addEventListener('touchstart', function(e) { e.preventDefault(); jump(); }, { passive: false });
