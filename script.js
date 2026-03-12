@@ -18,23 +18,27 @@
     let instanceCounter = 0;
     const CASCADE_OFFSET = 30;
 
+    // "Lag burst" easter egg - occasionally queues clicks then opens all at once
+    let openClickCount = 0;
+    let lagQueue = [];
+    let lagTimeout = null;
+
     // init is defined at the bottom of the file
 
     // ===== DESKTOP ICONS =====
+    function isMobile() {
+        return 'ontouchstart' in window || window.innerWidth <= 768;
+    }
+
     function initDesktopIcons() {
         document.querySelectorAll('.desktop-icon').forEach(icon => {
             icon.addEventListener('dblclick', () => {
                 openWindow(icon.dataset.window);
             });
-            // mobile single tap
-            let tapCount = 0;
+            // mobile: single tap opens
             icon.addEventListener('click', () => {
-                tapCount++;
-                if (tapCount === 1) {
-                    setTimeout(() => {
-                        if (tapCount >= 2) openWindow(icon.dataset.window);
-                        tapCount = 0;
-                    }, 300);
+                if (isMobile()) {
+                    openWindow(icon.dataset.window);
                 }
             });
         });
@@ -45,6 +49,30 @@
         // Close start menu
         document.getElementById('startMenu').classList.add('hidden');
 
+        // "Lag burst" - after every ~8-15 clicks, queue a few and burst them
+        openClickCount++;
+        if (!SINGLETON_WINDOWS.includes(name) && openClickCount > 7 && Math.random() < 0.3) {
+            lagQueue.push(name);
+            if (!lagTimeout) {
+                lagTimeout = setTimeout(function() {
+                    var q = lagQueue.slice();
+                    lagQueue = [];
+                    lagTimeout = null;
+                    openClickCount = 0;
+                    for (var i = 0; i < q.length; i++) {
+                        (function(n, delay) {
+                            setTimeout(function() { doOpenWindow(n); }, delay);
+                        })(q[i], i * 150);
+                    }
+                }, 1500 + Math.random() * 1000);
+            }
+            return;
+        }
+
+        doOpenWindow(name);
+    }
+
+    function doOpenWindow(name) {
         // Singletons: just show existing window
         if (SINGLETON_WINDOWS.includes(name)) {
             const win = document.getElementById('window-' + name);
@@ -615,7 +643,29 @@
         const termWin = document.getElementById('window-terminal');
         if (termWin) observer.observe(termWin, { attributes: true, attributeFilter: ['class'] });
 
+        // Tab completion
+        var knownCommands = [
+            'help', 'whoami', 'skills', 'experience', 'contact', 'projects',
+            'education', 'neofetch', 'theme', 'matrix', 'clear', 'exit',
+            'barka', 'serwerownia', 'achilles', '2137', 'sudo', 'ls', 'dir',
+            'pwd', 'date', 'cowsay', 'ping', 'cat readme.md', 'cd .secret'
+        ];
+
         input.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                var partial = input.value.trim().toLowerCase();
+                if (!partial) return;
+                var matches = knownCommands.filter(function(c) { return c.startsWith(partial); });
+                if (matches.length === 1) {
+                    input.value = matches[0];
+                } else if (matches.length > 1) {
+                    addLine(document.getElementById('terminalPrompt').textContent + partial);
+                    addLine(matches.join('  '), 'info');
+                    scrollTerminal();
+                }
+                return;
+            }
             if (e.key === 'Enter') {
                 const cmd = input.value.trim();
                 const prompt = document.getElementById('terminalPrompt').textContent;
@@ -884,240 +934,14 @@
                     addLine('');
                     addLine('Stękanie ćwiczącego lewicę Rinka dobiegało zza rzędu wykopowych');
                     addLine('monitorów. Miałek automatycznie podłożył ociekające potem dźwięki');
-                    addLine('pod obraz żony osadzonej na knadze Rinka. Intuicja podpowiadała');
-                    addLine('mu, że lekko otyły kolega z pracy przebiera palcami po najkrótszej');
-                    addLine('części ciała oglądając zdjęcia miałkowej połowicy na fejsbuku.');
-                    addLine('Nie mylił się. Czuł jednak dziwaczną dumę połączoną z rozbawieniem,');
-                    addLine('które przyniosła mu owa wizja.');
+                    addLine('pod obraz żony osadzonej na knadze Rinka.');
                     addLine('');
                     addLine(',,Puk puk".');
                     addLine('Pierwsza myśl - Kifle23. Kurwiszcze, które zrobiłoby wszystko za');
                     addLine('status moderatora w serwisie.');
                     addLine('');
-                    addLine('Miałek poczuł się ważny. Myśl o zdradzie żony przerodziła się');
-                    addLine('w pewność, że w tę sobotnią noc powstaje dziecko, na które po');
-                    addLine('badaniach DNA nie musiałby wyłożyć ani grosza. Zatliła się w jego');
-                    addLine('biednym umyśle żądza zemsty. Ocknąwszy się wstał i nonszalancko');
-                    addLine('otworzył drzwi.');
-                    addLine('');
-                    addLine('Kifle23. Czarna owca rodu Kickesch stała w progu oparta o framugę');
-                    addLine('ze swoim kurewskim uśmieszkiem woźnej. Baletki, krótka spódniczka');
-                    addLine('i motzno zarysowany dekolt jaśniały kontrastującą z nocnym');
-                    addLine('krajobrazem bielą. - wstawiona jak zwykle - pomyślał Miałek.');
-                    addLine('');
-                    addLine('Kifle położyła palec na ustach. Miałek domyślił się, że');
-                    addLine('odseparowany od świata zewnętrznego Rinek nie usłyszał pukania');
-                    addLine('aktywnej wykopowiczki, która właśnie przyniosła im kanapki.');
-                    addLine('Spod granicy niemieckiej.');
-                    addLine('');
-                    addLine('Kifle sprawnie zzuła obuwie i figlarnie mrugając ruszyła w stronę');
-                    addLine('Rinka. Miałek podążał wzrokiem za opalonymi stópkami zmierzającymi');
-                    addLine('w stronę McRinka, nie mogąc powstrzymać wewnętrznego rozbawienia.');
-                    addLine('Za chwilę miał wyjść na jaw fakt, którego nikt z pracowników');
-                    addLine('wykopu osobiście nie widział, choć był świadom jego istnienia.');
-                    addLine('Fakt, który miał zburzyć spokój Rinka na zawsze.');
-                    addLine('');
-                    addLine('Kifle wczołgała się pod biurko i sprawnie wyskoczyła po drugiej');
-                    addLine('stronie. Rinek wybałuszył oczy i odskoczył w tył z naprężonym');
-                    addLine('kutasem w ręku. - Ale...');
-                    addLine('');
-                    addLine('Spojrzenia Miałka i Rinka spotkały się. Rinek był zażenowany całą');
-                    addLine('sytuacją, o czym świadczył wyraźny rumieniec na jego aryjskiej');
-                    addLine('twarzy.');
-                    addLine('');
-                    addLine('Śmiech Kifla rozniósł się po pomieszczeniu.');
-                    addLine('- Mała pała jak na administratora. - powiedziała Kifle, ledwie');
-                    addLine('powstrzymując śmiech. Rinek spąsowiał bardziej. Ręce machinalnie');
-                    addLine('powędrowały w stronę rozporka, gdy podchmielona Kifle rzuciła się');
-                    addLine('w tę samą stronę.');
-                    addLine('- Zostaw. - powiedziała stanowczo.');
-                    addLine('');
-                    addLine('Zaskoczony Rinek wypuścił pytonga z ręki. Dziesięciocentymetrowy');
-                    addLine('organ bezwładnie opadł lekko kołysząc się na boki, gdy Kifle');
-                    addLine('doskoczyła do sparaliżowanego grubaska niczym wygłodniała kura');
-                    addLine('i stanowczym ruchem opuściła nieco za duże spodnie. Od czasu');
-                    addLine('nieudanego eksperymentu z rurkami Rinek powrócił bowiem do starych');
-                    addLine('nawyków, co ułatwiło wykopowiczce zadanie.');
-                    addLine('');
-                    addLine('- Jesteś pijana. - wystękał, gdy Kifle chwyciła go za lekko');
-                    addLine('przywiędniętą pałę i chichocząc zaczęła prowadzić w stronę Miałka,');
-                    addLine('który obserwował sytuację z zaciekawieniem. Programista nie');
-                    addLine('protestował jednak zbyt zaciekle. Był to pierwszy raz, kiedy');
-                    addLine('kobieca ręka spoczęła na jego wypustce. Było to niewątpliwie');
-                    addLine('ciekawe doznanie, gdyż sam Rinek zdawał się zapomnieć o dziwnych');
-                    addLine('okolicznościach, w jakich doszło do tego przełomowego momentu.');
-                    addLine('');
-                    addLine('Miałek nie mógł już powstrzymać rozbawienia, obserwując');
-                    addLine('zesztywniałego Rinka kroczącego za dzierżącą jego orzeszek');
-                    addLine('Kiflem. Wybuchnął serdecznym śmiechem, mimowolnie puszczając');
-                    addLine('krótkiego bąka o dosyć wysokiej tonacji.');
-                    addLine('');
-                    addLine('- Przepraszam, - rzekł Miałek przez łzy - ale nie bardzo rozumiem');
-                    addLine('sytuację.');
-                    addLine('');
-                    addLine('Kifle puściła rinkowe przyrodzenie i kołysząc biodrami powoli');
-                    addLine('podeszła do administratora o podkrążonych od pracoholizmu oczach,');
-                    addLine('zalotnie kręcąc loczek wydłubany spod natapirowanej burzy blond');
-                    addLine('włosów.');
-                    addLine('');
-                    addLine('- Nie planowałam tego. Zawsze byłam spontaniczna. - wyszeptała');
-                    addLine('prowokacyjnie, gmerając już teraz palcami w okolicy guzików');
-                    addLine('różowej koszuli Miałka.');
-                    addLine('');
-                    addLine('Rinek zastygł jak posąg w centrum serwerowni. Nie zdawał sobie');
-                    addLine('sprawy, jak komicznie wyglądał z opuszczonymi do kostek spodniami');
-                    addLine('kupionymi przez mamę w second-handzie, z włosami łonowymi');
-                    addLine('w nieładzie i zaczerwienioną od uścisku knagą smętnie zwisającą');
-                    addLine('między otłuszczonymi udami. Poczuł ukłucie zazdrości widząc');
-                    addLine('pierwszą kobietę, której pozwolił się dotknąć, z zapałem liżącą');
-                    addLine('opalony tors Miałka. To on powinien być na jej miejscu.');
-                    addLine('');
-                    addLine('Miałek zamknął oczy, czując wilgotne pociągnięcia kiflowego');
-                    addLine('języka po swojej klacie. Nie była to zdrada, był to gwałt. Stąd');
-                    addLine('też, domyślając się dalszego przebiegu sytuacji, nie miał żadnych');
-                    addLine('wyrzutów sumienia. Aby jednak im zapobiec, wyobraził sobie że');
-                    addLine('jego żona jest właśnie posuwana przez murzyna. ,,Co za kurwa"');
-                    addLine('- pomyślał. Czuł się całkowicie oczyszczony z zarzutów.');
-                    addLine('');
-                    addLine('Kifle przeszła do lizania twarzy, by w końcu zbliżyć się do ucha');
-                    addLine('Miałka.');
-                    addLine('- Wiesz, do czego tasował twój kolega? - szeptnęła, po kurewsku');
-                    addLine('przenosząc wzrok na jego twarz. - Do zdjęć twoich przeróbek');
-                    addLine('zrobionych przez...');
-                    addLine('- Nie kończ. - przerwał jej Miałek. Nie chciał by słowo codziennie');
-                    addLine('odmieniane przez przypadki w miejscu jego pracy ostudziło');
-                    addLine('podniecenie. Na moment jednak otrzeźwiał i odepchnął rozpaloną');
-                    addLine('Kickesch od siebie.');
-                    addLine('');
-                    addLine('- Czego tak właściwie chcesz, hm? - zapytał, badawczo spoglądając');
-                    addLine('na Kifla. Nie doczekał jednak odpowiedzi, gdyż Rinek');
-                    addLine('niespodziewanie zwinnie, biorąc pod uwagę jego warunki fizyczne,');
-                    addLine('chwycił drukarkę Samsunga i ogłuszył Kifla celnym uderzeniem');
-                    addLine('w tył głowy. Kifle bezwładnie osunęła się na ziemię, potwierdzając');
-                    addLine('swoją renomę kobiety upadłej. W sekundę później Rinek stanął');
-                    addLine('z roznegliżowanym Miałkiem twarzą w twarz, oko w oko.');
-                    addLine('Ich chuje również były całkiem blisko. Zszokowany Miałek nie');
-                    addLine('rozpoznawał nieśmiałego dotąd kolegi. Coś w nim zdecydowanie');
-                    addLine('pękło, a w spojrzeniu programisty była niewidoczna dotąd');
-                    addLine('determinacja.');
-                    addLine('');
-                    addLine('- Zerżnij mnie. - wycedził Rinek. - Zerżnij mnie motzno w odbyt.');
-                    addLine('- powtórzył. Powieka nawet nie drgnęła podczas wypowiadania tych');
-                    addLine('słów.');
-                    addLine('');
-                    addLine('Miałek w swoim zaskoczeniu wydał niezidentyfikowany dźwięk, lecz');
-                    addLine('Rinek natychmiast położył mu palec na ustach.');
-                    addLine('- Nikt się nie dowie. Ta kurwa Kifle i tak ci już powiedziała.');
-                    addLine('Nie mam nic do stracenia. - powiedział. Nie czekając na reakcję');
-                    addLine('Miałka, przeszedł od słów do czynów.');
-                    addLine('');
-                    addLine('Świat Miałka wywrócił się do góry nogami, starał się jednak');
-                    addLine('chłodno kalkulować, jak wiele nieoczekiwana przygoda gejowska');
-                    addLine('mogła zmienić w imidżu samca alfa, na który tak ciężko pracował.');
-                    addLine('A Rinek nie żartował. Był silniejszy od niego, co potwierdził');
-                    addLine('brutalnie atakując Kifla kilkanaście sekund wcześniej. Setki');
-                    addLine('podobnych myśli przelatywały mu przez głowę, gdy rudawy');
-                    addLine('programista delikatnie rozchylił mu wargi, by włożyć mięciutki');
-                    addLine('palec do ust i wymusić odruch ssania.');
-                    addLine('');
-                    addLine('Patrząc odważnie w oczy Miałka, Rinek zrobił kilka kroków w tył');
-                    addLine('i zdjął t-shirt jednym pewnym ruchem. Biała delikatna skóra');
-                    addLine('i puchate sutki Rinka były dziwacznie atrakcyjne, choć jeszcze');
-                    addLine('kilka minut wcześniej podobna myśl nie miała szans pojawić się');
-                    addLine('w umyśle Miałka.');
-                    addLine('');
-                    addLine('- Maciek, ty tak na serio? Oddasz mi się? - zapytał');
-                    addLine('z niedowierzaniem. Rinek skinął głową i oswobodził się ze spodni,');
-                    addLine('które aż do tej chwili pętały mu kostki. Odwrócił się i ułożył');
-                    addLine('w pozycji tylnej, która byłaby dla większości mężczyzn');
-                    addLine('upokarzająca. Ciasna dziurka programisty zachęcająco przezierała');
-                    addLine('przez gąszcz delikatnych włosków, aż prosząc się o rozepchanie.');
-                    addLine('Penis Miałka zareagował na ten widok od razu, ciekawie wynurzając');
-                    addLine('się z rozpiętych jeszcze przez Kifla spodni. - Raz się żyje');
-                    addLine('- pomyślał Miałek. Wyruchanie kolegi z pracy mogło się okazać');
-                    addLine('bardziej męskie, niż przypuszczał. To on miał przecież być stroną');
-                    addLine('dominującą.');
-                    addLine('');
-                    addLine('Miałek pozbył się resztek odzienia i pewnym krokiem podszedł do');
-                    addLine('wypiętego Rinka. Postanowił zaatakować znienacka. Napluł na rękę');
-                    addLine('i jednym ruchem wbił naprężonego kutasa w miękki odbyt');
-                    addLine('programisty. Sięgnął ręką do podbrzusza, by przekonać się, że');
-                    addLine('i chuj Rinka był tak nabrzmiały, jakby miał eksplodować. Dodało');
-                    addLine('mu to siły i pewności siebie. Poczuł się atrakcyjny.');
-                    addLine('');
-                    addLine('Pierwsze ruchy były jeszcze dość powolne, lecz Rinek starał się');
-                    addLine('przyjąć jak najwięcej pomimo słabego nawilżenia. Kolejne');
-                    addLine('centymetry napiętej pały Miałka znikały w czeluściach jego');
-                    addLine('odbytu, a zwierzęce sapanie Rinka tylko podniecało właściciela');
-                    addLine('dość dużej jak na polskie warunki kutangi. Miałek złapał Rinka');
-                    addLine('za biodra i przyciągnął do siebie. - Chciałeś rżnięcia? To masz.');
-                    addLine('- wycedził i zaczął miarowo, całym ciężarem napierać na puszyste');
-                    addLine('ciałko kolegi. - Pierdol mnie, Bichał! - krzyknął resztkami sił');
-                    addLine('Rinek, uginając się do samej podłogi, a odgłosy największego');
-                    addLine('rżnięcia w historii firmy ocuciły omdlałego Kifla, leżącego');
-                    addLine('od dwa metry dalej.');
-                    addLine('');
-                    addLine('Kifle wstała i zataczając się podeszła do sapiącego Miałka.');
-                    addLine('- Hej, chłopakii... - z ust dziewczyny wychodził pijacki bełkot,');
-                    addLine('który trudno było rozszyfrować. - mogę się przyłączyć?');
-                    addLine('- Wypierdalaj stąd! - wrzasnął Miałek i odtrącił rękę Kifla,');
-                    addLine('która zaczęła mierzwić jego włosy.');
-                    addLine('');
-                    addLine('Kifle prychnęła i odeszła na kilka kroków. Udawała obrażoną, choć');
-                    addLine('ciekawie zerkała na Miałka, który bez opamiętania pierdolił');
-                    addLine('Rinka jak maszyna. Sam Rinek odwrócił się w jej stronę i złośliwie');
-                    addLine('wystawił język na wierzch. Wygrał tę partię.');
-                    addLine('');
-                    addLine('Poszukiwania piersiówki w torebce w panterkę okazały się owocne.');
-                    addLine('Kifle pociągnęła resztkę bimbru dla kurażu i postanowiła nie');
-                    addLine('rezygnować z szansy zostania moderatorką swojego ulubionego');
-                    addLine('serwisu. Stanęła na wysokości oczu Miałka i ostentacyjnie');
-                    addLine('rozpoczęła striptiz. Na pierwszy ogień poszła spódniczka. Dopiero');
-                    addLine('w tym świetle znać było ślady spermy i wymiocin, które pokrywały');
-                    addLine('jasny materiał. Kifle zaplątała się w bluzkę, lecz niezrażona tym');
-                    addLine('faktem wciąż starała się wyglądać seksi. Będąc już w samej');
-                    addLine('bieliźnie odwróciła się i wypięła prosto przed twarzą Rinka,');
-                    addLine('który niewiele myśląc splunął prosto na naddarty materiał');
-                    addLine('kiflowych majtek. Kifle wybuchnęła śmiechem. Po zdjęciu stanika');
-                    addLine('ułożyła się na podłodze i uchyliła majtki, pokazując nieco');
-                    addLine('zarośniętą cipkę o wyraźnie zarysowanych wargach. - Nudzi mi się.');
-                    addLine('- powiedziała. - Długo jeszcze będziecie się pierdolić?. Miałek');
-                    addLine('jednak nie odpowiedział, zbyt zaaferowany stanem');
-                    addLine('przedorgazmicznym, który sobie zafundował.');
-                    addLine('');
-                    addLine('Największa kurewna wykopu postanowiła zabawić się sama. Sięgnęła');
-                    addLine('ręką po trzonek od łopaty, która była maskotką serwisu i zaczęła');
-                    addLine('nim jeździć po wargach sromowych. Śluz gęsto skapywał na podłogę,');
-                    addLine('a Kifle pociągała się za sutki, wijąc się jak piskorz po tanich');
-                    addLine('panelach. Trzonek wszedł w luźną jamę Kifla jak w masło.');
-                    addLine('Prawdopodobnie nie czuła niczego, a choć starała się zwrócić na');
-                    addLine('siebie uwagę przez jęki i udawane podniecenie, Miałek i Rinek');
-                    addLine('byli zajęci sobą. Spojeni w jedność dochodzili właśnie razem,');
-                    addLine('o czym obwieścił światu pierwotny ryk rudego programisty.');
-                    addLine('Zmęczony b__m od razu wyszedł z Rinka, racząc się widokiem');
-                    addLine('ciepłego jeszcze ciasteczka z kremem. Na pożegnanie przytulił się');
-                    addLine('do mięciutkiego tyłeczka kolegi, który dostarczył mu wiele');
-                    addLine('satysfakcji. I - jak podpowiadała mu intuicja - miał dostarczyć');
-                    addLine('jeszcze nieraz. Kutas Miałka pokryty był lekko kałem, lecz Rinek');
-                    addLine('sprawnie sobie z tym poradził, naprędce zlizując brązową maź');
-                    addLine('z mięknącego już chuja administratora wykopu. - Byłeś zajebisty,');
-                    addLine('nikt mnie jeszcze tak nie jebał. - powtarzał zmęczonym głosem');
-                    addLine('Rinek. - Zdejmij skarpetki, chcę ci podziękować jeszcze bardziej.');
-                    addLine('');
-                    addLine('Zdziwiony Miałek zsunął białe stopki z nóg, po czym Rinek rzucił');
-                    addLine('się do ssania dużego palca. Znudzona Kifle naprędce znalazła się');
-                    addLine('obok niego, próbując zmieścić w ustach jeszcze więcej palców, by');
-                    addLine('zyskać sobie przychylność Miałka. Ten zaś był w siódmym niebie.');
-                    addLine('Nie spieszyło mu się już do domu tak, jak kilka godzin wcześniej.');
-                    addLine('Rinek wykorzystał rozmarzenie kolegi, by na koniec usiąść mu na');
-                    addLine('twarzy i zmusić go do ssania swoich kulek. W oczach Miałka');
-                    addLine('pojawiły się pierwsze ślady przywiązania, co bardzo Maćka');
-                    addLine('wzruszyło. Nie zepsuło tej chwili nawet faux-pas Kifla, która');
-                    addLine('odepchnięta zapachem stóp Miałka zwymiotowała na jego nogi.');
-                    addLine('');
-                    addLine('Życie w serwisie już nigdy nie miało być takie samo.');
-                    addLine('');
-                    addLine('                              ~ fin ~', 'info');
+                    addLine('  [... reszta pasty ocenzurowana przez admina ...]', 'info');
+                    addLine('  [... ale koziołki zostają! ...]', 'info');
                     addLine('');
                     // Animated Poznań goats butting heads
                     const goatFrames = [
@@ -1199,6 +1023,7 @@
                     break;
 
                 case 'ls':
+                case 'dir':
                     addLine('about.txt    experience.log    skills.cfg    projects/');
                     addLine('education.md contact.vcf       README.md     .secret/');
                     break;

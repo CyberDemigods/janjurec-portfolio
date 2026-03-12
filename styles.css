@@ -83,6 +83,18 @@
     font-family: 'Trebuchet MS', 'Tahoma', sans-serif;
     letter-spacing: 1px;
 }
+.boot-mobile-hint {
+    display: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    font-family: 'Tahoma', sans-serif;
+    text-align: center;
+    margin: 10px 20px 0;
+    font-style: italic;
+}
+@media (max-width: 768px) {
+    .boot-mobile-hint { display: block; }
+}
 .boot-progress-area {
     width: 300px;
     margin: 0 auto;
