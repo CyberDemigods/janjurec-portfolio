@@ -461,6 +461,7 @@
                 updateActiveThemeBtn(theme);
                 localStorage.setItem('jan-portfolio-theme', theme);
                 applyWallpaperForTheme(theme);
+                updateBrowserTheme();
                 updateBrowserDesktopIcon();
             });
         });
@@ -2367,15 +2368,21 @@
     // ===== BROWSER THEME + LOADING =====
     var browserLoadingShown = false;
 
-    function isWindowsTheme() {
+    function getBrowserType() {
         var theme = document.documentElement.getAttribute('data-theme') || 'win98';
-        return theme === 'win98' || theme === 'winxp';
+        if (theme === 'win98' || theme === 'winxp') return 'ie';
+        if (theme === 'macos') return 'safari';
+        return 'tor';
+    }
+
+    function isWindowsTheme() {
+        return getBrowserType() === 'ie';
     }
 
     function updateBrowserTheme() {
         var win = document.getElementById('window-browser');
         if (!win) return;
-        var isWin = isWindowsTheme();
+        var type = getBrowserType();
         var titleIcon = win.querySelector('.window-title-icon');
         var titleText = win.querySelector('.window-title-text');
         var urlIcon = win.querySelector('.browser-url-icon');
@@ -2383,8 +2390,7 @@
         var noNetIcon = document.getElementById('browserNoNetIcon');
         var noNetTitle = document.getElementById('browserNoNetTitle');
         var noNetDesc = document.getElementById('browserNoNetDesc');
-        // Also update desktop icon label via i18n override
-        if (isWin) {
+        if (type === 'ie') {
             if (titleIcon) titleIcon.textContent = '🌐';
             if (titleText) titleText.textContent = 'Internet Explorer';
             if (urlIcon) urlIcon.textContent = '🔒';
@@ -2392,6 +2398,14 @@
             if (noNetIcon) noNetIcon.textContent = '🌐';
             if (noNetTitle) noNetTitle.textContent = 'Nie można wyświetlić strony';
             if (noNetDesc) noNetDesc.textContent = 'Sprawdź połączenie z Internetem';
+        } else if (type === 'safari') {
+            if (titleIcon) titleIcon.textContent = '🧭';
+            if (titleText) titleText.textContent = 'Safari';
+            if (urlIcon) urlIcon.textContent = '🔒';
+            if (urlText) urlText.textContent = 'janjurec.cyberdemigods.com';
+            if (noNetIcon) noNetIcon.textContent = '🧭';
+            if (noNetTitle) noNetTitle.textContent = 'You Are Not Connected to the Internet';
+            if (noNetDesc) noNetDesc.textContent = 'This page can\u2019t be displayed because your Mac isn\u2019t connected to the Internet.';
         } else {
             if (titleIcon) titleIcon.textContent = '🧅';
             if (titleText) titleText.textContent = 'Tor Browser';
@@ -2404,7 +2418,8 @@
     }
 
     function showBrowserLoading() {
-        if (!isWindowsTheme()) return; // Tor loads instantly
+        var type = getBrowserType();
+        if (type === 'tor') return; // Tor loads instantly
         var loadingEl = document.getElementById('browserLoading');
         var noNet = document.getElementById('browserNoNet');
         var canvas = document.getElementById('nosaczCanvas');
@@ -2436,10 +2451,15 @@
         var iconEl = document.getElementById('icon-browser');
         var labelEl = iconEl ? iconEl.parentElement.querySelector('[data-i18n="icon-browser"]') : null;
         var startItem = document.querySelector('.start-menu-item[data-window="browser"]');
-        if (isWindowsTheme()) {
+        var type = getBrowserType();
+        if (type === 'ie') {
             if (iconEl) iconEl.innerHTML = '<svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><circle cx="16" cy="16" r="13" fill="#0078d7" stroke="#005a9e" stroke-width="1.5"/><text x="16" y="21" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold" font-family="serif">e</text></svg>';
             if (labelEl) labelEl.textContent = 'Internet Explorer';
             if (startItem) startItem.innerHTML = '🌐 <span data-i18n="icon-browser">Internet Explorer</span>';
+        } else if (type === 'safari') {
+            if (iconEl) iconEl.innerHTML = '<svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><circle cx="16" cy="16" r="13" fill="#1A8FE3" stroke="#1478c2" stroke-width="1.5"/><circle cx="16" cy="16" r="10" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.4"/><line x1="16" y1="6" x2="16" y2="9" stroke="#fff" stroke-width="1" opacity="0.7"/><line x1="16" y1="23" x2="16" y2="26" stroke="#fff" stroke-width="1" opacity="0.7"/><line x1="6" y1="16" x2="9" y2="16" stroke="#fff" stroke-width="1" opacity="0.7"/><line x1="23" y1="16" x2="26" y2="16" stroke="#fff" stroke-width="1" opacity="0.7"/><polygon points="16,8 19,16 16,24 13,16" fill="#fff" opacity="0.9"/><polygon points="16,8 19,16" fill="#ff3b30" opacity="0.9"/><polygon points="16,24 13,16" fill="#ff3b30" opacity="0.9"/></svg>';
+            if (labelEl) labelEl.textContent = 'Safari';
+            if (startItem) startItem.innerHTML = '🧭 <span data-i18n="icon-browser">Safari</span>';
         } else {
             if (iconEl) iconEl.innerHTML = '<svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><circle cx="16" cy="16" r="13" fill="#7D4698" stroke="#4a2d5e" stroke-width="1.5"/><ellipse cx="16" cy="16" rx="6" ry="13" fill="none" stroke="#fff" stroke-width="1" opacity="0.5"/><line x1="3" y1="16" x2="29" y2="16" stroke="#fff" stroke-width="1" opacity="0.5"/><line x1="5" y1="9" x2="27" y2="9" stroke="#fff" stroke-width="0.7" opacity="0.3"/><line x1="5" y1="23" x2="27" y2="23" stroke="#fff" stroke-width="0.7" opacity="0.3"/><text x="16" y="19" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold" font-family="monospace">.onion</text></svg>';
             if (labelEl) labelEl.textContent = 'Tor Browser';
@@ -3257,6 +3277,7 @@
         initPaint();
         initWinamp();
         initNosaczGame();
+        updateBrowserTheme();
         updateBrowserDesktopIcon();
         initLanguageSwitcher();
         applyLanguage(currentLang);
