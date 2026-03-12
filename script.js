@@ -197,6 +197,11 @@
         const win = document.getElementById('window-' + name);
         if (!win) return;
 
+        // Stop Winamp playback when closing
+        if (name === 'winamp') {
+            stopWinamp();
+        }
+
         // Cloned instances: remove from DOM entirely
         if (win.dataset.baseName) {
             win.remove();
@@ -209,6 +214,31 @@
             delete windowStates[name];
         }
         updateTaskbarButtons();
+    }
+
+    function stopWinamp() {
+        winampPlaying = false;
+        winampPaused = false;
+        for (var j = 0; j < winampScheduledOscs.length; j++) {
+            try { winampScheduledOscs[j].stop(); } catch(ex){}
+        }
+        winampScheduledOscs = [];
+        if (winampAc) {
+            try { winampAc.close(); } catch(ex){}
+            winampAc = null;
+        }
+        if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
+        winampAnimFrame = null;
+        var timeDisplay = document.getElementById('winampTime');
+        var seekFill = document.getElementById('winampSeekFill');
+        var playBtn = document.getElementById('winampPlay');
+        var ticker = document.getElementById('winampTicker');
+        if (timeDisplay) timeDisplay.textContent = '0:00';
+        if (seekFill) seekFill.style.width = '0%';
+        if (playBtn) playBtn.textContent = '\u25B6';
+        if (ticker) ticker.textContent = '*** Winamp 2.91 - Jan Jurec Edition ***';
+        var bars = document.querySelectorAll('.winamp-viz-bar');
+        for (var j = 0; j < bars.length; j++) bars[j].style.height = '2px';
     }
 
     function minimizeWindow(name) {
@@ -1117,34 +1147,58 @@
 
         // Matrix rain easter egg
         function startMatrix() {
-            let matrixCount = 0;
-            const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ01234567890ABCDEF';
-            // Hidden hints embedded in matrix rain
-            const hints = [
+            var matrixCount = 0;
+            // ASCII-only chars for perfect monospace alignment
+            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%&*!?<>{}[]|/\\~^';
+            var hints = [
                 'try 2137 for a holy surprise',
                 'the fisherman sings at sea',
                 'achilles knows the way out',
                 'servers have stories to tell',
                 'bark at the moon or the terminal',
             ];
-            let hintShown = 0;
-            const interval = setInterval(() => {
-                let line = '';
-                // Occasionally embed a hint in the noise
+            var hintShown = 0;
+
+            // Calculate how many chars fit the terminal width
+            function getLineWidth() {
+                var termBody = document.getElementById('terminalBody');
+                if (!termBody) return 80;
+                // Measure char width using a temp element
+                var measure = document.createElement('span');
+                measure.style.fontFamily = 'inherit';
+                measure.style.fontSize = 'inherit';
+                measure.style.visibility = 'hidden';
+                measure.style.position = 'absolute';
+                measure.textContent = 'X';
+                termBody.appendChild(measure);
+                var charW = measure.getBoundingClientRect().width || 7.2;
+                termBody.removeChild(measure);
+                var bodyW = output.clientWidth;
+                return Math.floor(bodyW / charW);
+            }
+
+            var cols = getLineWidth();
+
+            var interval = setInterval(function() {
+                var line = '';
                 if (matrixCount > 5 && hintShown < hints.length && Math.random() < 0.25) {
-                    const hint = hints[hintShown++];
-                    const pad = Math.floor((60 - hint.length) / 2);
-                    for (let i = 0; i < pad; i++) line += chars[Math.floor(Math.random() * chars.length)];
+                    var hint = hints[hintShown++];
+                    var padL = Math.floor((cols - hint.length) / 2);
+                    var padR = cols - padL - hint.length;
+                    for (var i = 0; i < padL; i++) line += chars[Math.floor(Math.random() * chars.length)];
                     line += hint;
-                    for (let i = 0; i < 60 - pad - hint.length; i++) line += chars[Math.floor(Math.random() * chars.length)];
+                    for (var i = 0; i < padR; i++) line += chars[Math.floor(Math.random() * chars.length)];
                 } else {
-                    for (let i = 0; i < 60; i++) {
+                    for (var i = 0; i < cols; i++) {
                         line += chars[Math.floor(Math.random() * chars.length)];
                     }
                 }
                 var matLine = document.createElement('pre');
                 matLine.className = 'terminal-line success';
-                matLine.style.textAlign = 'right';
+                matLine.style.margin = '0';
+                matLine.style.padding = '0';
+                matLine.style.lineHeight = '1.2';
+                matLine.style.letterSpacing = '0';
                 matLine.textContent = line;
                 output.appendChild(matLine);
                 scrollTerminal();
@@ -1154,7 +1208,7 @@
                     addLine('');
                     addLine('Wake up, Jan...', 'info');
                     addLine('The Matrix has you...', 'info');
-                    addLine('Follow the white rabbit. 🐇', 'info');
+                    addLine('Follow the white rabbit.', 'info');
                     addLine('');
                 }
             }, 80);
