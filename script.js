@@ -3277,10 +3277,10 @@
         initPaint();
         initWinamp();
         initNosaczGame();
-        updateBrowserTheme();
-        updateBrowserDesktopIcon();
         initLanguageSwitcher();
         applyLanguage(currentLang);
+        updateBrowserTheme();
+        updateBrowserDesktopIcon();
 
         // Open "About" by default
         openWindow('about');
@@ -3315,6 +3315,8 @@
                 currentLang = lang;
                 localStorage.setItem('jan-portfolio-lang', lang);
                 applyLanguage(lang);
+                updateBrowserTheme();
+                updateBrowserDesktopIcon();
                 dropdown.classList.add('hidden');
             });
         });
