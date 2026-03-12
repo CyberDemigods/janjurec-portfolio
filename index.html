@@ -747,41 +747,46 @@
                 </div>
                 <div class="window-controls">
                     <button class="win-btn btn-minimize" data-window="winamp">_</button>
-                    <button class="win-btn btn-maximize" data-window="winamp">□</button>
                     <button class="win-btn btn-close" data-window="winamp">×</button>
                 </div>
             </div>
             <div class="winamp-body">
                 <div class="winamp-display">
-                    <div class="winamp-display-top">
-                        <span class="winamp-bitrate">8bit</span>
-                        <span class="winamp-khz">44khz</span>
-                        <span class="winamp-stereo">stereo</span>
+                    <div class="winamp-display-row">
+                        <div class="winamp-time" id="winampTime">0:00</div>
+                        <div class="winamp-info-col">
+                            <div class="winamp-display-top">
+                                <span class="winamp-bitrate">8bit</span>
+                                <span class="winamp-khz">44khz</span>
+                                <span class="winamp-stereo">stereo</span>
+                            </div>
+                            <div class="winamp-viz" id="winampViz"></div>
+                        </div>
                     </div>
                     <div class="winamp-ticker" id="winampTicker">*** Winamp 2.91 - Jan Jurec Edition ***</div>
-                    <div class="winamp-time" id="winampTime">0:00</div>
-                    <div class="winamp-viz" id="winampViz"></div>
                 </div>
                 <div class="winamp-seek">
                     <div class="winamp-seek-bar" id="winampSeek">
                         <div class="winamp-seek-fill" id="winampSeekFill"></div>
                     </div>
                 </div>
-                <div class="winamp-volume">
-                    <span class="winamp-vol-label">VOL</span>
-                    <input type="range" min="0" max="100" value="75" class="winamp-vol-slider" id="winampVolume">
-                </div>
-                <div class="winamp-controls">
-                    <button class="winamp-btn" id="winampPrev" title="Previous">⏮</button>
-                    <button class="winamp-btn winamp-play" id="winampPlay" title="Play">▶</button>
-                    <button class="winamp-btn" id="winampPause" title="Pause">⏸</button>
-                    <button class="winamp-btn" id="winampStop" title="Stop">⏹</button>
-                    <button class="winamp-btn" id="winampNext" title="Next">⏭</button>
+                <div class="winamp-mid-row">
+                    <div class="winamp-controls">
+                        <button class="winamp-btn" id="winampPrev" title="Previous">&#9198;</button>
+                        <button class="winamp-btn winamp-btn-play" id="winampPlay" title="Play">&#9654;</button>
+                        <button class="winamp-btn" id="winampPause" title="Pause">&#9646;&#9646;</button>
+                        <button class="winamp-btn" id="winampStop" title="Stop">&#9632;</button>
+                        <button class="winamp-btn" id="winampNext" title="Next">&#9197;</button>
+                    </div>
+                    <div class="winamp-volume">
+                        <span class="winamp-vol-ico">&#128266;</span>
+                        <input type="range" min="0" max="100" value="75" class="winamp-vol-slider" id="winampVolume">
+                    </div>
                 </div>
                 <div class="winamp-playlist" id="winampPlaylist">
-                    <div class="winamp-playlist-header">Playlist</div>
+                    <div class="winamp-playlist-header">&#9835; Playlist</div>
                     <div class="winamp-track active" data-track="rickroll">1. Rick Astley - Never Gonna Give You Up [8bit]</div>
-                    <div class="winamp-track locked" data-track="barka" id="winampBarka">🔒 ???  <span class="winamp-unlock-hint">(unlock in terminal)</span></div>
+                    <div class="winamp-track locked" data-track="barka" id="winampBarka">&#128274; ???  <span class="winamp-unlock-hint">(unlock in terminal)</span></div>
                 </div>
             </div>
         </div>

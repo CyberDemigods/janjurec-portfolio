@@ -1631,6 +1631,7 @@
     // ===== WINAMP PLAYER =====
     let winampAc = null;
     let winampPlaying = false;
+    let winampPaused = false;
     let winampCurrentTrack = 'rickroll';
     let winampScheduledOscs = [];
     let winampStartTime = 0;
@@ -1641,156 +1642,161 @@
         const barkaEl = document.getElementById('winampBarka');
         if (barkaEl) {
             barkaEl.classList.remove('locked');
-            barkaEl.innerHTML = '2. Barka - Pan kiedyś stanął nad brzegiem [8bit]';
+            barkaEl.textContent = '2. Barka - Pan kiedys\u0301 stan\u0105\u0142 [8bit]';
         }
     }
 
     function initWinamp() {
+        var playBtn = document.getElementById('winampPlay');
+        var pauseBtn = document.getElementById('winampPause');
+        var stopBtn = document.getElementById('winampStop');
+        var prevBtn = document.getElementById('winampPrev');
+        var nextBtn = document.getElementById('winampNext');
+        var volSlider = document.getElementById('winampVolume');
+        var ticker = document.getElementById('winampTicker');
+        var timeDisplay = document.getElementById('winampTime');
+        var seekFill = document.getElementById('winampSeekFill');
+        var vizEl = document.getElementById('winampViz');
+        var playlistEl = document.getElementById('winampPlaylist');
+
+        if (!playBtn || !vizEl) return;
+
         // Check if barka already unlocked
         if (localStorage.getItem('jan-portfolio-barka') === 'true') {
             unlockWinampBarka();
         }
 
-        const playBtn = document.getElementById('winampPlay');
-        const pauseBtn = document.getElementById('winampPause');
-        const stopBtn = document.getElementById('winampStop');
-        const prevBtn = document.getElementById('winampPrev');
-        const nextBtn = document.getElementById('winampNext');
-        const volSlider = document.getElementById('winampVolume');
-        const ticker = document.getElementById('winampTicker');
-        const timeDisplay = document.getElementById('winampTime');
-        const seekFill = document.getElementById('winampSeekFill');
-        const viz = document.getElementById('winampViz');
-        const playlist = document.getElementById('winampPlaylist');
-
         // Create viz bars
-        for (let i = 0; i < 20; i++) {
-            const bar = document.createElement('div');
+        for (var i = 0; i < 20; i++) {
+            var bar = document.createElement('div');
             bar.className = 'winamp-viz-bar';
-            viz.appendChild(bar);
+            vizEl.appendChild(bar);
         }
 
-        function getVolume() {
+        function getVol() {
             return (parseInt(volSlider.value) / 100) * 0.3;
         }
 
-        function stopPlayback() {
+        function doStop() {
             winampPlaying = false;
-            winampScheduledOscs.forEach(o => { try { o.stop(); } catch(e){} });
+            winampPaused = false;
+            for (var j = 0; j < winampScheduledOscs.length; j++) {
+                try { winampScheduledOscs[j].stop(); } catch(ex){}
+            }
             winampScheduledOscs = [];
-            if (winampAc) { winampAc.close(); winampAc = null; }
+            if (winampAc) {
+                try { winampAc.close(); } catch(ex){}
+                winampAc = null;
+            }
             if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
-            playBtn.textContent = '▶';
-            timeDisplay.textContent = '0:00';
-            seekFill.style.width = '0%';
-            viz.querySelectorAll('.winamp-viz-bar').forEach(b => b.style.height = '2px');
+            winampAnimFrame = null;
+            if (playBtn) playBtn.textContent = '\u25B6';
+            if (timeDisplay) timeDisplay.textContent = '0:00';
+            if (seekFill) seekFill.style.width = '0%';
+            var bars = vizEl.querySelectorAll('.winamp-viz-bar');
+            for (var j = 0; j < bars.length; j++) bars[j].style.height = '2px';
         }
 
-        function updateDisplay() {
-            if (!winampPlaying || !winampAc) return;
-            const elapsed = winampAc.currentTime - winampStartTime;
+        function tick() {
+            if (!winampPlaying || !winampAc || winampPaused) return;
+            var elapsed = winampAc.currentTime - winampStartTime;
             if (elapsed >= winampDuration) {
-                // Track ended - play next or loop
-                stopPlayback();
+                doStop();
+                ticker.textContent = 'Stopped';
                 return;
             }
-            const mins = Math.floor(elapsed / 60);
-            const secs = Math.floor(elapsed % 60);
-            timeDisplay.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+            var m = Math.floor(elapsed / 60);
+            var s = Math.floor(elapsed % 60);
+            timeDisplay.textContent = m + ':' + (s < 10 ? '0' : '') + s;
             seekFill.style.width = ((elapsed / winampDuration) * 100) + '%';
-
-            // Fake visualizer
-            viz.querySelectorAll('.winamp-viz-bar').forEach(bar => {
-                const h = winampPlaying ? (Math.random() * 18 + 2) : 2;
-                bar.style.height = h + 'px';
-            });
-
-            winampAnimFrame = requestAnimationFrame(updateDisplay);
+            var bars = vizEl.querySelectorAll('.winamp-viz-bar');
+            for (var j = 0; j < bars.length; j++) {
+                bars[j].style.height = (Math.random() * 18 + 2) + 'px';
+            }
+            winampAnimFrame = requestAnimationFrame(tick);
         }
 
-        function playTrack(trackId) {
-            stopPlayback();
+        function doPlay(trackId) {
+            doStop();
             winampCurrentTrack = trackId;
 
             // Update playlist highlight
-            playlist.querySelectorAll('.winamp-track').forEach(t => t.classList.remove('active'));
-            const trackEl = playlist.querySelector('[data-track="' + trackId + '"]');
+            var tracks = playlistEl.querySelectorAll('.winamp-track');
+            for (var j = 0; j < tracks.length; j++) tracks[j].classList.remove('active');
+            var trackEl = playlistEl.querySelector('[data-track="' + trackId + '"]');
             if (trackEl) trackEl.classList.add('active');
 
-            try {
-                winampAc = new (window.AudioContext || window.webkitAudioContext)();
-                // Resume if suspended (browser autoplay policy)
-                if (winampAc.state === 'suspended') winampAc.resume();
-                winampPlaying = true;
-                playBtn.textContent = '▶';
+            winampAc = new (window.AudioContext || window.webkitAudioContext)();
+            if (winampAc.state === 'suspended') winampAc.resume();
+            winampPlaying = true;
+            winampPaused = false;
+            playBtn.textContent = '\u25B6';
 
-                if (trackId === 'rickroll') {
-                    ticker.textContent = 'Rick Astley - Never Gonna Give You Up [8bit]';
-                    playRickRoll8bit(winampAc, getVolume());
-                } else if (trackId === 'barka') {
-                    ticker.textContent = 'Barka - Pan kiedyś stanął nad brzegiem [8bit]';
-                    playBarka8bit(winampAc, getVolume());
-                }
-
-                winampStartTime = winampAc.currentTime;
-                updateDisplay();
-            } catch(e) {
-                console.error('Winamp playback error:', e);
+            var v = getVol();
+            if (trackId === 'rickroll') {
+                ticker.textContent = 'Rick Astley - Never Gonna Give You Up [8bit]';
+                playRickRoll8bit(winampAc, v);
+            } else if (trackId === 'barka') {
+                ticker.textContent = 'Barka - Pan kiedys\u0301 stan\u0105\u0142 [8bit]';
+                playBarka8bit(winampAc, v);
             }
+
+            winampStartTime = winampAc.currentTime;
+            tick();
         }
 
-        playBtn.addEventListener('click', () => {
+        playBtn.addEventListener('click', function() {
+            if (winampPaused && winampAc) {
+                winampAc.resume();
+                winampPaused = false;
+                winampPlaying = true;
+                tick();
+                return;
+            }
             if (winampPlaying) return;
-            playTrack(winampCurrentTrack);
+            doPlay(winampCurrentTrack);
         });
 
-        pauseBtn.addEventListener('click', () => {
-            if (!winampAc) return;
-            if (winampAc.state === 'running') {
+        pauseBtn.addEventListener('click', function() {
+            if (!winampAc || !winampPlaying) return;
+            if (!winampPaused) {
                 winampAc.suspend();
-                playBtn.textContent = '▶';
-            } else if (winampAc.state === 'suspended') {
+                winampPaused = true;
+                if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
+            } else {
                 winampAc.resume();
-                playBtn.textContent = '▶';
-                updateDisplay();
+                winampPaused = false;
+                tick();
             }
         });
 
-        stopBtn.addEventListener('click', () => {
-            stopPlayback();
+        stopBtn.addEventListener('click', function() {
+            doStop();
             ticker.textContent = 'Stopped';
         });
 
-        prevBtn.addEventListener('click', () => {
-            const tracks = getAvailableTracks();
-            const idx = tracks.indexOf(winampCurrentTrack);
-            const prev = tracks[(idx - 1 + tracks.length) % tracks.length];
-            playTrack(prev);
+        prevBtn.addEventListener('click', function() {
+            var avail = getAvail();
+            var idx = avail.indexOf(winampCurrentTrack);
+            doPlay(avail[(idx - 1 + avail.length) % avail.length]);
         });
 
-        nextBtn.addEventListener('click', () => {
-            const tracks = getAvailableTracks();
-            const idx = tracks.indexOf(winampCurrentTrack);
-            const next = tracks[(idx + 1) % tracks.length];
-            playTrack(next);
+        nextBtn.addEventListener('click', function() {
+            var avail = getAvail();
+            var idx = avail.indexOf(winampCurrentTrack);
+            doPlay(avail[(idx + 1) % avail.length]);
         });
 
-        // Playlist click
-        playlist.addEventListener('click', (e) => {
-            const trackEl = e.target.closest('.winamp-track');
-            if (!trackEl || trackEl.classList.contains('locked')) return;
-            playTrack(trackEl.dataset.track);
+        playlistEl.addEventListener('click', function(e) {
+            var el = e.target.closest ? e.target.closest('.winamp-track') : null;
+            if (!el || el.classList.contains('locked')) return;
+            doPlay(el.dataset.track);
         });
 
-        // Volume change while playing
-        volSlider.addEventListener('input', () => {
-            // Volume will apply on next play
-        });
-
-        function getAvailableTracks() {
-            const tracks = ['rickroll'];
-            if (localStorage.getItem('jan-portfolio-barka') === 'true') tracks.push('barka');
-            return tracks;
+        function getAvail() {
+            var arr = ['rickroll'];
+            if (localStorage.getItem('jan-portfolio-barka') === 'true') arr.push('barka');
+            return arr;
         }
     }
 
