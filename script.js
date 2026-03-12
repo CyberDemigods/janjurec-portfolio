@@ -1163,18 +1163,22 @@
             // Force scrollbar visible before measuring to get stable width
             var prevOverflow = output.style.overflowY;
             output.style.overflowY = 'scroll';
-            var measure = document.createElement('pre');
-            measure.className = 'terminal-line';
-            measure.style.visibility = 'hidden';
-            measure.style.margin = '0';
-            measure.style.padding = '0';
-            measure.textContent = 'X';
-            output.appendChild(measure);
-            var charW = measure.getBoundingClientRect().width || 7.2;
-            output.removeChild(measure);
+            // Measure single char width with inline span inside a pre
+            var measurePre = document.createElement('pre');
+            measurePre.className = 'terminal-line';
+            measurePre.style.visibility = 'hidden';
+            measurePre.style.margin = '0';
+            measurePre.style.padding = '0';
+            measurePre.style.display = 'inline';
+            measurePre.textContent = 'XXXXXXXXXX';
+            output.appendChild(measurePre);
+            var charW = measurePre.getBoundingClientRect().width / 10;
+            output.removeChild(measurePre);
             var bodyW = output.clientWidth;
             output.style.overflowY = prevOverflow;
+            if (charW < 1) charW = 7.2;
             var cols = Math.floor(bodyW / charW) - 1;
+            if (cols < 20) cols = 80;
 
             var interval = setInterval(function() {
                 var line = '';
