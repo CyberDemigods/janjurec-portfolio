@@ -694,7 +694,7 @@
         var knownCommands = [
             'help', 'whoami', 'skills', 'experience', 'contact', 'projects',
             'education', 'neofetch', 'theme', 'matrix', 'clear', 'exit',
-            'barka', 'serwerownia', 'achilles', '2137', 'sudo', 'ls', 'dir',
+            'barka', 'serwerownia', 'achilles', 'sudo', 'ls', 'dir',
             'pwd', 'date', 'cowsay', 'ping', 'cat readme.md', 'cd .secrets',
             'top', 'python', 'python3', 'sl', 'rm -rf /', 'rm -rf',
             'ls .secrets', 'htop'
@@ -793,6 +793,78 @@
             scrollTerminal();
         }
 
+        // === JP2 EASTER EGG (shown on correct PIN) ===
+        function showJP2EasterEgg() {
+            addLine('');
+            var jp2map = [
+                '_______________WWWWWWWW_______________',
+                '____________WWWWWWWWWWWWWW____________',
+                '___________WWWWWWWWWWWWWWWW___________',
+                '__________WWWWWWWWWWWWWWWWWW__________',
+                '__________WWWWWWWWWWWWWWWWWW__________',
+                '_________YYWWWWWWWWWWWWWWWWYY_________',
+                '________YYYYYYYYYYYYYYYYYYYYYYY_______',
+                '_______YYYYYYYYYYYYYYYYYYYYYYYYY______',
+                '______YYYYYYYYYYYYYYYYYYYYYYYYYYYY____',
+                '______YYYYYYY_DDDYYYYYYDD_YYYYYYYY___',
+                '______YYYYYY_D__DYYYYYY_DD_YYYYYYY___',
+                '______YYYYYYY_DDDYYYYYYDD_YYYYYYYY___',
+                '______YYYYYYYYYYYYYYYYYYYYYYYYYYYY____',
+                '_______YYYYYYYYYYYY_YYYYYYYYYYYYYY____',
+                '_______YYYYYYYYYYYY_YYYYYYYYYYYYYY____',
+                '________YYYYYYYYYYYYYYYYYYYYYYYYY_____',
+                '________YYYYYY__________YYYYYYYY_____',
+                '_________YYYYYYY______YYYYYYYYY______',
+                '__________YYYYYYYYYYYYYYYYYYYY_______',
+                '___________YYYYYYYYYYYYYYYYY_________',
+                '____________YYYYYYYYYYYYYY___________',
+                '_________WWWWWWWWWWWWWWWWWWWW________',
+                '________WWWWWWWWWWWWWWWWWWWWWW_______',
+                '_______WWWWWWWWWWWWWWWWWWWWWWWW______',
+                '______WWWWWWWWWWWWWWWWWWWWWWWWWW_____',
+                '______WWWWWWWWWWW_WW_WWWWWWWWWWW_____',
+                '______WWWWWWWWW_WWWWWW_WWWWWWWWW_____',
+                '_____WWWWWWWWWWWWWWWWWWWWWWWWWWWWW____',
+                '_____WWWWWWWWWWWWWWWWWWWWWWWWWWWWW____',
+            ];
+            var colorMap = { W: '#FFFFFF', Y: '#FFD700', D: '#333333', _: null };
+            jp2map.forEach(function(row) {
+                var html = '';
+                for (var i = 0; i < row.length; i++) {
+                    var c = row[i];
+                    if (c === '_') { html += ' '; }
+                    else { html += '<span style="color:' + colorMap[c] + '">\u2588</span>'; }
+                }
+                addHTML(html, 'ascii-art');
+            });
+            addLine('');
+            addHTML('<span style="color:#FFD700">    Jan Pawel II - Patron polskiego internetu</span>', 'ascii-art');
+            addHTML('<span style="color:#FFF">            \u26EA </span><span style="color:#FFD700">2 1 3 7</span><span style="color:#FFF"> \u26EA ODJAZD \u26EA</span>', 'ascii-art');
+            addLine('');
+            if (!jp2Unlocked) {
+                jp2Unlocked = true;
+                localStorage.setItem('jan-portfolio-jp2', 'true');
+                addLine('  \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557', 'success');
+                addLine('  \u2551  \uD83C\uDFC6 ACHIEVEMENT UNLOCKED!           \u2551', 'success');
+                addLine('  \u2551                                      \u2551', 'success');
+                addLine('  \u2551  Secret JP2 wallpaper is now         \u2551', 'success');
+                addLine('  \u2551  available in Display Properties!    \u2551', 'success');
+                addLine('  \u2551                                      \u2551', 'success');
+                addLine('  \u2551  Right-click desktop > Change        \u2551', 'success');
+                addLine('  \u2551  Wallpaper to use it.                \u2551', 'success');
+                addLine('  \u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D', 'success');
+                addLine('');
+            } else {
+                addLine('  (JP2 wallpaper already unlocked!)', 'info');
+                addLine('');
+            }
+            var win = document.getElementById('window-terminal');
+            if (win) {
+                win.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(function() { win.style.animation = ''; }, 500);
+            }
+        }
+
         // === PIN ENTRY MODE ===
         function handlePinInput(pin) {
             addLine('  PIN: ' + pin.replace(/./g, '*'));
@@ -800,7 +872,6 @@
                 terminalMode = 'normal';
                 secretsUnlocked = true;
                 localStorage.setItem('jan-portfolio-secrets', 'true');
-                addLine('');
                 // Success jingle
                 playSuccessJingle();
                 addLine('  ╔══════════════════════════════════════╗', 'success');
@@ -810,6 +881,8 @@
                 addLine('');
                 showSecretsContent();
                 addLine('');
+                // Show the holy easter egg
+                showJP2EasterEgg();
                 var promptEl = document.getElementById('terminalPrompt');
                 var theme = document.documentElement.getAttribute('data-theme') || 'win98';
                 updatePrompt(theme);
@@ -877,87 +950,6 @@
         function processCommand(cmd) {
             const lower = cmd.toLowerCase().trim();
             logSession('terminal', { command: cmd });
-
-            // === EASTER EGG: 2137 ===
-            if (lower === '2137') {
-                addLine('');
-                // W=white(cap/robes), Y=yellow(face/skin), D=dark(features), _=space
-                const jp2map = [
-                    '_______________WWWWWWWW_______________',
-                    '____________WWWWWWWWWWWWWW____________',
-                    '___________WWWWWWWWWWWWWWWW___________',
-                    '__________WWWWWWWWWWWWWWWWWW__________',
-                    '__________WWWWWWWWWWWWWWWWWW__________',
-                    '_________YYWWWWWWWWWWWWWWWWYY_________',
-                    '________YYYYYYYYYYYYYYYYYYYYYYY_______',
-                    '_______YYYYYYYYYYYYYYYYYYYYYYYYY______',
-                    '______YYYYYYYYYYYYYYYYYYYYYYYYYYYY____',
-                    '______YYYYYYY_DDDYYYYYYDD_YYYYYYYY___',
-                    '______YYYYYY_D__DYYYYYY_DD_YYYYYYY___',
-                    '______YYYYYYY_DDDYYYYYYDD_YYYYYYYY___',
-                    '______YYYYYYYYYYYYYYYYYYYYYYYYYYYY____',
-                    '_______YYYYYYYYYYYY_YYYYYYYYYYYYYY____',
-                    '_______YYYYYYYYYYYY_YYYYYYYYYYYYYY____',
-                    '________YYYYYYYYYYYYYYYYYYYYYYYYY_____',
-                    '________YYYYYY__________YYYYYYYY_____',
-                    '_________YYYYYYY______YYYYYYYYY______',
-                    '__________YYYYYYYYYYYYYYYYYYYY_______',
-                    '___________YYYYYYYYYYYYYYYYY_________',
-                    '____________YYYYYYYYYYYYYY___________',
-                    '_________WWWWWWWWWWWWWWWWWWWW________',
-                    '________WWWWWWWWWWWWWWWWWWWWWW_______',
-                    '_______WWWWWWWWWWWWWWWWWWWWWWWW______',
-                    '______WWWWWWWWWWWWWWWWWWWWWWWWWW_____',
-                    '______WWWWWWWWWWW_WW_WWWWWWWWWWW_____',
-                    '______WWWWWWWWW_WWWWWW_WWWWWWWWW_____',
-                    '_____WWWWWWWWWWWWWWWWWWWWWWWWWWWWW____',
-                    '_____WWWWWWWWWWWWWWWWWWWWWWWWWWWWW____',
-                ];
-                const colorMap = { W: '#FFFFFF', Y: '#FFD700', D: '#333333', _: null };
-                const blockChar = '█';
-
-                jp2map.forEach(row => {
-                    let html = '';
-                    for (const c of row) {
-                        if (c === '_') {
-                            html += ' ';
-                        } else {
-                            html += `<span style="color:${colorMap[c]}">${blockChar}</span>`;
-                        }
-                    }
-                    addHTML(html, 'ascii-art');
-                });
-
-                addLine('');
-                addHTML('<span style="color:#FFD700">    Jan Pawel II - Patron polskiego internetu</span>', 'ascii-art');
-                addHTML('<span style="color:#FFF">            ⛪ </span><span style="color:#FFD700">2 1 3 7</span><span style="color:#FFF"> ⛪ ODJAZD ⛪</span>', 'ascii-art');
-                addLine('');
-
-                // Unlock secret wallpaper!
-                if (!jp2Unlocked) {
-                    jp2Unlocked = true;
-                    localStorage.setItem('jan-portfolio-jp2', 'true');
-                    addLine('  ╔══════════════════════════════════════╗', 'success');
-                    addLine('  ║  🏆 ACHIEVEMENT UNLOCKED!           ║', 'success');
-                    addLine('  ║                                      ║', 'success');
-                    addLine('  ║  Secret JP2 wallpaper is now         ║', 'success');
-                    addLine('  ║  available in Display Properties!    ║', 'success');
-                    addLine('  ║                                      ║', 'success');
-                    addLine('  ║  Right-click desktop > Change        ║', 'success');
-                    addLine('  ║  Wallpaper to use it.                ║', 'success');
-                    addLine('  ╚══════════════════════════════════════╝', 'success');
-                    addLine('');
-                } else {
-                    addLine('  (JP2 wallpaper already unlocked!)', 'info');
-                    addLine('');
-                }
-
-                // Extra effect: shake the window
-                const win = document.getElementById('window-terminal');
-                win.style.animation = 'shake 0.5s ease-in-out';
-                setTimeout(() => win.style.animation = '', 500);
-                return;
-            }
 
             // === REGULAR COMMANDS ===
             switch (lower) {
