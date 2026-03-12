@@ -1160,24 +1160,21 @@
             var hintShown = 0;
 
             // Calculate how many chars fit the terminal width
-            function getLineWidth() {
-                var termBody = document.getElementById('terminalBody');
-                if (!termBody) return 80;
-                // Measure char width using a temp element
-                var measure = document.createElement('span');
-                measure.style.fontFamily = 'inherit';
-                measure.style.fontSize = 'inherit';
-                measure.style.visibility = 'hidden';
-                measure.style.position = 'absolute';
-                measure.textContent = 'X';
-                termBody.appendChild(measure);
-                var charW = measure.getBoundingClientRect().width || 7.2;
-                termBody.removeChild(measure);
-                var bodyW = output.clientWidth;
-                return Math.floor(bodyW / charW);
-            }
-
-            var cols = getLineWidth();
+            // Force scrollbar visible before measuring to get stable width
+            var prevOverflow = output.style.overflowY;
+            output.style.overflowY = 'scroll';
+            var measure = document.createElement('pre');
+            measure.className = 'terminal-line';
+            measure.style.visibility = 'hidden';
+            measure.style.margin = '0';
+            measure.style.padding = '0';
+            measure.textContent = 'X';
+            output.appendChild(measure);
+            var charW = measure.getBoundingClientRect().width || 7.2;
+            output.removeChild(measure);
+            var bodyW = output.clientWidth;
+            output.style.overflowY = prevOverflow;
+            var cols = Math.floor(bodyW / charW) - 1;
 
             var interval = setInterval(function() {
                 var line = '';
