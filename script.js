@@ -1554,7 +1554,7 @@
         const dkEl = document.getElementById('winampDK');
         if (dkEl) {
             dkEl.classList.remove('locked');
-            dkEl.textContent = '3. Donkey Kong Theme [8bit]';
+            dkEl.textContent = '3. Master of Onions [8bit]';
         }
     }
 
@@ -1655,7 +1655,7 @@
                 ticker.textContent = 'Barka - Pan kiedys\u0301 stan\u0105\u0142 [8bit]';
                 playBarka8bit(winampAc, v);
             } else if (trackId === 'donkeykong') {
-                ticker.textContent = 'Donkey Kong Theme [8bit]';
+                ticker.textContent = 'Master of Onions [8bit]';
                 playDonkeyKong8bit(winampAc, v);
             }
 
@@ -2435,7 +2435,7 @@
             if (score >= 5 && localStorage.getItem('jan-portfolio-dk') === 'true') {
                 ctx.fillStyle = '#FFD700';
                 ctx.font = 'bold 12px Arial';
-                ctx.fillText('\uD83C\uDFB5 Donkey Kong unlocked in Winamp!', canvas.width / 2, canvas.height / 2 + 60);
+                ctx.fillText('\uD83C\uDFB5 Master of Onions unlocked in Winamp!', canvas.width / 2, canvas.height / 2 + 60);
             }
         }
 
