@@ -2719,49 +2719,31 @@
         noNet.addEventListener('click', jump);
 
         // Draw nosacz (proboscis monkey - simple cartoon)
+        // Preload nosacz head image
+        var nosaczImg = new Image();
+        nosaczImg.src = '_images/nosacz1.png';
+        var nosaczImgReady = false;
+        nosaczImg.onload = function() { nosaczImgReady = true; };
+
         function drawNosacz(x, y) {
-            // Body
-            ctx.fillStyle = '#D2691E';
-            ctx.beginPath();
-            ctx.ellipse(x + 18, y + 25, 14, 15, 0, 0, Math.PI * 2);
-            ctx.fill();
-            // Belly
-            ctx.fillStyle = '#F5DEB3';
-            ctx.beginPath();
-            ctx.ellipse(x + 18, y + 28, 9, 10, 0, 0, Math.PI * 2);
-            ctx.fill();
-            // Head
-            ctx.fillStyle = '#D2691E';
-            ctx.beginPath();
-            ctx.arc(x + 18, y + 8, 10, 0, Math.PI * 2);
-            ctx.fill();
-            // Face
-            ctx.fillStyle = '#F5DEB3';
-            ctx.beginPath();
-            ctx.arc(x + 20, y + 9, 7, 0, Math.PI * 2);
-            ctx.fill();
-            // Nose (big!)
-            ctx.fillStyle = '#CC7744';
-            ctx.beginPath();
-            ctx.ellipse(x + 26, y + 12, 5, 7, 0.3, 0, Math.PI * 2);
-            ctx.fill();
-            // Eyes
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(x + 17, y + 6, 1.5, 0, Math.PI * 2);
-            ctx.fill();
-            // Legs (animated)
-            var legOff = running ? Math.sin(Date.now() / 80) * 4 : 0;
-            ctx.strokeStyle = '#8B4513';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x + 12, y + 36);
-            ctx.lineTo(x + 8, y + 40 + legOff);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x + 24, y + 36);
-            ctx.lineTo(x + 28, y + 40 - legOff);
-            ctx.stroke();
+            var w = nosacz.w;
+            var h = nosacz.h;
+            if (nosaczImgReady) {
+                ctx.save();
+                // Flip horizontally (image faces left, we want right)
+                ctx.translate(x + w, y);
+                ctx.scale(-1, 1);
+                // Slight bob animation while running
+                var bob = running ? Math.sin(Date.now() / 100) * 2 : 0;
+                ctx.drawImage(nosaczImg, 0, bob, w, h);
+                ctx.restore();
+            } else {
+                // Fallback: simple circle
+                ctx.fillStyle = '#D2691E';
+                ctx.beginPath();
+                ctx.arc(x + w / 2, y + h / 2, w / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
         // Draw onion
