@@ -695,10 +695,28 @@
             'help', 'whoami', 'skills', 'experience', 'contact', 'projects',
             'education', 'neofetch', 'theme', 'matrix', 'clear', 'exit',
             'barka', 'serwerownia', 'achilles', '2137', 'sudo', 'ls', 'dir',
-            'pwd', 'date', 'cowsay', 'ping', 'cat readme.md', 'cd .secret'
+            'pwd', 'date', 'cowsay', 'ping', 'cat readme.md', 'cd .secrets',
+            'top', 'python', 'python3', 'sl', 'rm -rf /', 'rm -rf',
+            'ls .secrets', 'htop'
         ];
 
+        // Terminal modes: 'normal', 'pin', 'python'
+        var terminalMode = 'normal';
+        var secretsUnlocked = localStorage.getItem('jan-portfolio-secrets') === 'true';
+
         input.addEventListener('keydown', (e) => {
+            // Ctrl+D exits python mode
+            if (e.key === 'd' && e.ctrlKey && terminalMode === 'python') {
+                e.preventDefault();
+                terminalMode = 'normal';
+                addLine('>>> ');
+                addLine('Exiting Python...', 'info');
+                var promptEl = document.getElementById('terminalPrompt');
+                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                updatePrompt(theme);
+                scrollTerminal();
+                return;
+            }
             if (e.key === 'Tab') {
                 e.preventDefault();
                 var partial = input.value.trim().toLowerCase();
@@ -715,6 +733,19 @@
             }
             if (e.key === 'Enter') {
                 const cmd = input.value.trim();
+                input.value = '';
+
+                if (terminalMode === 'pin') {
+                    handlePinInput(cmd);
+                    scrollTerminal();
+                    return;
+                }
+                if (terminalMode === 'python') {
+                    handlePythonInput(cmd, e);
+                    scrollTerminal();
+                    return;
+                }
+
                 const prompt = document.getElementById('terminalPrompt').textContent;
                 addLine(prompt + cmd);
                 if (cmd) {
@@ -722,7 +753,6 @@
                     historyIndex = -1;
                     processCommand(cmd);
                 }
-                input.value = '';
                 scrollTerminal();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
@@ -761,6 +791,87 @@
             pre.innerHTML = html;
             output.appendChild(pre);
             scrollTerminal();
+        }
+
+        // === PIN ENTRY MODE ===
+        function handlePinInput(pin) {
+            addLine('  PIN: ' + pin.replace(/./g, '*'));
+            if (pin === '2137') {
+                terminalMode = 'normal';
+                secretsUnlocked = true;
+                localStorage.setItem('jan-portfolio-secrets', 'true');
+                addLine('');
+                // Success jingle
+                playSuccessJingle();
+                addLine('  ╔══════════════════════════════════════╗', 'success');
+                addLine('  ║  🔓 ACCESS GRANTED                   ║', 'success');
+                addLine('  ║  Welcome to .secrets/                 ║', 'success');
+                addLine('  ╚══════════════════════════════════════╝', 'success');
+                addLine('');
+                showSecretsContent();
+                addLine('');
+                var promptEl = document.getElementById('terminalPrompt');
+                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                updatePrompt(theme);
+            } else {
+                addLine('  ❌ ACCESS DENIED. Wrong PIN.', 'error');
+                addLine('  Hint: a holy number...', 'error');
+                addLine('');
+                terminalMode = 'normal';
+                var promptEl = document.getElementById('terminalPrompt');
+                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                updatePrompt(theme);
+            }
+        }
+
+        function showSecretsContent() {
+            addLine('drwxr-xr-x  .secrets/', 'info');
+            addLine('  -rw-r--r--  papiezowe_memy.txt');
+            addLine('  -rw-r--r--  wifi_haslo.txt        -> "ZAQ!2wsx"');
+            addLine('  -rw-r--r--  TODO.md                -> "naprawic produkcje"');
+            addLine('  -rw-------  nie_otwieraj.sh        -> #!/bin/bash; echo "2137"');
+            addLine('  -rw-r--r--  tajne_przez_poufne.gpg');
+            addLine('  -rw-r--r--  kto_zjadl_ostatnia_pizza.log -> "jan.jurec"');
+        }
+
+        function playSuccessJingle() {
+            try {
+                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                if (ac.state === 'suspended') ac.resume();
+                var notes = [
+                    {f:523.25,s:0,d:0.12},{f:659.25,s:0.12,d:0.12},
+                    {f:783.99,s:0.24,d:0.12},{f:1046.5,s:0.36,d:0.25}
+                ];
+                notes.forEach(function(n) {
+                    var osc = ac.createOscillator();
+                    var gain = ac.createGain();
+                    osc.type = 'square';
+                    osc.frequency.value = n.f;
+                    gain.gain.setValueAtTime(0.15, ac.currentTime + n.s);
+                    gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+                    osc.connect(gain); gain.connect(ac.destination);
+                    osc.start(ac.currentTime + n.s);
+                    osc.stop(ac.currentTime + n.s + n.d + 0.02);
+                });
+                setTimeout(function() { ac.close(); }, 1000);
+            } catch(e) {}
+        }
+
+        // === PYTHON MODE ===
+        function handlePythonInput(cmd, e) {
+            addLine('>>> ' + cmd);
+            if (cmd === 'exit()' || cmd === 'quit()') {
+                terminalMode = 'normal';
+                addLine('Exiting Python...', 'info');
+                var promptEl = document.getElementById('terminalPrompt');
+                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                updatePrompt(theme);
+                return;
+            }
+            if (cmd === '') return;
+            // Everything else: snake emoji
+            var snakes = ['🐍', '🐍🐍', '🐍🐍🐍', '🐍 sssssss...', '🐍 *hiss*', '🐍 import antigravity'];
+            addLine(snakes[Math.floor(Math.random() * snakes.length)]);
         }
 
         function processCommand(cmd) {
@@ -1060,10 +1171,27 @@
                     }, 1500);
                     break;
 
+                case 'rm -rf /':
+                case 'rm -rf':
                 case 'sudo rm -rf /':
                 case 'sudo rm -rf':
-                    addLine('Nice try! But this portfolio is indestructible 💪', 'error');
-                    break;
+                    addLine('Initiating system destruction...', 'error');
+                    addLine('');
+                    setTimeout(function() { addLine('Deleting /usr/bin...', 'error'); scrollTerminal(); }, 300);
+                    setTimeout(function() { addLine('Deleting /home/jan...', 'error'); scrollTerminal(); }, 700);
+                    setTimeout(function() { addLine('Deleting /var/log...', 'error'); scrollTerminal(); }, 1000);
+                    setTimeout(function() { addLine('Deleting /etc...', 'error'); scrollTerminal(); }, 1300);
+                    setTimeout(function() { addLine('Deleting system32...', 'error'); scrollTerminal(); }, 1600);
+                    setTimeout(function() {
+                        addLine('');
+                        addLine('💀 SYSTEM DESTROYED 💀', 'error');
+                        // Freeze the entire page
+                        var overlay = document.createElement('div');
+                        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#ff0000;font-family:monospace;cursor:not-allowed;';
+                        overlay.innerHTML = '<pre style="font-size:16px;text-align:center;color:#ff0000">FATAL ERROR: System halted\n\nAll files have been deleted.\nThis incident has been reported to /dev/null.\n\n\n<span style="color:#666;font-size:12px">(...odśwież stronę żeby wskrzesić system)</span></pre>';
+                        document.body.appendChild(overlay);
+                    }, 2000);
+                    return;
 
                 case 'sudo':
                     addLine('jan is not in the sudoers file. This incident will be reported.', 'error');
@@ -1072,7 +1200,18 @@
                 case 'ls':
                 case 'dir':
                     addLine('about.txt    experience.log    skills.cfg    projects/');
-                    addLine('education.md contact.vcf       README.md     .secret/');
+                    addLine('education.md contact.vcf       README.md     .secrets/');
+                    break;
+
+                case 'ls .secrets':
+                case 'ls .secrets/':
+                case 'dir .secrets':
+                case 'dir .secrets/':
+                    if (secretsUnlocked) {
+                        showSecretsContent();
+                    } else {
+                        addLine('Permission denied: .secrets/', 'error');
+                    }
                     break;
 
                 case 'cat readme.md':
@@ -1082,7 +1221,21 @@
                     break;
 
                 case 'cd .secret':
-                    addLine('Permission denied... or is it? Try some numbers.', 'error');
+                case 'cd .secrets':
+                case 'cd .secrets/':
+                    if (secretsUnlocked) {
+                        addLine('Entering .secrets/...', 'success');
+                        showSecretsContent();
+                    } else {
+                        addLine('  ┌──────────────────────────────┐', 'error');
+                        addLine('  │  🔒 Permission denied         │', 'error');
+                        addLine('  │  Enter PIN to continue:       │', 'error');
+                        addLine('  │  _ _ _ _                      │', 'error');
+                        addLine('  └──────────────────────────────┘', 'error');
+                        terminalMode = 'pin';
+                        var promptEl = document.getElementById('terminalPrompt');
+                        promptEl.textContent = '  PIN> ';
+                    }
                     break;
 
                 case 'pwd':
@@ -1100,15 +1253,113 @@
 
                 case 'cowsay':
                 case 'cowsay hello':
-                    addLine(' ___________');
-                    addLine('< hire jan! >');
-                    addLine(' -----------');
+                    var cowMsgs = [
+                        'hire jan!', 'moo!', 'DevOps is my passion',
+                        '( \u0361\u00B0 \u035C\u0296 \u0361\u00B0)', 'kubectl apply -f cow.yaml',
+                        '2137', 'sudo rm -rf /barn'
+                    ];
+                    var cowMsg = cowMsgs[Math.floor(Math.random() * cowMsgs.length)];
+                    var pad = cowMsg.length + 2;
+                    addLine(' ' + '_'.repeat(pad));
+                    addLine('< ' + cowMsg + ' >');
+                    addLine(' ' + '-'.repeat(pad));
                     addLine('        \\   ^__^');
-                    addLine('         \\  (oo)\\_______');
+                    addLine('         \\  (\u0361\u00B0\u035C\u0296\u0361\u00B0)\\_______');
                     addLine('            (__)\\       )\\/\\');
                     addLine('                ||----w |');
                     addLine('                ||     ||');
                     break;
+
+                case 'top':
+                case 'htop':
+                    addLine('top - ' + new Date().toLocaleTimeString() + ' up 2137 days, load: 0.69 0.42 0.21', 'info');
+                    addLine('Tasks: 137 total, 3 running, 134 sleeping');
+                    addLine('Mem: 16384MB total, 13337MB used, 3047MB free');
+                    addLine('');
+                    addLine('  PID USER      PR  NI  VIRT   RES  %CPU %MEM COMMAND', 'info');
+                    var procs = [
+                        [2137, 'jan',   20, 0, '4.2G', '1.3G', 99.7, 8.1, 'kubernetes-chaos-monkey'],
+                        [666, 'root',  20, 0, '2.1G', '890M', 45.2, 5.4, 'npm install (running since 2019)'],
+                        [420, 'jan',   20, 0, '1.8G', '512M', 32.1, 3.1, 'docker-compose-up-and-pray'],
+                        [1337, 'jan',  20, 0, '900M', '256M', 18.5, 1.6, 'terraform-apply-yolo'],
+                        [42, 'root',   20, 0, '512M', '128M', 12.3, 0.8, 'stackoverflow-copier'],
+                        [7, 'jan',     20, 0, '256M', '64M',  8.7,  0.4, 'git-blame-coworker'],
+                        [69, 'root',   20, 0, '128M', '32M',  5.1,  0.2, 'rm-rf-slash-preventer'],
+                        [404, 'nobody', 20, 0, '64M', '16M',  2.3,  0.1, 'bug-not-found'],
+                        [1, 'root',    20, 0, '32M',  '8M',   0.5,  0.0, 'systemd (it\'s always systemd)'],
+                        [9999, 'jan',  20, 0, '16M',  '4M',   0.1,  0.0, 'deploy-on-friday-service'],
+                    ];
+                    procs.forEach(function(p) {
+                        addLine('  ' + String(p[0]).padStart(5) + ' ' + p[1].padEnd(8) + '  ' + p[2] + '   ' + p[3] + ' ' + String(p[4]).padEnd(6) + ' ' + String(p[5]).padEnd(5) + ' ' + String(p[6]).toFixed(1).padStart(5) + ' ' + String(p[7]).toFixed(1).padStart(4) + ' ' + p[8]);
+                    });
+                    addLine('');
+                    addLine('(press q to exit... just kidding, this is a fake terminal)', 'info');
+                    break;
+
+                case 'python':
+                case 'python3':
+                    addLine('Python 3.11.2137 (jan-edition, Mar 12 2026, 21:37:00)', 'info');
+                    addLine('[GCC 13.2.0] on linux');
+                    addLine('Type "exit()" or Ctrl+D to exit.');
+                    addLine('WARNING: everything you type will be interpreted as 🐍');
+                    terminalMode = 'python';
+                    var promptEl = document.getElementById('terminalPrompt');
+                    promptEl.textContent = '>>> ';
+                    break;
+
+                case 'sl':
+                    // ASCII Steam Locomotive animation
+                    var slFrames = [
+                        [
+                            '      ====        ________                 ',
+                            '  _D _|  |_______/        \\__I_I_____===__|',
+                            '   |(_)---  |   H\\________/ |   |        =|',
+                            '   /     |  |   H  |  |     |   |         |',
+                            '  |      |  |   H  |__--------------------\'',
+                            '  | ________|___H__/__|_____/[][]~\\_______|',
+                            '  |/ |   |-----------I_____I [][] []  D   |]',
+                            '__/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__',
+                            ' |/-=|___|=   O=====O=====O=====O|_____/~\\___/       |',
+                            '  \\_/      \\__/  \\__/  \\__/  \\__/      \\_/           ',
+                        ],
+                        [
+                            '       ====        ________                ',
+                            '   _D _|  |_______/        \\__I_I_____===__|',
+                            '    |(_)---  |   H\\________/ |   |        =|',
+                            '    /     |  |   H  |  |     |   |         |',
+                            '   |      |  |   H  |__--------------------\'',
+                            '   | ________|___H__/__|_____/[][]~\\_______|',
+                            '   |/ |   |-----------I_____I [][] []  D   |]',
+                            ' __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__',
+                            '  |/-=|___|=   O=====O=====O=====O|_____/~\\___/       |',
+                            '   \\_/      \\__/  \\__/  \\__/  \\__/      \\_/           ',
+                        ]
+                    ];
+                    var slContainer = document.createElement('div');
+                    slContainer.className = 'terminal-line';
+                    slContainer.style.whiteSpace = 'pre';
+                    slContainer.style.fontFamily = 'monospace';
+                    slContainer.style.overflow = 'hidden';
+                    output.appendChild(slContainer);
+                    var slPos = 60;
+                    var slFrame = 0;
+                    var slInterval = setInterval(function() {
+                        slPos -= 3;
+                        slFrame = 1 - slFrame;
+                        var padding = slPos > 0 ? ' '.repeat(slPos) : '';
+                        var lines = slFrames[slFrame].map(function(l) {
+                            var shifted = padding + l;
+                            return slPos < 0 ? shifted.substring(-slPos) : shifted;
+                        });
+                        slContainer.textContent = lines.join('\n') + '\n  ' + padding + 'CHOO CHOO! 🚂💨';
+                        scrollTerminal();
+                        if (slPos < -50) {
+                            clearInterval(slInterval);
+                            addLine('');
+                            addLine('Did you mean: ls?', 'info');
+                        }
+                    }, 100);
+                    return;
 
                 default:
                     if (lower.startsWith('theme ')) {
@@ -1122,6 +1373,17 @@
                         } else {
                             addLine('Unknown theme. Available: win98, winxp, macos, linux', 'error');
                         }
+                    } else if (lower.startsWith('cowsay ')) {
+                        var msg = cmd.substring(7).trim() || 'moo';
+                        var pad2 = msg.length + 2;
+                        addLine(' ' + '_'.repeat(pad2));
+                        addLine('< ' + msg + ' >');
+                        addLine(' ' + '-'.repeat(pad2));
+                        addLine('        \\   ^__^');
+                        addLine('         \\  (\u0361\u00B0\u035C\u0296\u0361\u00B0)\\_______');
+                        addLine('            (__)\\       )\\/\\');
+                        addLine('                ||----w |');
+                        addLine('                ||     ||');
                     } else if (lower === 'echo hello world') {
                         addLine('Hello World!');
                     } else {
