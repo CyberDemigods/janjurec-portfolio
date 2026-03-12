@@ -1175,9 +1175,13 @@
                     setTimeout(function() { addLine('Deleting /var/log...', 'error'); scrollTerminal(); }, 1000);
                     setTimeout(function() { addLine('Deleting /etc...', 'error'); scrollTerminal(); }, 1300);
                     setTimeout(function() { addLine('Deleting system32...', 'error'); scrollTerminal(); }, 1600);
+                    setTimeout(function() { addLine('Deleting localStorage...', 'error'); scrollTerminal(); }, 1900);
                     setTimeout(function() {
                         addLine('');
                         addLine('💀 SYSTEM DESTROYED 💀', 'error');
+                        // Wipe all progress
+                        localStorage.clear();
+                        sessionStorage.clear();
                         // Freeze the entire page
                         var overlay = document.createElement('div');
                         overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#ff0000;font-family:monospace;cursor:not-allowed;';
