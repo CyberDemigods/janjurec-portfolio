@@ -13,7 +13,7 @@
     let selectedWallpaperCss = null;
 
     // Singleton windows (have JS state, only one instance)
-    const SINGLETON_WINDOWS = ['terminal', 'paint', 'winamp'];
+    const SINGLETON_WINDOWS = ['terminal', 'paint', 'winamp', 'browser'];
     // Instance counter for cascading offset
     let instanceCounter = 0;
     const CASCADE_OFFSET = 30;
@@ -2014,6 +2014,307 @@
         });
     }
 
+    // ===== NOSACZ GAME (Tor Browser) =====
+    function initNosaczGame() {
+        var canvas = document.getElementById('nosaczCanvas');
+        var scoreEl = document.getElementById('nosaczScore');
+        var noNet = document.getElementById('browserNoNet');
+        var browserWin = document.getElementById('window-browser');
+        if (!canvas || !noNet) return;
+
+        var ctx = canvas.getContext('2d');
+        var running = false;
+        var gameOver = false;
+        var score = 0;
+        var highScore = parseInt(localStorage.getItem('jan-nosacz-high') || '0');
+        var frameId = null;
+
+        // Game objects
+        var nosacz = { x: 50, y: 0, w: 36, h: 40, vy: 0, jumping: false };
+        var ground = 0;
+        var obstacles = [];
+        var onions = [];
+        var speed = 4;
+        var gravity = 0.6;
+        var jumpForce = -11;
+        var spawnTimer = 0;
+        var onionTimer = 0;
+        var cloudX = 200;
+
+        function resizeCanvas() {
+            var body = canvas.parentElement;
+            if (!body) return;
+            canvas.width = body.clientWidth;
+            canvas.height = body.clientHeight;
+            ground = canvas.height - 40;
+            nosacz.y = ground - nosacz.h;
+        }
+
+        function startGame() {
+            noNet.classList.add('hidden');
+            canvas.classList.remove('hidden');
+            scoreEl.classList.remove('hidden');
+            resizeCanvas();
+            score = 0;
+            speed = 4;
+            obstacles = [];
+            onions = [];
+            spawnTimer = 0;
+            onionTimer = 0;
+            nosacz.y = ground - nosacz.h;
+            nosacz.vy = 0;
+            nosacz.jumping = false;
+            running = true;
+            gameOver = false;
+            scoreEl.textContent = '\uD83E\uDDBD 0';
+            loop();
+        }
+
+        function endGame() {
+            running = false;
+            gameOver = true;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('jan-nosacz-high', String(highScore));
+            }
+            // Draw game over
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20);
+            ctx.font = '14px Arial';
+            ctx.fillText('Wynik: ' + score + '  |  Rekord: ' + highScore, canvas.width / 2, canvas.height / 2 + 10);
+            ctx.fillText('SPACJA aby zagra\u0107 ponownie', canvas.width / 2, canvas.height / 2 + 35);
+        }
+
+        function jump() {
+            if (!running && !gameOver) { startGame(); return; }
+            if (gameOver) { startGame(); return; }
+            if (!nosacz.jumping) {
+                nosacz.vy = jumpForce;
+                nosacz.jumping = true;
+            }
+        }
+
+        // Controls
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' && browserWin && !browserWin.classList.contains('hidden')) {
+                e.preventDefault();
+                jump();
+            }
+        });
+        // Tap on canvas for mobile
+        canvas.addEventListener('click', jump);
+        canvas.addEventListener('touchstart', function(e) { e.preventDefault(); jump(); }, { passive: false });
+        // Also allow clicking noNet screen to start
+        noNet.addEventListener('click', jump);
+
+        // Draw nosacz (proboscis monkey - simple cartoon)
+        function drawNosacz(x, y) {
+            // Body
+            ctx.fillStyle = '#D2691E';
+            ctx.beginPath();
+            ctx.ellipse(x + 18, y + 25, 14, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Belly
+            ctx.fillStyle = '#F5DEB3';
+            ctx.beginPath();
+            ctx.ellipse(x + 18, y + 28, 9, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Head
+            ctx.fillStyle = '#D2691E';
+            ctx.beginPath();
+            ctx.arc(x + 18, y + 8, 10, 0, Math.PI * 2);
+            ctx.fill();
+            // Face
+            ctx.fillStyle = '#F5DEB3';
+            ctx.beginPath();
+            ctx.arc(x + 20, y + 9, 7, 0, Math.PI * 2);
+            ctx.fill();
+            // Nose (big!)
+            ctx.fillStyle = '#CC7744';
+            ctx.beginPath();
+            ctx.ellipse(x + 26, y + 12, 5, 7, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            // Eyes
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(x + 17, y + 6, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            // Legs (animated)
+            var legOff = running ? Math.sin(Date.now() / 80) * 4 : 0;
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x + 12, y + 36);
+            ctx.lineTo(x + 8, y + 40 + legOff);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x + 24, y + 36);
+            ctx.lineTo(x + 28, y + 40 - legOff);
+            ctx.stroke();
+        }
+
+        // Draw onion
+        function drawOnion(x, y) {
+            // Bulb
+            ctx.fillStyle = '#DAA520';
+            ctx.beginPath();
+            ctx.arc(x + 10, y + 14, 10, 0, Math.PI * 2);
+            ctx.fill();
+            // Skin lines
+            ctx.strokeStyle = '#B8860B';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.arc(x + 10, y + 14, 7, 0, Math.PI * 2);
+            ctx.stroke();
+            // Root
+            ctx.strokeStyle = '#8B7355';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + 10, y + 24);
+            ctx.lineTo(x + 8, y + 28);
+            ctx.moveTo(x + 10, y + 24);
+            ctx.lineTo(x + 12, y + 28);
+            ctx.stroke();
+            // Sprout
+            ctx.strokeStyle = '#228B22';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x + 10, y + 4);
+            ctx.lineTo(x + 8, y - 4);
+            ctx.moveTo(x + 10, y + 4);
+            ctx.lineTo(x + 13, y - 3);
+            ctx.stroke();
+        }
+
+        // Draw cactus-like obstacle (rock/firewall)
+        function drawObstacle(ob) {
+            ctx.fillStyle = '#555';
+            ctx.fillRect(ob.x, ob.y, ob.w, ob.h);
+            ctx.fillStyle = '#666';
+            ctx.fillRect(ob.x + 2, ob.y + 2, ob.w - 4, ob.h - 4);
+            // Firewall text
+            ctx.fillStyle = '#ff4444';
+            ctx.font = 'bold 8px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('FW', ob.x + ob.w / 2, ob.y + ob.h / 2 + 3);
+        }
+
+        function loop() {
+            if (!running) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Sky
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Stars
+            ctx.fillStyle = '#ffffff33';
+            for (var s = 0; s < 20; s++) {
+                var sx = (s * 137 + 50) % canvas.width;
+                var sy = (s * 97 + 20) % (ground - 40);
+                ctx.fillRect(sx, sy, 1.5, 1.5);
+            }
+
+            // Cloud
+            cloudX -= speed * 0.3;
+            if (cloudX < -60) cloudX = canvas.width + 40;
+            ctx.fillStyle = '#ffffff15';
+            ctx.beginPath();
+            ctx.arc(cloudX, 50, 18, 0, Math.PI * 2);
+            ctx.arc(cloudX + 20, 45, 22, 0, Math.PI * 2);
+            ctx.arc(cloudX + 40, 50, 16, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ground
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0, ground, canvas.width, canvas.height - ground);
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, ground);
+            ctx.lineTo(canvas.width, ground);
+            ctx.stroke();
+
+            // Physics
+            nosacz.vy += gravity;
+            nosacz.y += nosacz.vy;
+            if (nosacz.y >= ground - nosacz.h) {
+                nosacz.y = ground - nosacz.h;
+                nosacz.vy = 0;
+                nosacz.jumping = false;
+            }
+
+            // Spawn obstacles
+            spawnTimer++;
+            if (spawnTimer > 90 + Math.random() * 60) {
+                var h = 25 + Math.random() * 25;
+                obstacles.push({ x: canvas.width, y: ground - h, w: 20, h: h });
+                spawnTimer = 0;
+            }
+
+            // Spawn onions
+            onionTimer++;
+            if (onionTimer > 50 + Math.random() * 80) {
+                var oy = ground - 50 - Math.random() * 60;
+                onions.push({ x: canvas.width, y: oy, w: 20, h: 28, collected: false });
+                onionTimer = 0;
+            }
+
+            // Move & draw obstacles
+            for (var i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].x -= speed;
+                if (obstacles[i].x + obstacles[i].w < 0) {
+                    obstacles.splice(i, 1);
+                    continue;
+                }
+                drawObstacle(obstacles[i]);
+                // Collision
+                if (nosacz.x + nosacz.w - 8 > obstacles[i].x &&
+                    nosacz.x + 8 < obstacles[i].x + obstacles[i].w &&
+                    nosacz.y + nosacz.h > obstacles[i].y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            // Move & draw onions
+            for (var i = onions.length - 1; i >= 0; i--) {
+                onions[i].x -= speed;
+                if (onions[i].x + onions[i].w < 0) {
+                    onions.splice(i, 1);
+                    continue;
+                }
+                if (!onions[i].collected) {
+                    drawOnion(onions[i].x, onions[i].y);
+                    // Collect
+                    if (nosacz.x + nosacz.w - 5 > onions[i].x &&
+                        nosacz.x + 5 < onions[i].x + onions[i].w &&
+                        nosacz.y < onions[i].y + onions[i].h &&
+                        nosacz.y + nosacz.h > onions[i].y) {
+                        onions[i].collected = true;
+                        score++;
+                        scoreEl.textContent = '\uD83E\uDDBD ' + score;
+                    }
+                }
+            }
+
+            // Draw nosacz
+            drawNosacz(nosacz.x, nosacz.y);
+
+            // Speed up over time
+            if (score > 0 && score % 10 === 0) {
+                speed = 4 + Math.floor(score / 10) * 0.5;
+                if (speed > 12) speed = 12;
+            }
+
+            frameId = requestAnimationFrame(loop);
+        }
+    }
+
     // ===== SESSION LOGGING =====
     const SESSION_LOG_URL = 'https://janjurec-logger.achillesgrek.workers.dev';
     const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -2308,6 +2609,7 @@
         initWallpapers();
         initPaint();
         initWinamp();
+        initNosaczGame();
         initLanguageSwitcher();
         applyLanguage(currentLang);
 

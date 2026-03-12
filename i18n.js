@@ -15,9 +15,11 @@ const TRANSLATIONS = {
         'icon-terminal': 'Terminal',
         'icon-paint': 'Paint',
         'icon-winamp': 'Winamp',
+        'icon-browser': 'Tor Browser',
 
         // Window titles
         'title-winamp': 'Winamp',
+        'title-browser': 'Tor Browser',
         'title-about': 'About Me',
         'title-experience': 'Experience',
         'title-skills': 'Device Manager \u2013 Skills',
@@ -114,8 +116,10 @@ const TRANSLATIONS = {
         'icon-terminal': 'Terminal',
         'icon-paint': 'Paint',
         'icon-winamp': 'Winamp',
+        'icon-browser': 'Przeglądarka Tor',
 
         'title-winamp': 'Winamp',
+        'title-browser': 'Przeglądarka Tor',
         'title-about': 'O mnie',
         'title-experience': 'Do\u015bwiadczenie',
         'title-skills': 'Mened\u017cer urz\u0105dze\u0144 \u2013 Umiej\u0119tno\u015bci',
@@ -198,8 +202,10 @@ const TRANSLATIONS = {
         'icon-terminal': 'De\'wI\'',
         'icon-paint': 'rItlh',
         'icon-winamp': 'QoQ muchHom',
+        'icon-browser': 'HaSta QumwI\'',
 
         'title-winamp': 'QoQ muchHom',
+        'title-browser': 'HaSta QumwI\'',
         'title-about': 'jIH - SuvwI\' nughI\'',
         'title-experience': 'may\' ta \u2013 noH mIw',
         'title-skills': 'nuH pat \u2013 laH',
@@ -283,9 +289,11 @@ const TRANSLATIONS = {
         'icon-terminal': 'טרמינל',
         'icon-paint': 'צייר',
         'icon-winamp': 'ווינאמפ',
+        'icon-browser': 'דפדפן טור',
 
         // Window titles
         'title-winamp': 'ווינאמפ',
+        'title-browser': 'דפדפן טור',
         'title-about': 'אודותיי',
         'title-experience': 'ניסיון',
         'title-skills': 'מנהל התקנים – כישורים',

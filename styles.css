@@ -1501,6 +1501,112 @@ a:hover {
 .winamp-playlist::-webkit-scrollbar-thumb { background: #333; }
 
 /* ===========================
+   TOR BROWSER / NOSACZ GAME
+   =========================== */
+.browser-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: #3a3a3a;
+    border-bottom: 1px solid #555;
+    flex-shrink: 0;
+}
+.browser-nav {
+    display: flex;
+    gap: 2px;
+}
+.browser-nav-btn {
+    width: 24px;
+    height: 22px;
+    background: #4a4a4a;
+    border: 1px solid #666;
+    color: #aaa;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+.browser-nav-btn:hover { background: #555; }
+.browser-url {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: #8f8;
+    font-family: monospace;
+}
+.browser-url-icon { font-size: 12px; }
+.browser-url-text { opacity: 0.8; }
+.browser-body {
+    flex: 1;
+    background: #1a1a2e;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+.browser-nonet {
+    text-align: center;
+    color: #888;
+    user-select: none;
+}
+.browser-nonet-icon {
+    font-size: 64px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+}
+.browser-nonet h2 {
+    color: #aaa;
+    font-family: Arial, sans-serif;
+    font-size: 22px;
+    margin: 0 0 8px;
+}
+.browser-nonet p {
+    font-size: 13px;
+    margin: 4px 0;
+    font-family: Arial, sans-serif;
+}
+.browser-nonet-hint {
+    margin-top: 20px !important;
+    color: #666;
+    font-size: 12px !important;
+    animation: blink-hint 1.5s ease-in-out infinite;
+}
+@keyframes blink-hint {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+.nosacz-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.nosacz-score {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: #DAA520;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: monospace;
+    text-shadow: 0 0 6px rgba(218,165,32,0.4);
+    z-index: 2;
+}
+
+/* ===========================
    TERMINAL
    =========================== */
 .terminal-body {

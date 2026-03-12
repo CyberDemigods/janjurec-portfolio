@@ -76,6 +76,10 @@
                 <div class="desktop-icon-img" id="icon-terminal">🖥️</div>
                 <span data-i18n="icon-terminal">Terminal</span>
             </div>
+            <div class="desktop-icon" data-window="browser">
+                <div class="desktop-icon-img" id="icon-browser"><svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><circle cx="16" cy="16" r="13" fill="#7D4698" stroke="#4a2d5e" stroke-width="1.5"/><ellipse cx="16" cy="16" rx="6" ry="13" fill="none" stroke="#fff" stroke-width="1" opacity="0.5"/><line x1="3" y1="16" x2="29" y2="16" stroke="#fff" stroke-width="1" opacity="0.5"/><line x1="5" y1="9" x2="27" y2="9" stroke="#fff" stroke-width="0.7" opacity="0.3"/><line x1="5" y1="23" x2="27" y2="23" stroke="#fff" stroke-width="0.7" opacity="0.3"/><text x="16" y="19" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold" font-family="monospace">.onion</text></svg></div>
+                <span data-i18n="icon-browser">Tor Browser</span>
+            </div>
             <div class="desktop-icon" data-window="winamp">
                 <div class="desktop-icon-img" id="icon-winamp"><svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><rect x="2" y="4" width="28" height="24" rx="3" fill="#2a2a2a" stroke="#555" stroke-width="1"/><rect x="5" y="7" width="22" height="8" rx="1" fill="#0a1628"/><text x="16" y="13" text-anchor="middle" fill="#00ff00" font-size="5" font-family="monospace">♪ WINAMP</text><rect x="5" y="17" width="5" height="3" rx="1" fill="#ff6600"/><rect x="11" y="17" width="5" height="3" rx="1" fill="#ff6600"/><rect x="17" y="17" width="5" height="3" rx="1" fill="#ff6600"/><rect x="5" y="22" width="22" height="3" rx="1" fill="#333"/><rect x="5" y="22" width="12" height="3" rx="1" fill="#00cc00"/></svg></div>
                 <span data-i18n="icon-winamp">Winamp</span>
@@ -873,6 +877,42 @@
             </div>
         </div>
 
+        <!-- ==================== TOR BROWSER WINDOW ==================== -->
+        <div class="window hidden" id="window-browser" style="width:600px;height:440px;top:50px;left:100px;">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="window-title-icon">🧅</span>
+                    <span class="window-title-text" data-i18n="title-browser">Tor Browser</span>
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn btn-minimize" data-window="browser">_</button>
+                    <button class="win-btn btn-maximize" data-window="browser">□</button>
+                    <button class="win-btn btn-close" data-window="browser">×</button>
+                </div>
+            </div>
+            <div class="browser-toolbar">
+                <div class="browser-nav">
+                    <button class="browser-nav-btn" disabled>&#9664;</button>
+                    <button class="browser-nav-btn" disabled>&#9654;</button>
+                    <button class="browser-nav-btn">&#8635;</button>
+                </div>
+                <div class="browser-url">
+                    <span class="browser-url-icon">🧅</span>
+                    <span class="browser-url-text">http://janportf0l1o.onion</span>
+                </div>
+            </div>
+            <div class="browser-body">
+                <div class="browser-nonet" id="browserNoNet">
+                    <div class="browser-nonet-icon">🧅</div>
+                    <h2>NIE MASZ INTERNETU</h2>
+                    <p>Nie mo&#380;na po&#322;&#261;czy&#263; z sieci&#261; Tor</p>
+                    <p class="browser-nonet-hint">Naci&#347;nij SPACJĘ aby zagra&#263; w grę</p>
+                </div>
+                <canvas id="nosaczCanvas" class="nosacz-canvas hidden"></canvas>
+                <div class="nosacz-score hidden" id="nosaczScore">&#129389; 0</div>
+            </div>
+        </div>
+
     </div><!-- /desktop -->
 
     <!-- ==================== TASKBAR ==================== -->
@@ -897,6 +937,7 @@
                 <div class="start-menu-item" data-window="recommendations">⭐ <span data-i18n="icon-recommendations">Reviews</span></div>
                 <div class="start-menu-item" data-window="contact">📧 <span data-i18n="icon-contact">Contact</span></div>
                 <div class="start-menu-item" data-window="terminal">🖥️ <span data-i18n="icon-terminal">Terminal</span></div>
+                <div class="start-menu-item" data-window="browser">🧅 <span data-i18n="icon-browser">Tor Browser</span></div>
                 <div class="start-menu-item" data-window="winamp">🎵 <span data-i18n="icon-winamp">Winamp</span></div>
                 <div class="start-menu-item" data-window="paint">🎨 <span data-i18n="icon-paint">Paint</span></div>
             </div>
