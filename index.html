@@ -902,10 +902,15 @@
                 </div>
             </div>
             <div class="browser-body">
+                <div class="browser-loading hidden" id="browserLoading">
+                    <div class="browser-loading-spinner"></div>
+                    <p class="browser-loading-text">Trwa ładowanie strony...</p>
+                    <div class="browser-loading-bar"><div class="browser-loading-fill"></div></div>
+                </div>
                 <div class="browser-nonet" id="browserNoNet">
-                    <div class="browser-nonet-icon">🧅</div>
-                    <h2>NIE MASZ INTERNETU</h2>
-                    <p>Nie mo&#380;na po&#322;&#261;czy&#263; z sieci&#261; Tor</p>
+                    <div class="browser-nonet-icon" id="browserNoNetIcon">🧅</div>
+                    <h2 id="browserNoNetTitle">NIE MASZ INTERNETU</h2>
+                    <p id="browserNoNetDesc">Nie mo&#380;na po&#322;&#261;czy&#263; z sieci&#261; Tor</p>
                     <p class="browser-nonet-hint">Naci&#347;nij SPACJĘ aby zagra&#263; w grę</p>
                 </div>
                 <canvas id="nosaczCanvas" class="nosacz-canvas hidden"></canvas>

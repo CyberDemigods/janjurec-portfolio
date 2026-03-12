@@ -87,6 +87,11 @@
                     if (playBtn) playBtn.click();
                 }, 200);
             }
+            // Theme-aware browser: IE on Windows, Tor on others
+            if (name === 'browser') {
+                updateBrowserTheme();
+                showBrowserLoading();
+            }
             return;
         }
 
@@ -200,6 +205,10 @@
         // Stop Winamp playback when closing
         if (name === 'winamp') {
             stopWinamp();
+        }
+        // Reset Nosacz game when closing browser
+        if (name === 'browser') {
+            resetNosaczGame();
         }
 
         // Cloned instances: remove from DOM entirely
@@ -452,6 +461,7 @@
                 updateActiveThemeBtn(theme);
                 localStorage.setItem('jan-portfolio-theme', theme);
                 applyWallpaperForTheme(theme);
+                updateBrowserDesktopIcon();
             });
         });
 
@@ -1519,6 +1529,9 @@
         }
     }
 
+    // ===== NOSACZ GAME RESET (set by initNosaczGame) =====
+    var resetNosaczGame = function() {};
+
     // ===== WINAMP PLAYER =====
     let winampAc = null;
     let winampPlaying = false;
@@ -2014,6 +2027,89 @@
         });
     }
 
+    // ===== BROWSER THEME + LOADING =====
+    var browserLoadingShown = false;
+
+    function isWindowsTheme() {
+        var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+        return theme === 'win98' || theme === 'winxp';
+    }
+
+    function updateBrowserTheme() {
+        var win = document.getElementById('window-browser');
+        if (!win) return;
+        var isWin = isWindowsTheme();
+        var titleIcon = win.querySelector('.window-title-icon');
+        var titleText = win.querySelector('.window-title-text');
+        var urlIcon = win.querySelector('.browser-url-icon');
+        var urlText = win.querySelector('.browser-url-text');
+        var noNetIcon = document.getElementById('browserNoNetIcon');
+        var noNetTitle = document.getElementById('browserNoNetTitle');
+        var noNetDesc = document.getElementById('browserNoNetDesc');
+        // Also update desktop icon label via i18n override
+        if (isWin) {
+            if (titleIcon) titleIcon.textContent = '🌐';
+            if (titleText) titleText.textContent = 'Internet Explorer';
+            if (urlIcon) urlIcon.textContent = '🔒';
+            if (urlText) urlText.textContent = 'http://janjurec.cyberdemigods.com';
+            if (noNetIcon) noNetIcon.textContent = '🌐';
+            if (noNetTitle) noNetTitle.textContent = 'Nie można wyświetlić strony';
+            if (noNetDesc) noNetDesc.textContent = 'Sprawdź połączenie z Internetem';
+        } else {
+            if (titleIcon) titleIcon.textContent = '🧅';
+            if (titleText) titleText.textContent = 'Tor Browser';
+            if (urlIcon) urlIcon.textContent = '🧅';
+            if (urlText) urlText.textContent = 'http://janportf0l1o.onion';
+            if (noNetIcon) noNetIcon.textContent = '🧅';
+            if (noNetTitle) noNetTitle.textContent = 'NIE MASZ INTERNETU';
+            if (noNetDesc) noNetDesc.textContent = 'Nie można połączyć z siecią Tor';
+        }
+    }
+
+    function showBrowserLoading() {
+        if (!isWindowsTheme()) return; // Tor loads instantly
+        var loadingEl = document.getElementById('browserLoading');
+        var noNet = document.getElementById('browserNoNet');
+        var canvas = document.getElementById('nosaczCanvas');
+        var scoreEl = document.getElementById('nosaczScore');
+        if (!loadingEl || !noNet) return;
+        // Only show loading if game isn't already running
+        if (canvas && !canvas.classList.contains('hidden')) return;
+        browserLoadingShown = true;
+        noNet.classList.add('hidden');
+        loadingEl.classList.remove('hidden');
+        // Reset loading bar animation
+        var fill = loadingEl.querySelector('.browser-loading-fill');
+        if (fill) {
+            fill.style.animation = 'none';
+            fill.offsetHeight; // force reflow
+            fill.style.animation = '';
+        }
+        // After 3-5 seconds, show "no internet" with error
+        var delay = 3000 + Math.random() * 2000;
+        setTimeout(function() {
+            if (!browserLoadingShown) return;
+            loadingEl.classList.add('hidden');
+            noNet.classList.remove('hidden');
+            browserLoadingShown = false;
+        }, delay);
+    }
+
+    function updateBrowserDesktopIcon() {
+        var iconEl = document.getElementById('icon-browser');
+        var labelEl = iconEl ? iconEl.parentElement.querySelector('[data-i18n="icon-browser"]') : null;
+        var startItem = document.querySelector('.start-menu-item[data-window="browser"]');
+        if (isWindowsTheme()) {
+            if (iconEl) iconEl.innerHTML = '<svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><circle cx="16" cy="16" r="13" fill="#0078d7" stroke="#005a9e" stroke-width="1.5"/><text x="16" y="21" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold" font-family="serif">e</text></svg>';
+            if (labelEl) labelEl.textContent = 'Internet Explorer';
+            if (startItem) startItem.innerHTML = '🌐 <span data-i18n="icon-browser">Internet Explorer</span>';
+        } else {
+            if (iconEl) iconEl.innerHTML = '<svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><circle cx="16" cy="16" r="13" fill="#7D4698" stroke="#4a2d5e" stroke-width="1.5"/><ellipse cx="16" cy="16" rx="6" ry="13" fill="none" stroke="#fff" stroke-width="1" opacity="0.5"/><line x1="3" y1="16" x2="29" y2="16" stroke="#fff" stroke-width="1" opacity="0.5"/><line x1="5" y1="9" x2="27" y2="9" stroke="#fff" stroke-width="0.7" opacity="0.3"/><line x1="5" y1="23" x2="27" y2="23" stroke="#fff" stroke-width="0.7" opacity="0.3"/><text x="16" y="19" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold" font-family="monospace">.onion</text></svg>';
+            if (labelEl) labelEl.textContent = 'Tor Browser';
+            if (startItem) startItem.innerHTML = '🧅 <span data-i18n="icon-browser">Tor Browser</span>';
+        }
+    }
+
     // ===== NOSACZ GAME (Tor Browser) =====
     function initNosaczGame() {
         var canvas = document.getElementById('nosaczCanvas');
@@ -2318,6 +2414,28 @@
 
             frameId = requestAnimationFrame(loop);
         }
+
+        // Expose reset for closeWindow
+        resetNosaczGame = function() {
+            if (frameId) { cancelAnimationFrame(frameId); frameId = null; }
+            running = false;
+            gameOver = false;
+            canvasSized = false;
+            score = 0;
+            speed = 4;
+            obstacles = [];
+            onions = [];
+            spawnTimer = 0;
+            onionTimer = 0;
+            noNet.classList.remove('hidden');
+            canvas.classList.add('hidden');
+            scoreEl.classList.add('hidden');
+            scoreEl.textContent = '\uD83E\uDDBD 0';
+            // Reset loading screen state
+            var loadingEl = document.getElementById('browserLoading');
+            if (loadingEl) { loadingEl.classList.add('hidden'); }
+            browserLoadingShown = false;
+        };
     }
 
     // ===== SESSION LOGGING =====
@@ -2615,6 +2733,7 @@
         initPaint();
         initWinamp();
         initNosaczGame();
+        updateBrowserDesktopIcon();
         initLanguageSwitcher();
         applyLanguage(currentLang);
 
