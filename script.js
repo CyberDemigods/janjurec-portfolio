@@ -1796,6 +1796,7 @@
     let winampStartTime = 0;
     let winampDuration = 0;
     let winampAnimFrame = null;
+    var winampMasterGain = null;
 
     function unlockWinampBarka() {
         const barkaEl = document.getElementById('winampBarka');
@@ -1844,11 +1845,20 @@
         }
 
         function getVol() {
+            return (parseInt(volSlider.value) / 100) * 0.3;
+        }
+
+        function updateMasterVolume() {
+            if (!winampMasterGain) return;
             var theme = document.documentElement.getAttribute('data-theme') || 'win98';
             if (theme === 'win98' || theme === 'winxp') {
-                return 0.3; // Volume doesn't work on Windows lol
+                return; // Volume doesn't work on Windows lol
             }
-            return (parseInt(volSlider.value) / 100) * 0.3;
+            winampMasterGain.gain.setValueAtTime(parseInt(volSlider.value) / 100, winampAc.currentTime);
+        }
+
+        if (volSlider) {
+            volSlider.addEventListener('input', updateMasterVolume);
         }
 
         function doStop() {
@@ -1902,20 +1912,27 @@
 
             winampAc = new (window.AudioContext || window.webkitAudioContext)();
             if (winampAc.state === 'suspended') winampAc.resume();
+            winampMasterGain = winampAc.createGain();
+            winampMasterGain.connect(winampAc.destination);
+            // Set initial master volume (on Windows it stays at 1.0 regardless of slider)
+            var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+            if (theme !== 'win98' && theme !== 'winxp') {
+                winampMasterGain.gain.setValueAtTime(parseInt(volSlider.value) / 100, winampAc.currentTime);
+            }
             winampPlaying = true;
             winampPaused = false;
             playBtn.textContent = '\u25B6';
 
-            var v = getVol();
+            var v = 0.3; // base volume, master gain handles actual level
             if (trackId === 'rickroll') {
                 ticker.textContent = 'Rick Astley - Never Gonna Give You Up [8bit]';
-                playRickRoll8bit(winampAc, v);
+                playRickRoll8bit(winampAc, v, winampMasterGain);
             } else if (trackId === 'barka') {
                 ticker.textContent = 'Barka - Pan kiedys\u0301 stan\u0105\u0142 [8bit]';
-                playBarka8bit(winampAc, v);
+                playBarka8bit(winampAc, v, winampMasterGain);
             } else if (trackId === 'donkeykong') {
                 ticker.textContent = 'Master of Onions [8bit]';
-                playDonkeyKong8bit(winampAc, v);
+                playDonkeyKong8bit(winampAc, v, winampMasterGain);
             }
 
             winampStartTime = winampAc.currentTime;
@@ -1978,7 +1995,8 @@
     }
 
     // 8-bit Rick Roll - "Never Gonna Give You Up" melody
-    function playRickRoll8bit(ac, vol) {
+    function playRickRoll8bit(ac, vol, dest) {
+        if (!dest) dest = ac.destination;
         const b = 0.22; // fast 8-bit tempo
 
         // Note frequencies
@@ -2105,7 +2123,7 @@
             gain.gain.setValueAtTime(vol * 0.5, ac.currentTime + n.s + n.d * 0.8);
             gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
             osc.connect(gain);
-            gain.connect(ac.destination);
+            gain.connect(dest);
             osc.start(ac.currentTime + n.s);
             osc.stop(ac.currentTime + n.s + n.d + 0.02);
             winampScheduledOscs.push(osc);
@@ -2158,7 +2176,7 @@
             gain.gain.setValueAtTime(vol * 0.25, ac.currentTime + n.s + n.d * 0.7);
             gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
             osc.connect(gain);
-            gain.connect(ac.destination);
+            gain.connect(dest);
             osc.start(ac.currentTime + n.s);
             osc.stop(ac.currentTime + n.s + n.d + 0.02);
             winampScheduledOscs.push(osc);
@@ -2177,7 +2195,7 @@
             kickGain.gain.setValueAtTime(vol * 0.4, ac.currentTime + t);
             kickGain.gain.linearRampToValueAtTime(0, ac.currentTime + t + 0.1);
             kickOsc.connect(kickGain);
-            kickGain.connect(ac.destination);
+            kickGain.connect(dest);
             kickOsc.start(ac.currentTime + t);
             kickOsc.stop(ac.currentTime + t + 0.12);
             winampScheduledOscs.push(kickOsc);
@@ -2192,7 +2210,7 @@
                 snGain.gain.setValueAtTime(vol * 0.15, ac.currentTime + st);
                 snGain.gain.linearRampToValueAtTime(0, ac.currentTime + st + 0.06);
                 snOsc.connect(snGain);
-                snGain.connect(ac.destination);
+                snGain.connect(dest);
                 snOsc.start(ac.currentTime + st);
                 snOsc.stop(ac.currentTime + st + 0.08);
                 winampScheduledOscs.push(snOsc);
@@ -2201,7 +2219,8 @@
     }
 
     // 8-bit Barka for Winamp
-    function playBarka8bit(ac, vol) {
+    function playBarka8bit(ac, vol, dest) {
+        if (!dest) dest = ac.destination;
         const b = 0.35;
 
         const C4=261.63, D4=293.66, E4=329.63, F4=349.23;
@@ -2263,7 +2282,7 @@
             gain.gain.setValueAtTime(vol * 0.4, ac.currentTime + n.s + n.d * 0.8);
             gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
             osc.connect(gain);
-            gain.connect(ac.destination);
+            gain.connect(dest);
             osc.start(ac.currentTime + n.s);
             osc.stop(ac.currentTime + n.s + n.d + 0.02);
             winampScheduledOscs.push(osc);
@@ -2293,7 +2312,7 @@
             gain.gain.setValueAtTime(vol * 0.2, ac.currentTime + n.s + n.d * 0.7);
             gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
             osc.connect(gain);
-            gain.connect(ac.destination);
+            gain.connect(dest);
             osc.start(ac.currentTime + n.s);
             osc.stop(ac.currentTime + n.s + n.d + 0.02);
             winampScheduledOscs.push(osc);
@@ -2301,7 +2320,8 @@
     }
 
     // ===== DONKEY KONG 8-BIT =====
-    function playDonkeyKong8bit(ac, vol) {
+    function playDonkeyKong8bit(ac, vol, dest) {
+        if (!dest) dest = ac.destination;
         var b = 0.18;
         var C4=261.63, D4=293.66, E4=329.63, F4=349.23, G4=392.00, A4=440.00, B4=493.88;
         var C5=523.25, D5=587.33, E5=659.25, F5=698.46, G5=783.99;
@@ -2347,7 +2367,7 @@
             gain.gain.linearRampToValueAtTime(vol * 0.25, ac.currentTime + n.s + 0.01);
             gain.gain.setValueAtTime(vol * 0.2, ac.currentTime + n.s + n.d * 0.7);
             gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
-            osc.connect(gain); gain.connect(ac.destination);
+            osc.connect(gain); gain.connect(dest);
             osc.start(ac.currentTime + n.s);
             osc.stop(ac.currentTime + n.s + n.d + 0.02);
             winampScheduledOscs.push(osc);
@@ -2362,7 +2382,7 @@
             gain.gain.linearRampToValueAtTime(vol * 0.15, ac.currentTime + n.s + 0.01);
             gain.gain.setValueAtTime(vol * 0.1, ac.currentTime + n.s + n.d * 0.7);
             gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
-            osc.connect(gain); gain.connect(ac.destination);
+            osc.connect(gain); gain.connect(dest);
             osc.start(ac.currentTime + n.s);
             osc.stop(ac.currentTime + n.s + n.d + 0.02);
             winampScheduledOscs.push(osc);
