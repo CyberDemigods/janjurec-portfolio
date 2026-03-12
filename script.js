@@ -1550,6 +1550,14 @@
         }
     }
 
+    function unlockWinampDK() {
+        const dkEl = document.getElementById('winampDK');
+        if (dkEl) {
+            dkEl.classList.remove('locked');
+            dkEl.textContent = '3. Donkey Kong Theme [8bit]';
+        }
+    }
+
     function initWinamp() {
         var playBtn = document.getElementById('winampPlay');
         var pauseBtn = document.getElementById('winampPause');
@@ -1565,9 +1573,12 @@
 
         if (!playBtn || !vizEl) return;
 
-        // Check if barka already unlocked
+        // Check if tracks already unlocked
         if (localStorage.getItem('jan-portfolio-barka') === 'true') {
             unlockWinampBarka();
+        }
+        if (localStorage.getItem('jan-portfolio-dk') === 'true') {
+            unlockWinampDK();
         }
 
         // Create viz bars
@@ -1643,6 +1654,9 @@
             } else if (trackId === 'barka') {
                 ticker.textContent = 'Barka - Pan kiedys\u0301 stan\u0105\u0142 [8bit]';
                 playBarka8bit(winampAc, v);
+            } else if (trackId === 'donkeykong') {
+                ticker.textContent = 'Donkey Kong Theme [8bit]';
+                playDonkeyKong8bit(winampAc, v);
             }
 
             winampStartTime = winampAc.currentTime;
@@ -2027,6 +2041,75 @@
         });
     }
 
+    // ===== DONKEY KONG 8-BIT =====
+    function playDonkeyKong8bit(ac, vol) {
+        var b = 0.18;
+        var C4=261.63, D4=293.66, E4=329.63, F4=349.23, G4=392.00, A4=440.00, B4=493.88;
+        var C5=523.25, D5=587.33, E5=659.25, F5=698.46, G5=783.99;
+        var C3=130.81, D3=146.83, E3=164.81, F3=174.61, G3=196.00, A3=220.00, B3=246.94;
+        var C2=65.41, D2=73.42, E2=82.41, F2=87.31, G2=98.00, A2=110.00;
+
+        // DK Country - main theme riff (jungle swing feel)
+        var melody = [
+            // Intro phrase
+            {f:E4,s:0,d:b},{f:G4,s:b,d:b},{f:A4,s:b*2,d:b*2},{f:G4,s:b*4,d:b},{f:E4,s:b*5,d:b},
+            {f:D4,s:b*6,d:b*2},
+            {f:E4,s:b*8,d:b},{f:G4,s:b*9,d:b},{f:A4,s:b*10,d:b},{f:C5,s:b*11,d:b*2},{f:A4,s:b*13,d:b},
+            {f:G4,s:b*14,d:b*2},
+            // Second phrase
+            {f:A4,s:b*16,d:b},{f:C5,s:b*17,d:b},{f:D5,s:b*18,d:b*2},{f:C5,s:b*20,d:b},{f:A4,s:b*21,d:b},
+            {f:G4,s:b*22,d:b},{f:E4,s:b*23,d:b},{f:G4,s:b*24,d:b*2},
+            {f:A4,s:b*26,d:b},{f:G4,s:b*27,d:b},{f:E4,s:b*28,d:b},{f:D4,s:b*29,d:b},{f:C4,s:b*30,d:b*2},
+            // Repeat with variation
+            {f:E4,s:b*32,d:b},{f:G4,s:b*33,d:b},{f:A4,s:b*34,d:b*2},{f:G4,s:b*36,d:b},{f:E4,s:b*37,d:b},
+            {f:D4,s:b*38,d:b},{f:E4,s:b*39,d:b},{f:G4,s:b*40,d:b*2},
+            {f:A4,s:b*42,d:b},{f:C5,s:b*43,d:b},{f:D5,s:b*44,d:b*2},{f:E5,s:b*46,d:b},
+            {f:D5,s:b*47,d:b},{f:C5,s:b*48,d:b*2},{f:A4,s:b*50,d:b},{f:G4,s:b*51,d:b*3},
+            // Ending flourish
+            {f:E5,s:b*54,d:b},{f:D5,s:b*55,d:b},{f:C5,s:b*56,d:b},{f:A4,s:b*57,d:b},
+            {f:G4,s:b*58,d:b},{f:E4,s:b*59,d:b},{f:G4,s:b*60,d:b*3},
+        ];
+
+        var bass = [
+            {f:C3,s:0,d:b*4},{f:C3,s:b*4,d:b*4},{f:F3,s:b*8,d:b*4},{f:G3,s:b*12,d:b*4},
+            {f:A3,s:b*16,d:b*4},{f:F3,s:b*20,d:b*4},{f:C3,s:b*24,d:b*4},{f:G3,s:b*28,d:b*4},
+            {f:C3,s:b*32,d:b*4},{f:C3,s:b*36,d:b*4},{f:F3,s:b*40,d:b*4},{f:G3,s:b*44,d:b*4},
+            {f:A3,s:b*48,d:b*4},{f:F3,s:b*52,d:b*4},{f:C3,s:b*56,d:b*4},{f:C3,s:b*60,d:b*3},
+        ];
+
+        winampDuration = b * 63;
+
+        melody.forEach(function(n) {
+            var osc = ac.createOscillator();
+            var gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0, ac.currentTime + n.s);
+            gain.gain.linearRampToValueAtTime(vol * 0.25, ac.currentTime + n.s + 0.01);
+            gain.gain.setValueAtTime(vol * 0.2, ac.currentTime + n.s + n.d * 0.7);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+            osc.connect(gain); gain.connect(ac.destination);
+            osc.start(ac.currentTime + n.s);
+            osc.stop(ac.currentTime + n.s + n.d + 0.02);
+            winampScheduledOscs.push(osc);
+        });
+
+        bass.forEach(function(n) {
+            var osc = ac.createOscillator();
+            var gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0, ac.currentTime + n.s);
+            gain.gain.linearRampToValueAtTime(vol * 0.15, ac.currentTime + n.s + 0.01);
+            gain.gain.setValueAtTime(vol * 0.1, ac.currentTime + n.s + n.d * 0.7);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.s + n.d);
+            osc.connect(gain); gain.connect(ac.destination);
+            osc.start(ac.currentTime + n.s);
+            osc.stop(ac.currentTime + n.s + n.d + 0.02);
+            winampScheduledOscs.push(osc);
+        });
+    }
+
     // ===== BROWSER THEME + LOADING =====
     var browserLoadingShown = false;
 
@@ -2137,6 +2220,159 @@
         var onionTimer = 0;
         var cloudX = 200;
 
+        // ===== GAME AUDIO =====
+        var gameAc = null;
+        var gameBgOscs = [];
+        var gameBgTimeout = null;
+        var dkUnlocked = localStorage.getItem('jan-portfolio-dk') === 'true';
+
+        function initGameAudio() {
+            if (gameAc) return;
+            gameAc = new (window.AudioContext || window.webkitAudioContext)();
+            if (gameAc.state === 'suspended') gameAc.resume();
+        }
+
+        function playCollectSound(collectCount) {
+            if (!gameAc) return;
+            if (collectCount > 0 && collectCount % 10 === 0) {
+                // Every 10th: speech-like "pyyyyszna cebula"
+                playSpeech(gameAc);
+            } else {
+                // Normal: mniam/mlask chirp
+                playMniam(gameAc);
+            }
+        }
+
+        function playMniam(ac) {
+            var osc = ac.createOscillator();
+            var gain = ac.createGain();
+            osc.type = 'square';
+            // Quick chirp up then down - "mniam" feel
+            osc.frequency.setValueAtTime(300, ac.currentTime);
+            osc.frequency.linearRampToValueAtTime(600, ac.currentTime + 0.04);
+            osc.frequency.linearRampToValueAtTime(200, ac.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.15, ac.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ac.currentTime + 0.12);
+            osc.connect(gain); gain.connect(ac.destination);
+            osc.start(ac.currentTime);
+            osc.stop(ac.currentTime + 0.13);
+        }
+
+        function playSpeech(ac) {
+            // Complex multi-tone "pyyyyszna cebula" - longer, more elaborate
+            var t = ac.currentTime;
+            var notes = [
+                {f:400,s:0,d:0.08},{f:500,s:0.08,d:0.06},{f:450,s:0.14,d:0.06},
+                {f:600,s:0.22,d:0.06},{f:550,s:0.28,d:0.06},{f:500,s:0.34,d:0.05},
+                {f:650,s:0.42,d:0.07},{f:600,s:0.49,d:0.06},{f:500,s:0.55,d:0.05},
+                {f:700,s:0.62,d:0.05},{f:600,s:0.67,d:0.05},{f:450,s:0.72,d:0.08},
+                {f:350,s:0.82,d:0.06},{f:500,s:0.88,d:0.06},{f:400,s:0.94,d:0.08},
+            ];
+            notes.forEach(function(n) {
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.value = n.f;
+                gain.gain.setValueAtTime(0, t + n.s);
+                gain.gain.linearRampToValueAtTime(0.12, t + n.s + 0.01);
+                gain.gain.linearRampToValueAtTime(0, t + n.s + n.d);
+                osc.connect(gain); gain.connect(ac.destination);
+                osc.start(t + n.s);
+                osc.stop(t + n.s + n.d + 0.02);
+            });
+        }
+
+        function playDeathSound(ac) {
+            if (!ac) return;
+            // Descending "ahhhhh" wail
+            var t = ac.currentTime;
+            var osc = ac.createOscillator();
+            var gain = ac.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(800, t);
+            osc.frequency.linearRampToValueAtTime(150, t + 0.6);
+            gain.gain.setValueAtTime(0.2, t);
+            gain.gain.linearRampToValueAtTime(0.15, t + 0.3);
+            gain.gain.linearRampToValueAtTime(0, t + 0.7);
+            osc.connect(gain); gain.connect(ac.destination);
+            osc.start(t);
+            osc.stop(t + 0.75);
+            // Low thud
+            var osc2 = ac.createOscillator();
+            var gain2 = ac.createGain();
+            osc2.type = 'square';
+            osc2.frequency.value = 80;
+            gain2.gain.setValueAtTime(0.2, t + 0.1);
+            gain2.gain.linearRampToValueAtTime(0, t + 0.4);
+            osc2.connect(gain2); gain2.connect(ac.destination);
+            osc2.start(t + 0.1);
+            osc2.stop(t + 0.45);
+        }
+
+        // DK-style background loop for the game
+        function playGameBgLoop() {
+            if (!gameAc || !running) return;
+            var ac = gameAc;
+            var t = ac.currentTime;
+            var b = 0.16;
+            var C4=261.63,D4=293.66,E4=329.63,F4=349.23,G4=392.00,A4=440.00;
+            var C3=130.81,E3=164.81,G3=196.00,A3=220.00;
+
+            // Short jungle riff loop (~2.5 sec)
+            var riff = [
+                {f:E4,s:0,d:b*0.8},{f:G4,s:b,d:b*0.8},{f:A4,s:b*2,d:b*1.5},
+                {f:G4,s:b*3.5,d:b*0.8},{f:E4,s:b*4.5,d:b*0.8},
+                {f:D4,s:b*5.5,d:b*0.8},{f:E4,s:b*6.5,d:b*0.8},{f:G4,s:b*7.5,d:b*1.5},
+                {f:A4,s:b*9,d:b*0.8},{f:G4,s:b*10,d:b*0.8},{f:E4,s:b*11,d:b*0.8},
+                {f:D4,s:b*12,d:b*0.8},{f:C4,s:b*13,d:b*1.5},
+            ];
+            var bass = [
+                {f:C3,s:0,d:b*3.5},{f:A3,s:b*3.5,d:b*3},{f:G3,s:b*6.5,d:b*3},
+                {f:E3,s:b*9.5,d:b*2.5},{f:C3,s:b*12,d:b*2.5},
+            ];
+
+            riff.forEach(function(n) {
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.type = 'square';
+                osc.frequency.value = n.f;
+                gain.gain.setValueAtTime(0, t + n.s);
+                gain.gain.linearRampToValueAtTime(0.08, t + n.s + 0.01);
+                gain.gain.linearRampToValueAtTime(0, t + n.s + n.d);
+                osc.connect(gain); gain.connect(ac.destination);
+                osc.start(t + n.s); osc.stop(t + n.s + n.d + 0.02);
+                gameBgOscs.push(osc);
+            });
+            bass.forEach(function(n) {
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = n.f;
+                gain.gain.setValueAtTime(0, t + n.s);
+                gain.gain.linearRampToValueAtTime(0.06, t + n.s + 0.01);
+                gain.gain.linearRampToValueAtTime(0, t + n.s + n.d);
+                osc.connect(gain); gain.connect(ac.destination);
+                osc.start(t + n.s); osc.stop(t + n.s + n.d + 0.02);
+                gameBgOscs.push(osc);
+            });
+
+            var loopLen = b * 14.5;
+            gameBgTimeout = setTimeout(function() {
+                if (running) playGameBgLoop();
+            }, loopLen * 1000);
+        }
+
+        function stopGameAudio() {
+            for (var i = 0; i < gameBgOscs.length; i++) {
+                try { gameBgOscs[i].stop(); } catch(e) {}
+            }
+            gameBgOscs = [];
+            if (gameBgTimeout) { clearTimeout(gameBgTimeout); gameBgTimeout = null; }
+        }
+
+        var speechText = '';
+        var speechTimer = 0;
+
         var canvasSized = false;
         function resizeCanvas() {
             var rect = canvas.getBoundingClientRect();
@@ -2165,15 +2401,26 @@
             running = true;
             gameOver = false;
             scoreEl.textContent = '\uD83E\uDDBD 0';
+            initGameAudio();
+            stopGameAudio();
+            playGameBgLoop();
             loop();
         }
 
         function endGame() {
             running = false;
             gameOver = true;
+            stopGameAudio();
+            playDeathSound(gameAc);
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('jan-nosacz-high', String(highScore));
+            }
+            // Unlock DK in Winamp at 5+ points
+            if (score >= 5 && !dkUnlocked) {
+                dkUnlocked = true;
+                localStorage.setItem('jan-portfolio-dk', 'true');
+                unlockWinampDK();
             }
             // Draw game over
             ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -2185,6 +2432,11 @@
             ctx.font = '14px Arial';
             ctx.fillText('Wynik: ' + score + '  |  Rekord: ' + highScore, canvas.width / 2, canvas.height / 2 + 10);
             ctx.fillText('SPACJA aby zagra\u0107 ponownie', canvas.width / 2, canvas.height / 2 + 35);
+            if (score >= 5 && localStorage.getItem('jan-portfolio-dk') === 'true') {
+                ctx.fillStyle = '#FFD700';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('\uD83C\uDFB5 Donkey Kong unlocked in Winamp!', canvas.width / 2, canvas.height / 2 + 60);
+            }
         }
 
         function jump() {
@@ -2399,12 +2651,46 @@
                         onions[i].collected = true;
                         score++;
                         scoreEl.textContent = '\uD83E\uDDBD ' + score;
+                        playCollectSound(score);
+                        if (score % 10 === 0) {
+                            speechText = 'Pyyyyszna cebula! Wcale nie czuc\u0301 bieda\u0328!';
+                            speechTimer = 120;
+                        } else {
+                            var sfx = ['mniam!', 'mlask!', 'nom!', 'mniam mniam!', 'pycha!'];
+                            speechText = sfx[Math.floor(Math.random() * sfx.length)];
+                            speechTimer = 40;
+                        }
                     }
                 }
             }
 
             // Draw nosacz
             drawNosacz(nosacz.x, nosacz.y);
+
+            // Speech bubble
+            if (speechTimer > 0) {
+                speechTimer--;
+                ctx.save();
+                ctx.font = 'bold 11px Arial';
+                var tw = ctx.measureText(speechText).width;
+                var bx = nosacz.x + nosacz.w + 5;
+                var by = nosacz.y - 10;
+                if (bx + tw + 12 > canvas.width) bx = nosacz.x - tw - 15;
+                ctx.fillStyle = '#fff';
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(bx, by - 14, tw + 10, 20, 4);
+                } else {
+                    ctx.rect(bx, by - 14, tw + 10, 20);
+                }
+                ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'left';
+                ctx.fillText(speechText, bx + 5, by);
+                ctx.restore();
+            }
 
             // Speed up over time
             if (score > 0 && score % 10 === 0) {
@@ -2418,6 +2704,8 @@
         // Expose reset for closeWindow
         resetNosaczGame = function() {
             if (frameId) { cancelAnimationFrame(frameId); frameId = null; }
+            stopGameAudio();
+            if (gameAc) { try { gameAc.close(); } catch(e) {} gameAc = null; }
             running = false;
             gameOver = false;
             canvasSized = false;
