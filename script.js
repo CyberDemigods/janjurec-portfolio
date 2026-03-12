@@ -1714,23 +1714,29 @@
 
             // Update playlist highlight
             playlist.querySelectorAll('.winamp-track').forEach(t => t.classList.remove('active'));
-            const trackEl = playlist.querySelector(`[data-track="${trackId}"]`);
+            const trackEl = playlist.querySelector('[data-track="' + trackId + '"]');
             if (trackEl) trackEl.classList.add('active');
 
-            winampAc = new (window.AudioContext || window.webkitAudioContext)();
-            winampPlaying = true;
-            playBtn.textContent = '▶';
+            try {
+                winampAc = new (window.AudioContext || window.webkitAudioContext)();
+                // Resume if suspended (browser autoplay policy)
+                if (winampAc.state === 'suspended') winampAc.resume();
+                winampPlaying = true;
+                playBtn.textContent = '▶';
 
-            if (trackId === 'rickroll') {
-                ticker.textContent = 'Rick Astley - Never Gonna Give You Up [8bit]';
-                playRickRoll8bit(winampAc, getVolume());
-            } else if (trackId === 'barka') {
-                ticker.textContent = 'Barka - Pan kiedyś stanął nad brzegiem [8bit]';
-                playBarka8bit(winampAc, getVolume());
+                if (trackId === 'rickroll') {
+                    ticker.textContent = 'Rick Astley - Never Gonna Give You Up [8bit]';
+                    playRickRoll8bit(winampAc, getVolume());
+                } else if (trackId === 'barka') {
+                    ticker.textContent = 'Barka - Pan kiedyś stanął nad brzegiem [8bit]';
+                    playBarka8bit(winampAc, getVolume());
+                }
+
+                winampStartTime = winampAc.currentTime;
+                updateDisplay();
+            } catch(e) {
+                console.error('Winamp playback error:', e);
             }
-
-            winampStartTime = winampAc.currentTime;
-            updateDisplay();
         }
 
         playBtn.addEventListener('click', () => {
