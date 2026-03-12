@@ -2041,11 +2041,12 @@
         var onionTimer = 0;
         var cloudX = 200;
 
+        var canvasSized = false;
         function resizeCanvas() {
-            var body = canvas.parentElement;
-            if (!body) return;
-            canvas.width = body.clientWidth;
-            canvas.height = body.clientHeight;
+            var rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            canvas.width = Math.round(rect.width);
+            canvas.height = Math.round(rect.height);
             ground = canvas.height - 40;
             nosacz.y = ground - nosacz.h;
         }
@@ -2055,7 +2056,7 @@
             noNet.classList.add('hidden');
             canvas.classList.remove('hidden');
             scoreEl.classList.remove('hidden');
-            resizeCanvas();
+            if (!canvasSized) { resizeCanvas(); canvasSized = true; }
             score = 0;
             speed = 4;
             obstacles = [];
