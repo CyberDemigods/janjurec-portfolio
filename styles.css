@@ -63,6 +63,26 @@
     font-style: italic;
     margin-left: 4px;
 }
+.boot-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0 16px;
+}
+.boot-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    box-shadow: 0 0 12px rgba(255,255,255,0.15);
+}
+.boot-username {
+    font-size: 16px;
+    color: #fff;
+    font-family: 'Trebuchet MS', 'Tahoma', sans-serif;
+    letter-spacing: 1px;
+}
 .boot-progress-area {
     width: 300px;
     margin: 0 auto;
