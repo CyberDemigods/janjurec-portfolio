@@ -10,8 +10,20 @@
     <link rel="stylesheet" href="themes/winxp.css">
     <link rel="stylesheet" href="themes/macos.css">
     <link rel="stylesheet" href="themes/linux.css">
+    <!-- Apply saved theme immediately to prevent flash of default theme on cached visits -->
+    <script>
+        (function() {
+            var t = new URLSearchParams(window.location.search).get('theme') || localStorage.getItem('jan-portfolio-theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
+    <!-- SVG filters for macOS liquid glass refraction (populated by initLiquidGlass in script.js) -->
+    <svg class="macos-liquid-glass-svg" id="liquidGlassSvg" xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;pointer-events:none">
+        <defs id="liquidGlassDefs"></defs>
+    </svg>
+
     <!-- ==================== LOADING SCREEN ==================== -->
     <div class="boot-screen" id="bootScreen">
         <div class="boot-content">
@@ -41,7 +53,7 @@
         </div>
     </div>
 
-    <div class="desktop" id="desktop">
+    <div class="desktop" id="desktop" style="visibility:hidden">
         <!-- Desktop Icons -->
         <div class="desktop-icons">
             <div class="desktop-icon" data-window="about">
@@ -84,9 +96,21 @@
                 <div class="desktop-icon-img" id="icon-winamp"><svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><rect x="2" y="4" width="28" height="24" rx="3" fill="#2a2a2a" stroke="#555" stroke-width="1"/><rect x="5" y="7" width="22" height="8" rx="1" fill="#0a1628"/><text x="16" y="13" text-anchor="middle" fill="#00ff00" font-size="5" font-family="monospace">♪ WINAMP</text><rect x="5" y="17" width="5" height="3" rx="1" fill="#ff6600"/><rect x="11" y="17" width="5" height="3" rx="1" fill="#ff6600"/><rect x="17" y="17" width="5" height="3" rx="1" fill="#ff6600"/><rect x="5" y="22" width="22" height="3" rx="1" fill="#333"/><rect x="5" y="22" width="12" height="3" rx="1" fill="#00cc00"/></svg></div>
                 <span data-i18n="icon-winamp">Winamp</span>
             </div>
+            <div class="desktop-icon" data-window="breakout">
+                <div class="desktop-icon-img" id="icon-breakout"><svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><rect x="2" y="3" width="7" height="4" rx="1" fill="#ff4444"/><rect x="10" y="3" width="7" height="4" rx="1" fill="#ff8800"/><rect x="18" y="3" width="7" height="4" rx="1" fill="#ffcc00"/><rect x="2" y="8" width="7" height="4" rx="1" fill="#44ff44"/><rect x="10" y="8" width="7" height="4" rx="1" fill="#4488ff"/><rect x="18" y="8" width="7" height="4" rx="1" fill="#cc44ff"/><rect x="10" y="26" width="12" height="3" rx="1.5" fill="#ccc" stroke="#999" stroke-width="0.5"/><circle cx="16" cy="22" r="2" fill="#fff" stroke="#999" stroke-width="0.5"/></svg></div>
+                <span>Breakout</span>
+            </div>
+            <div class="desktop-icon" data-window="tetris">
+                <div class="desktop-icon-img" id="icon-tetris"><svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><rect x="4" y="2" width="8" height="8" fill="#00f0f0" stroke="#009999" stroke-width="0.5" rx="1"/><rect x="12" y="2" width="8" height="8" fill="#00f0f0" stroke="#009999" stroke-width="0.5" rx="1"/><rect x="20" y="2" width="8" height="8" fill="#00f0f0" stroke="#009999" stroke-width="0.5" rx="1"/><rect x="12" y="10" width="8" height="8" fill="#00f0f0" stroke="#009999" stroke-width="0.5" rx="1"/><rect x="4" y="14" width="8" height="8" fill="#f0a000" stroke="#b07800" stroke-width="0.5" rx="1"/><rect x="4" y="22" width="8" height="8" fill="#f0a000" stroke="#b07800" stroke-width="0.5" rx="1"/><rect x="12" y="22" width="8" height="8" fill="#f0a000" stroke="#b07800" stroke-width="0.5" rx="1"/><rect x="20" y="14" width="8" height="8" fill="#a000f0" stroke="#7000a0" stroke-width="0.5" rx="1"/><rect x="20" y="22" width="8" height="8" fill="#a000f0" stroke="#7000a0" stroke-width="0.5" rx="1"/></svg></div>
+                <span>Tetris</span>
+            </div>
             <div class="desktop-icon" data-window="paint">
                 <div class="desktop-icon-img" id="icon-paint"><svg viewBox="0 0 32 32" width="32" height="32" style="display:block;margin:0 auto"><rect x="4" y="2" width="24" height="20" rx="2" fill="#fff" stroke="#333" stroke-width="1.5"/><rect x="7" y="5" width="5" height="4" fill="#ff0000"/><rect x="13" y="5" width="5" height="4" fill="#00aa00"/><rect x="19" y="5" width="5" height="4" fill="#0000ff"/><rect x="7" y="10" width="5" height="4" fill="#ffff00"/><rect x="13" y="10" width="5" height="4" fill="#ff6600"/><rect x="19" y="10" width="5" height="4" fill="#9900cc"/><rect x="7" y="15" width="17" height="3" fill="#000"/><line x1="22" y1="18" x2="28" y2="30" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/><circle cx="28" cy="30" r="1.5" fill="#333"/></svg></div>
                 <span data-i18n="icon-paint">Paint</span>
+            </div>
+            <div class="desktop-icon" data-window="notepad">
+                <div class="desktop-icon-img">📝</div>
+                <span data-i18n="icon-notepad">Notepad</span>
             </div>
         </div>
 
@@ -748,7 +772,7 @@
         </div>
 
         <!-- ==================== WINAMP WINDOW ==================== -->
-        <div class="window hidden" id="window-winamp" style="width:275px;top:80px;left:300px;">
+        <div class="window hidden" id="window-winamp" style="width:285px;top:80px;left:300px;">
             <div class="window-titlebar winamp-titlebar">
                 <div class="window-title">
                     <span class="window-title-icon">🎵</span>
@@ -797,6 +821,9 @@
                     <div class="winamp-track active" data-track="rickroll">1. Rick Astley - Never Gonna Give You Up [8bit]</div>
                     <div class="winamp-track locked" data-track="barka" id="winampBarka">&#128274; ???  <span class="winamp-unlock-hint">(unlock in terminal)</span></div>
                     <div class="winamp-track locked" data-track="donkeykong" id="winampDK">&#128274; ???  <span class="winamp-unlock-hint">(unlock in Nosacz game)</span></div>
+                    <div class="winamp-track locked" data-track="tetris" id="winampTetris">&#128274; ???  <span class="winamp-unlock-hint">(score 1000+ in Tetris)</span></div>
+                    <div class="winamp-track locked" data-track="breakout" id="winampBreakout">&#128274; ???  <span class="winamp-unlock-hint">(clear a board in Breakout)</span></div>
+                    <div class="winamp-track locked" data-track="chocolaterain" id="winampChocolateRain">&#128274; ???  <span class="winamp-unlock-hint">(discover the secret)</span></div>
                 </div>
             </div>
         </div>
@@ -816,6 +843,7 @@
             </div>
             <div class="paint-menubar">
                 <span class="paint-menu-item" data-tool="save">File: Save</span>
+                <span class="paint-menu-item" data-tool="undo">Edit: Undo</span>
                 <span class="paint-menu-item" data-tool="clear">Edit: Clear</span>
             </div>
             <div class="window-body paint-body">
@@ -832,7 +860,14 @@
                     <button class="paint-tool" data-tool="fill" title="Fill">
                         <svg viewBox="0 0 16 16" width="16" height="16"><path d="M4 13l5-10 3 3-5 10z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M13 9c1 1.5 0 3-1 3s-1-1.5 0-3l1-1z" fill="#4488ff"/></svg>
                     </button>
+                    <button class="paint-tool" data-tool="spray" title="Spray Can">
+                        <svg viewBox="0 0 16 16" width="16" height="16"><rect x="5" y="6" width="6" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="6" x2="8" y2="3" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="3" r="0.8" fill="currentColor" opacity="0.5"/><circle cx="5" cy="1.5" r="0.8" fill="currentColor" opacity="0.4"/><circle cx="11" cy="2" r="0.8" fill="currentColor" opacity="0.3"/></svg>
+                    </button>
+                    <button class="paint-tool" data-tool="stamp" title="Stamp">
+                        <span style="font-size:14px;line-height:16px;">⭐</span>
+                    </button>
                     <div class="paint-separator-h"></div>
+                    <div class="paint-stamp-picker hidden" id="paintStampPicker"></div>
                     <div class="paint-size-box">
                         <input type="range" id="paintSize" min="1" max="30" value="3" class="paint-size-slider" orient="vertical">
                         <span id="paintSizeLabel">3</span>
@@ -878,6 +913,78 @@
             </div>
         </div>
 
+        <!-- ==================== NOTEPAD WINDOW ==================== -->
+        <div class="window hidden" id="window-notepad" style="width:500px;height:400px;top:50px;left:120px;">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="window-title-icon">📝</span>
+                    <span class="window-title-text" data-i18n="title-notepad">Notepad - untitled.txt</span>
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn btn-minimize" data-window="notepad">_</button>
+                    <button class="win-btn btn-maximize" data-window="notepad">□</button>
+                    <button class="win-btn btn-close" data-window="notepad">×</button>
+                </div>
+            </div>
+            <div class="window-body notepad-body">
+                <textarea id="notepadText" spellcheck="false" placeholder="Start typing..."></textarea>
+            </div>
+            <div class="window-statusbar">
+                <span id="notepadCharCount">Characters: 0</span>
+            </div>
+        </div>
+
+        <!-- ==================== BREAKOUT WINDOW ==================== -->
+        <div class="window hidden" id="window-breakout" style="width:380px;height:480px;top:40px;left:200px;">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="window-title-icon">🧱</span>
+                    <span class="window-title-text">Brick Breaker</span>
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn btn-minimize" data-window="breakout">_</button>
+                    <button class="win-btn btn-maximize" data-window="breakout">□</button>
+                    <button class="win-btn btn-close" data-window="breakout">×</button>
+                </div>
+            </div>
+            <div class="window-body" style="background:#111;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;">
+                <canvas id="breakoutCanvas" width="340" height="420" style="display:block;cursor:none;"></canvas>
+            </div>
+        </div>
+
+        <!-- ==================== TETRIS WINDOW ==================== -->
+        <div class="window hidden" id="window-tetris" style="width:420px;height:520px;top:30px;left:150px;">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="window-title-icon">🎮</span>
+                    <span class="window-title-text">Tetris</span>
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn btn-minimize" data-window="tetris">_</button>
+                    <button class="win-btn btn-maximize" data-window="tetris">□</button>
+                    <button class="win-btn btn-close" data-window="tetris">×</button>
+                </div>
+            </div>
+            <div class="window-body tetris-body" style="background:#0a0a1a;display:flex;padding:0;overflow:hidden;">
+                <canvas id="tetrisCanvas" width="200" height="400" style="display:block;"></canvas>
+                <div class="tetris-sidebar" id="tetrisSidebar">
+                    <div class="tetris-next-label">NEXT</div>
+                    <canvas id="tetrisNext" width="80" height="80"></canvas>
+                    <div class="tetris-stat"><span class="tetris-stat-label">SCORE</span><span class="tetris-stat-value" id="tetrisScore">0</span></div>
+                    <div class="tetris-stat"><span class="tetris-stat-label">LINES</span><span class="tetris-stat-value" id="tetrisLines">0</span></div>
+                    <div class="tetris-stat"><span class="tetris-stat-label">LEVEL</span><span class="tetris-stat-value" id="tetrisLevel">1</span></div>
+                    <div class="tetris-stat"><span class="tetris-stat-label">HIGH</span><span class="tetris-stat-value" id="tetrisHigh">0</span></div>
+                    <div class="tetris-controls-hint">
+                        ← → Move<br>
+                        ↑ Rotate<br>
+                        ↓ Soft drop<br>
+                        Space Hard drop<br>
+                        P Pause
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ==================== TOR BROWSER WINDOW ==================== -->
         <div class="window hidden" id="window-browser" style="width:600px;height:440px;top:50px;left:100px;">
             <div class="window-titlebar">
@@ -903,17 +1010,19 @@
                 </div>
             </div>
             <div class="browser-body">
+                <div class="browser-watermark hidden" id="browserWatermark"></div>
                 <div class="browser-loading hidden" id="browserLoading">
                     <div class="browser-loading-spinner"></div>
-                    <p class="browser-loading-text">Trwa ładowanie strony...</p>
+                    <p class="browser-loading-text" data-i18n="browser-loading-text">Trwa ładowanie strony...</p>
                     <div class="browser-loading-bar"><div class="browser-loading-fill"></div></div>
                 </div>
                 <div class="browser-nonet" id="browserNoNet">
                     <div class="browser-nonet-icon" id="browserNoNetIcon">🧅</div>
                     <h2 id="browserNoNetTitle">NIE MASZ INTERNETU</h2>
                     <p id="browserNoNetDesc">Nie mo&#380;na po&#322;&#261;czy&#263; z sieci&#261; Tor</p>
-                    <p class="browser-nonet-hint">Naci&#347;nij SPACJĘ aby zagra&#263; w grę</p>
+                    <p class="browser-nonet-hint" id="browserNoNetHint" data-i18n="browser-nonet-hint">Naci&#347;nij SPACJĘ aby zagra&#263; w grę</p>
                 </div>
+                <iframe id="safariInception" class="safari-inception hidden" sandbox="allow-scripts allow-same-origin"></iframe>
                 <canvas id="nosaczCanvas" class="nosacz-canvas hidden"></canvas>
                 <div class="nosacz-score hidden" id="nosaczScore">&#129389; 0</div>
             </div>
@@ -922,7 +1031,7 @@
     </div><!-- /desktop -->
 
     <!-- ==================== TASKBAR ==================== -->
-    <div class="taskbar" id="taskbar">
+    <div class="taskbar" id="taskbar" style="visibility:hidden">
         <button class="start-button" id="startBtn">
             <span class="start-icon">🪟</span>
             <span class="start-text" data-i18n="start">Start</span>
@@ -946,6 +1055,7 @@
                 <div class="start-menu-item" data-window="browser">🧅 <span data-i18n="icon-browser">Tor Browser</span></div>
                 <div class="start-menu-item" data-window="winamp">🎵 <span data-i18n="icon-winamp">Winamp</span></div>
                 <div class="start-menu-item" data-window="paint">🎨 <span data-i18n="icon-paint">Paint</span></div>
+                <div class="start-menu-item" data-window="notepad">📝 <span data-i18n="icon-notepad">Notepad</span></div>
             </div>
             <div class="start-menu-footer">
                 <div class="theme-switcher">
@@ -968,7 +1078,6 @@
                     <button class="lang-btn" data-lang="en" title="English">EN</button>
                     <button class="lang-btn" data-lang="pl" title="Polski">PL</button>
                     <button class="lang-btn" data-lang="klingon" title="tlhIngan Hol">tlh</button>
-                    <button class="lang-btn" data-lang="hebrew" title="עברית">עבר</button>
                 </div>
             </div>
             <div class="tray-separator"></div>
@@ -1014,6 +1123,8 @@
 
     <script src="i18n.js"></script>
     <script src="wallpapers.js"></script>
+    <script src="questions.js"></script>
+    <script src="liquid-glass.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

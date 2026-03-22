@@ -253,16 +253,13 @@ a:hover {
    DESKTOP ICONS
    =========================== */
 .desktop-icons {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 16px;
-    max-height: calc(100vh - var(--taskbar-height, 36px) - 32px);
-    align-content: flex-start;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .desktop-icon {
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -310,6 +307,28 @@ a:hover {
     z-index: 10;
     overflow: hidden;
     transition: opacity 0.15s, transform 0.15s;
+}
+.window-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    z-index: 10;
+}
+.window-resize-handle::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #999;
+    border-bottom: 2px solid #999;
+}
+.window.maximized .window-resize-handle {
+    display: none;
 }
 .window.hidden {
     display: none;
@@ -636,6 +655,20 @@ a:hover {
 .theme-btn-small.active {
     background: var(--tray-btn-active, #0066cc);
     color: #fff;
+}
+
+/* Attention pulse for first-visit tray buttons */
+@keyframes tray-attention {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 102, 204, 0); }
+    50% { box-shadow: 0 0 8px 3px rgba(0, 102, 204, 0.6); }
+}
+.tray-attention .theme-btn-small,
+.tray-attention .lang-toggle {
+    animation: tray-attention 1.5s ease-in-out 3;
+}
+.tray-attention .theme-btn-small:hover,
+.tray-attention .lang-toggle:hover {
+    animation: none;
 }
 .taskbar-clock {
     font-size: 11px;
@@ -1212,6 +1245,31 @@ a:hover {
     background: #888;
     margin: 2px 0;
 }
+.paint-stamp-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    width: 34px;
+    padding: 2px 0;
+}
+.paint-stamp-picker.hidden { display: none; }
+.paint-stamp-btn {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    border: 1px solid transparent;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 2px;
+}
+.paint-stamp-btn:hover { background: rgba(0,0,0,0.08); }
+.paint-stamp-btn.active {
+    border: 1px inset #888;
+    background: rgba(0,0,0,0.1);
+}
 .paint-size-box {
     display: flex;
     flex-direction: column;
@@ -1319,6 +1377,10 @@ a:hover {
     background: linear-gradient(180deg, #232323 0%, #1a1a1a 100%);
     padding: 0;
     font-family: 'Arial', 'Helvetica', sans-serif;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     font-size: 11px;
     color: #00ff00;
     user-select: none;
@@ -1471,8 +1533,10 @@ a:hover {
     background: #0a0a1e;
     margin: 2px 3px 3px;
     border: 1px solid #333;
-    max-height: 80px;
+    min-height: 100px;
+    max-height: none;
     overflow-y: auto;
+    flex: 1;
 }
 .winamp-playlist-header {
     background: linear-gradient(180deg, #2a2a4a, #1a1a3a);
@@ -1543,6 +1607,63 @@ a:hover {
     color: #8f8;
     font-family: monospace;
 }
+/* ===========================
+   TETRIS
+   =========================== */
+.tetris-body {
+    background: #0a0a1a !important;
+    gap: 0;
+}
+#tetrisCanvas {
+    border-right: 1px solid #1a1a3e;
+}
+.tetris-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    color: #0ff;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    min-width: 120px;
+    gap: 8px;
+    background: linear-gradient(180deg, #0a0a1a 0%, #0f0f2e 100%);
+}
+.tetris-next-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    opacity: 0.6;
+    margin-bottom: 2px;
+}
+#tetrisNext {
+    border: 1px solid #1a1a3e;
+    border-radius: 4px;
+    background: #050510;
+}
+.tetris-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.tetris-stat-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    opacity: 0.5;
+}
+.tetris-stat-value {
+    font-size: 18px;
+    color: #f0f;
+    text-shadow: 0 0 8px #f0f;
+}
+.tetris-controls-hint {
+    margin-top: auto;
+    font-size: 9px;
+    opacity: 0.3;
+    line-height: 1.6;
+    text-align: center;
+}
+
 .browser-url-icon { font-size: 12px; }
 .browser-url-text { opacity: 0.8; }
 .browser-body {
@@ -1556,30 +1677,56 @@ a:hover {
     justify-content: center;
     min-height: 0;
 }
+.browser-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.06);
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    z-index: 0;
+    letter-spacing: 4px;
+    font-family: 'Arial Black', Arial, sans-serif;
+    text-transform: uppercase;
+}
 .browser-nonet {
     text-align: center;
-    color: #888;
+    color: #ccc;
     user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 15%;
+    height: 100%;
 }
 .browser-nonet-icon {
-    font-size: 64px;
-    margin-bottom: 12px;
-    opacity: 0.4;
+    font-size: 80px;
+    margin-bottom: 16px;
+    opacity: 0.6;
 }
 .browser-nonet h2 {
-    color: #aaa;
+    color: #e0e0e0;
     font-family: Arial, sans-serif;
-    font-size: 22px;
-    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 300;
+    margin: 0 0 12px;
+    letter-spacing: 1px;
 }
 .browser-nonet p {
-    font-size: 13px;
+    font-size: 14px;
     margin: 4px 0;
     font-family: Arial, sans-serif;
+    color: #bbb;
 }
 .browser-nonet-hint {
     margin-top: 20px !important;
-    color: #666;
+    color: #999;
     font-size: 12px !important;
     animation: blink-hint 1.5s ease-in-out infinite;
 }
@@ -1597,8 +1744,15 @@ a:hover {
 .nosacz-canvas.hidden,
 .nosacz-score.hidden,
 .browser-nonet.hidden,
-.browser-loading.hidden {
+.browser-loading.hidden,
+.browser-watermark.hidden,
+.safari-inception.hidden {
     display: none;
+}
+.safari-inception {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 .browser-loading {
     text-align: center;
@@ -1926,4 +2080,169 @@ a:hover {
     .start-text {
         display: none;
     }
+}
+
+/* ===========================
+   NOTEPAD
+   =========================== */
+.notepad-body {
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+#notepadText {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 13px;
+    background: transparent;
+    color: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* ===========================
+   SAW GAME (Vim Easter Egg)
+   =========================== */
+.saw-terminal-fullscreen {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 80vw !important;
+    height: 65vh !important;
+    z-index: 99999 !important;
+    transition: all 0.5s ease !important;
+    max-height: none !important;
+    max-width: none !important;
+}
+.saw-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 99998;
+    transition: background 1s ease;
+    pointer-events: none;
+}
+.saw-timer-container {
+    position: fixed;
+    z-index: 100000;
+    top: calc(50% - 33vh - 20px);
+    left: 10vw;
+    width: 80vw;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.saw-timer-bar {
+    height: 100%;
+    width: 100%;
+    background: #ff0000;
+    transition: width 1s linear;
+    border-radius: 4px;
+}
+.saw-timer-bar.urgent {
+    animation: sawTimerPulse 0.5s ease-in-out infinite alternate;
+}
+@keyframes sawTimerPulse {
+    from { background: #ff0000; }
+    to { background: #ff4444; box-shadow: 0 0 10px #ff0000; }
+}
+.saw-timer-text {
+    position: fixed;
+    z-index: 100000;
+    top: calc(50% - 33vh - 40px);
+    left: 10vw;
+    width: 80vw;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff4444;
+}
+.saw-life {
+    position: fixed !important;
+    bottom: 3vh !important;
+    z-index: 99999 !important;
+    pointer-events: none !important;
+    transition: left 0.5s ease, opacity 0.3s ease !important;
+    transform: scale(0.8) !important;
+}
+.saw-life-dying {
+    animation: sawLifeDie 0.8s ease forwards !important;
+}
+@keyframes sawLifeDie {
+    0% { transform: scale(0.8); opacity: 1; filter: brightness(1); }
+    20% { transform: scale(1.2); filter: brightness(3) sepia(1) hue-rotate(-30deg); }
+    100% { transform: scale(0) rotate(90deg); opacity: 0; filter: brightness(0); }
+}
+.saw-crack {
+    position: fixed;
+    z-index: 100001;
+    pointer-events: none;
+    opacity: 0;
+    animation: sawCrackAppear 0.3s ease forwards;
+}
+@keyframes sawCrackAppear {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 0.85; transform: scale(1); }
+}
+@keyframes sawScreenShake {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5px, -3px); }
+    20% { transform: translate(4px, 5px); }
+    30% { transform: translate(-6px, 2px); }
+    40% { transform: translate(3px, -4px); }
+    50% { transform: translate(-2px, 5px); }
+    60% { transform: translate(5px, -2px); }
+    70% { transform: translate(-3px, 3px); }
+    80% { transform: translate(4px, -5px); }
+    90% { transform: translate(-4px, 1px); }
+}
+.saw-shake {
+    animation: sawScreenShake 0.4s ease;
+}
+.saw-bloody-text {
+    color: #8b0000 !important;
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000;
+    font-size: 24px !important;
+    text-align: center;
+    animation: sawBloodyPulse 2s ease-in-out infinite alternate;
+}
+@keyframes sawBloodyPulse {
+    from { text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000; }
+    to { text-shadow: 0 0 20px #ff0000, 0 0 40px #8b0000, 0 0 60px #4a0000; }
+}
+.saw-game-over-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #000;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    /* No fade — instant black to prevent flash */
+}
+@keyframes sawFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.saw-lives-counter {
+    position: fixed;
+    z-index: 100000;
+    bottom: calc(3vh + 80px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: monospace;
+    font-size: 12px;
+    color: #ff4444;
+    text-align: center;
 }

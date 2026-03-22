@@ -198,6 +198,59 @@
     color: #8ae234;
 }
 
+/* Paint on dark theme */
+[data-theme="linux"] .paint-sidebar {
+    background: #3c3c3c;
+    border-right-color: #555;
+}
+[data-theme="linux"] .paint-tool {
+    color: #eeeeec;
+    border-color: #555;
+    background: #4a4a4a;
+}
+[data-theme="linux"] .paint-tool:hover {
+    background: #5a5a5a;
+    border-color: #888;
+}
+[data-theme="linux"] .paint-tool.active {
+    background: #8ae234;
+    color: #1e1e1e;
+    border-color: #6abf1a;
+}
+[data-theme="linux"] .paint-menubar {
+    background: #2d2d2d;
+    color: #eeeeec;
+}
+[data-theme="linux"] .paint-menu-item {
+    color: #eeeeec;
+}
+[data-theme="linux"] .paint-menu-item:hover {
+    background: #8ae234;
+    color: #1e1e1e;
+}
+[data-theme="linux"] .paint-palette {
+    background: #2d2d2d;
+    border-top-color: #555;
+}
+[data-theme="linux"] .paint-size-box {
+    color: #eeeeec;
+}
+[data-theme="linux"] .paint-separator-h {
+    background: #555;
+}
+[data-theme="linux"] .paint-stamp-btn {
+    color: #eeeeec;
+}
+[data-theme="linux"] .paint-stamp-btn.active {
+    background: rgba(138,226,52,0.2);
+    border-color: #8ae234;
+}
+[data-theme="linux"] #window-paint .window-statusbar {
+    background: #2d2d2d;
+    color: #eeeeec;
+    border-top-color: #555;
+}
+
 /* Scrollbar thin */
 [data-theme="linux"] .window-body::-webkit-scrollbar {
     width: 8px;

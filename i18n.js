@@ -1,5 +1,5 @@
 /* ===========================
-   TRANSLATIONS: EN / PL / tlhIngan Hol (Klingon) / עברית (Hebrew)
+   TRANSLATIONS: EN / PL / tlhIngan Hol (Klingon)
    =========================== */
 
 const TRANSLATIONS = {
@@ -103,6 +103,50 @@ const TRANSLATIONS = {
         'term-welcome-1': 'Jan Jurec Portfolio OS [Version 2.1.37]',
         'term-welcome-2': '(C) 2024 Jan Jurec. All rights reserved.',
         'term-welcome-3': 'Type "help" for available commands.',
+
+        // Browser no-net texts
+        'browser-nonet-ie-title': 'This page cannot be displayed',
+        'browser-nonet-ie-desc': 'Check your Internet connection',
+        'browser-nonet-safari-title': 'You Are Not Connected to the Internet',
+        'browser-nonet-safari-desc': 'This page can\u2019t be displayed because your Mac isn\u2019t connected to the Internet.',
+        'browser-nonet-tor-title': 'NO INTERNET',
+        'browser-nonet-tor-desc': 'Unable to connect to the Tor network',
+        'browser-nonet-hint': 'Press SPACE to play a game',
+
+        // Browser loading
+        'browser-loading-text': 'Loading page...',
+
+        // Hypnotoad
+        'hypnotoad-glory': 'ALL GLORY TO THE HYPNOTOAD',
+
+        // Nosacz game
+        'game-over': 'GAME OVER',
+        'game-score': 'Score',
+        'game-highscore': 'Best',
+        'game-restart': 'SPACE to play again',
+        'game-dk-unlock': 'Master of Onions unlocked in Winamp!',
+
+        // Saw/Jigsaw game
+        'saw-intro': 'I want to play a game...',
+        'saw-intro-2': 'You have been trapped in vim. Now prove your worth.',
+        'saw-intro-3': 'Answer my questions... or lose everything.',
+        'saw-rules': 'Rules: Answer correctly within 30 seconds. Wrong answer = lose a life. No lives = game over.',
+        'saw-question': 'Question',
+        'saw-time-up': 'TIME\'S UP!',
+        'saw-wrong': 'WRONG! The answer was',
+        'saw-correct': 'Correct.',
+        'saw-taunt-1': 'Impressive... but don\'t get comfortable.',
+        'saw-taunt-2': 'Well done. But the next one won\'t be so easy.',
+        'saw-taunt-3': 'You live... for now.',
+        'saw-taunt-4': 'Lucky guess. Or was it?',
+        'saw-taunt-5': 'The puppet is not amused.',
+        'saw-taunt-6': 'Correct. But time is running out for your friends...',
+        'saw-defeat': 'YOU HAVE BEEN DEFEATED.',
+        'saw-defeat-2': 'All your files... gone. All your icons... consumed.',
+        'saw-defeat-sub': 'Refresh the page... if you dare.',
+        'saw-victory': 'You survived... all 150 questions. Impressive.',
+        'saw-victory-2': 'But remember... vim is always watching.',
+        'saw-type-anything': 'Type anything to begin...',
     },
 
     pl: {
@@ -189,6 +233,50 @@ const TRANSLATIONS = {
         'term-welcome-1': 'Jan Jurec Portfolio OS [Wersja 2.1.37]',
         'term-welcome-2': '(C) 2024 Jan Jurec. Wszelkie prawa zastrze\u017cone.',
         'term-welcome-3': 'Wpisz "help" aby zobaczy\u0107 dost\u0119pne komendy.',
+
+        // Browser no-net texts
+        'browser-nonet-ie-title': 'Nie mo\u017cna wy\u015bwietli\u0107 strony',
+        'browser-nonet-ie-desc': 'Sprawd\u017a po\u0142\u0105czenie z Internetem',
+        'browser-nonet-safari-title': 'Brak po\u0142\u0105czenia z Internetem',
+        'browser-nonet-safari-desc': 'Nie mo\u017cna wy\u015bwietli\u0107 strony, poniewa\u017c Mac nie jest po\u0142\u0105czony z Internetem.',
+        'browser-nonet-tor-title': 'NIE MASZ INTERNETU',
+        'browser-nonet-tor-desc': 'Nie mo\u017cna po\u0142\u0105czy\u0107 z sieci\u0105 Tor',
+        'browser-nonet-hint': 'Naci\u015bnij SPACJ\u0118 aby zagra\u0107 w gr\u0119',
+
+        // Browser loading
+        'browser-loading-text': 'Trwa \u0142adowanie strony...',
+
+        // Hypnotoad
+        'hypnotoad-glory': 'CA\u0141A CHWA\u0141A HYPNO\u017bABIE',
+
+        // Nosacz game
+        'game-over': 'KONIEC GRY',
+        'game-score': 'Wynik',
+        'game-highscore': 'Rekord',
+        'game-restart': 'SPACJA aby zagra\u0107 ponownie',
+        'game-dk-unlock': 'Master of Onions odblokowany w Winampie!',
+
+        // Saw/Jigsaw game
+        'saw-intro': 'Chcę zagrać w grę...',
+        'saw-intro-2': 'Zostałeś uwięziony w vimie. Udowodnij swoją wartość.',
+        'saw-intro-3': 'Odpowiedz na moje pytania... albo stracisz wszystko.',
+        'saw-rules': 'Zasady: Odpowiedz poprawnie w 30 sekund. Zła odpowiedź = tracisz życie. Brak żyć = koniec gry.',
+        'saw-question': 'Pytanie',
+        'saw-time-up': 'CZAS MINĄŁ!',
+        'saw-wrong': 'ŹLE! Prawidłowa odpowiedź to',
+        'saw-correct': 'Poprawnie.',
+        'saw-taunt-1': 'Imponujące... ale nie przyzwyczajaj się.',
+        'saw-taunt-2': 'Nieźle. Ale następne nie będzie takie łatwe.',
+        'saw-taunt-3': 'Żyjesz... na razie.',
+        'saw-taunt-4': 'Szczęśliwy strzał. A może nie?',
+        'saw-taunt-5': 'Kukiełka nie jest pod wrażeniem.',
+        'saw-taunt-6': 'Poprawnie. Ale czas ucieka twoim przyjaciołom...',
+        'saw-defeat': 'PONIOSŁEŚ KLĘSKĘ.',
+        'saw-defeat-2': 'Wszystkie twoje pliki... zniknęły. Wszystkie ikony... pochłonięte.',
+        'saw-defeat-sub': 'Odśwież stronę... jeśli się odważysz.',
+        'saw-victory': 'Przeżyłeś... wszystkie 150 pytań. Imponujące.',
+        'saw-victory-2': 'Ale pamiętaj... vim zawsze patrzy.',
+        'saw-type-anything': 'Wpisz cokolwiek, aby rozpocząć...',
     },
 
     klingon: {
@@ -275,108 +363,50 @@ const TRANSLATIONS = {
         'term-welcome-1': 'Jan Jurec yo\'SeH pat [mIw 2.1.37]',
         'term-welcome-2': '(C) 2024 Jan Jurec. Hoch chaw\' rarlu\'.',
         'term-welcome-3': '"help" yIghItlh. QaH DaSuqmeH.',
-    },
 
-    hebrew: {
-        // Desktop icons
-        'icon-about': 'אודותיי',
-        'icon-experience': 'ניסיון',
-        'icon-skills': 'כישורים',
-        'icon-projects': 'פרויקטים',
-        'icon-education': 'השכלה',
-        'icon-recommendations': 'המלצות',
-        'icon-contact': 'צור קשר',
-        'icon-terminal': 'טרמינל',
-        'icon-paint': 'צייר',
-        'icon-winamp': 'ווינאמפ',
-        'icon-browser': 'דפדפן טור',
+        // Browser no-net texts
+        'browser-nonet-ie-title': 'HaSta leghlaHbe\'',
+        'browser-nonet-ie-desc': 'QumwI\' yI\'ol',
+        'browser-nonet-safari-title': 'QumwI\' tu\'lu\'be\'',
+        'browser-nonet-safari-desc': 'HaSta leghlaHbe\' - QumwI\' Qapbe\'.',
+        'browser-nonet-tor-title': 'QUM TU\'LU\'BE\'',
+        'browser-nonet-tor-desc': 'Tor QumwI\' rarlaHbe\'',
+        'browser-nonet-hint': 'SPACE yIchel - Quj DatIv',
 
-        // Window titles
-        'title-winamp': 'ווינאמפ',
-        'title-browser': 'דפדפן טור',
-        'title-about': 'אודותיי',
-        'title-experience': 'ניסיון',
-        'title-skills': 'מנהל התקנים – כישורים',
-        'title-projects': 'C:\\פרויקטים',
-        'title-education': 'השכלה',
-        'title-recommendations': 'המלצות – מה אומרים הקולגות',
-        'title-contact': 'צור קשר',
-        'title-paint': 'ללא שם - צייר',
-        'title-terminal-win': 'C:\\WINDOWS\\system32\\cmd.exe',
-        'title-terminal-mac': 'Terminal — zsh',
-        'title-terminal-linux': 'jan@portfolio: ~',
+        // Browser loading
+        'browser-loading-text': 'HaSta loDlu\'taH...',
 
-        // Menu bar
-        'menu-file': 'קובץ',
-        'menu-edit': 'עריכה',
-        'menu-view': 'תצוגה',
-        'menu-help': 'עזרה',
-        'menu-action': 'פעולה',
-        'menu-favorites': 'מועדפים',
+        // Hypnotoad
+        'hypnotoad-glory': 'HYPNOTOAD BATLH HoCH',
 
-        // Start
-        'start': 'התחל',
+        // Nosacz game
+        'game-over': 'QUJ VANPU\'',
+        'game-score': 'mI\'',
+        'game-highscore': 'mI\' QaQ',
+        'game-restart': 'SPACE yIchel - Quj chu\'',
+        'game-dk-unlock': 'QoQ muchHom Daq Master of Onions poSmoHlu\'!',
 
-        // About content
-        'about-title': 'מהנדס DevOps בכיר | MLOps | Backend',
-        'about-location': '📍 גוז\'וב וילקופולסקי, פולין',
-        'about-tagline': '"Python, AWS, Linux. דברים מגניבים."',
-        'about-bio-1': 'מקצוען מנוסה ורב-תחומי, מצטיין הן ב-DevOps והן בהנדסת תוכנה. כישורים עיקריים: <strong>AWS</strong>, <strong>Python</strong> ו-<strong>DevOps</strong>, עם דגש על Infrastructure as Code באמצעות Terraform + CDK, וניהול CI/CD.',
-        'about-bio-2': 'עובד מרחוק מ-2018 (לפני שזה היה טרנדי). נלהב מפתרון בעיות מורכבות בגישה אנליטית. משגשג בצוותים קטנים שבהם האוטונומיה חשובה.',
-        'about-bio-3': 'מוביל יוזמות לשיפור יעילות, אמינות ופרודוקטיביות של מערכות. מספק הדרכה טכנית, מטפח תרבות איכות, ומוביל פרויקטים מהרעיון ועד להשקה.',
-        'about-status-1': '10+ שנות ניסיון',
-        'about-status-2': 'מרחוק מ-2018',
-
-        // Experience
-        'exp-status-1': '8 תפקידים',
-        'exp-status-2': '10+ שנים בהייטק',
-
-        // Skills
-        'skills-status-1': '35+ כישורים',
-        'skills-status-2': '4 מבחני LinkedIn עברו',
-        'cat-cloud': 'ענן ותשתיות',
-        'cat-lang': 'שפות ופריימוורקים',
-        'cat-devops': 'DevOps וכלים',
-        'cat-data': 'דאטה ו-ML',
-        'cat-testing': 'בדיקות ואיכות',
-        'cat-languages': 'שפות',
-
-        // Projects
-        'proj-workshops': 'סדנאות והרצאות @ TUI',
-        'proj-status-1': '15 רפוזיטוריז ציבוריים',
-        'proj-status-2': '148 ★ בפרויקט המוביל',
-
-        // Education
-        'edu-certs': 'הסמכות',
-        'edu-status-1': 'תואר שני + תואר ראשון',
-
-        // Recommendations
-        'rec-status-1': '10 המלצות בלינקדאין',
-        'rec-status-2': 'כולם קולגות מאומתים',
-
-        // Contact
-        'contact-remote': 'מרחוק מ-2018 – זמין בכל העולם',
-        'contact-status': 'פתוח להצעות',
-
-        // Context menu
-        'ctx-wallpaper': '🖼️ שנה טפט',
-        'ctx-about-os': 'ℹ️ אודות מערכת ההפעלה',
-
-        // Wallpaper picker
-        'wp-title': 'מאפייני תצוגה – טפט',
-        'wp-apply': 'החל',
-        'wp-cancel': 'ביטול',
-
-        // Theme labels
-        'theme-switch': ':החלף מערכת',
-
-        // Loading
-        'loading-text': '...מאתחל חלונות 98',
-
-        // Terminal
-        'term-welcome-1': 'Jan Jurec Portfolio OS [גרסה 2.1.37]',
-        'term-welcome-2': '(C) 2024 Jan Jurec. כל הזכויות שמורות.',
-        'term-welcome-3': 'הקלד "help" לרשימת פקודות.',
+        // Saw/Jigsaw game
+        'saw-intro': 'Quj vIQuj neH...',
+        'saw-intro-2': 'vim DavoqHa\'pu\'. DaH bItobnIS.',
+        'saw-intro-3': 'yujmeywIj yIjang... pagh Hoch DacheghmoH.',
+        'saw-rules': 'chutmey: cha\'maH wej lup yIjang. muj = yIn DachIl. yIn pagh = Quj vanpu\'.',
+        'saw-question': 'yu\'',
+        'saw-time-up': 'QIt VANPU\'!',
+        'saw-wrong': 'muj! jang qaq ghaH',
+        'saw-correct': 'lugh.',
+        'saw-taunt-1': 'nIteb... \'ach yImev.',
+        'saw-taunt-2': 'majQa\'. \'ach veb Qatlh law\'.',
+        'saw-taunt-3': 'bIyIn... DaH.',
+        'saw-taunt-4': 'Do\' neH. ghap qar\'a\'?',
+        'saw-taunt-5': 'naQjejHomwIj belHa\'.',
+        'saw-taunt-6': 'lugh. \'ach juppu\'lI\' poH vanlu\'...',
+        'saw-defeat': 'BIGHOBTA\'.',
+        'saw-defeat-2': 'De\'lI\' Hoch... lojmIt. nagh\'e\' Hoch... Soplu\'.',
+        'saw-defeat-sub': 'DuHIvqa\'... bIDareHchugh.',
+        'saw-victory': 'bIyInqa\'... Hoch wa\'vatlh vaghmaH. nIteb.',
+        'saw-victory-2': '\'ach qaw... vim reH bIleghlu\'.',
+        'saw-type-anything': 'vay\' yIghItlh...',
     }
 };
 
