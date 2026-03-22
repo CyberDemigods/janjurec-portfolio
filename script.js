@@ -5215,6 +5215,7 @@
 
         function playCollectSound(collectCount) {
             if (!gameAc) return;
+            if (window._janArmageddonActive) return;
             if (collectCount > 0 && collectCount % 10 === 0) {
                 // Every 10th: speech-like "pyyyyszna cebula"
                 playSpeech(gameAc);
@@ -5293,6 +5294,7 @@
         // DK-style background loop for the game
         function playGameBgLoop() {
             if (!gameAc || !running) return;
+            if (window._janArmageddonActive) return;
             var ac = gameAc;
             var t = ac.currentTime;
             var b = 0.16;
@@ -5491,8 +5493,18 @@
             }
         }
 
-        // Draw onion
+        // Draw onion (or kremówka during jankozy)
+        var kremowkaImg = new Image();
+        kremowkaImg.src = '_images/kremowka.png';
+        var kremowkaReady = false;
+        kremowkaImg.onload = function() { kremowkaReady = true; };
+
         function drawOnion(x, y) {
+            // During jankozy — draw kremówka instead of onion
+            if (window._janArmageddonActive && kremowkaReady) {
+                ctx.drawImage(kremowkaImg, x - 2, y - 2, 24, 24);
+                return;
+            }
             // Bulb
             ctx.fillStyle = '#DAA520';
             ctx.beginPath();
@@ -5633,7 +5645,15 @@
                         score++;
                         scoreEl.textContent = '\uD83E\uDDBD ' + score;
                         playCollectSound(score);
-                        if (score % 10 === 0) {
+                        if (window._janArmageddonActive) {
+                            if (score % 10 === 0) {
+                                speechText = 'JAN KOCHA KREMOWKI!!!';
+                                speechDuration = 3000;
+                            } else {
+                                var janSfx = ['jan!', 'kremowka!', 'jan jan!', 'mniam jan!', 'JAAAAN!'];
+                                speechText = janSfx[Math.floor(Math.random() * janSfx.length)];
+                            }
+                        } else if (score % 10 === 0) {
                             speechText = 'Pyyyyszna cebula! Wcale nie czuc\u0301 bieda\u0328!';
                             speechDuration = 3000;
                         } else {
