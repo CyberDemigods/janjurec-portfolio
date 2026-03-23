@@ -2060,11 +2060,27 @@ a:hover {
    RESPONSIVE
    =========================== */
 @media (max-width: 768px) {
+    .desktop {
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
     .desktop-icons {
+        display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        align-content: flex-start;
+        gap: 8px;
+        padding: 12px 8px;
         max-height: none;
+    }
+    .desktop-icon {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        width: 72px;
+        flex-shrink: 0;
     }
     .window {
         width: calc(100vw - 16px) !important;
@@ -2079,6 +2095,13 @@ a:hover {
     }
     .start-text {
         display: none;
+    }
+    .taskbar {
+        z-index: 10000;
+    }
+    .lang-toggle {
+        font-size: 11px;
+        padding: 2px 6px;
     }
 }
 

@@ -38,9 +38,16 @@
         var savedPositions = {};
         try { savedPositions = JSON.parse(localStorage.getItem('jan-portfolio-icon-pos') || '{}'); } catch(e) {}
 
+        var mobile = isMobile();
+
         icons.forEach(function(icon, i) {
             var key = icon.dataset.window;
-            if (savedPositions[key]) {
+            if (mobile) {
+                // Mobile: no absolute positioning, use flow layout
+                icon.style.position = 'relative';
+                icon.style.left = '';
+                icon.style.top = '';
+            } else if (savedPositions[key]) {
                 icon.style.left = savedPositions[key].x + 'px';
                 icon.style.top = savedPositions[key].y + 'px';
             } else {
@@ -62,7 +69,8 @@
                 if (isMobile()) openWindow(icon.dataset.window);
             });
 
-            // Drag icons
+            // Drag icons (desktop only)
+            if (mobile) return; // skip drag setup on mobile
             var dragStartX, dragStartY, iconStartX, iconStartY, isDragging = false;
             icon.addEventListener('mousedown', function(e) {
                 if (e.button !== 0) return;
@@ -3523,6 +3531,8 @@
                 allIcons.forEach(function(icon, i) {
                     if (i < smileyPositions.length) {
                         var pos = smileyPositions[i];
+                        // On mobile: switch from flow to absolute for xD formation
+                        icon.style.position = 'absolute';
                         icon.style.transition = 'left 1.5s ease-in-out, top 1.5s ease-in-out';
                         icon.style.left = Math.round(pos.x - 32) + 'px';
                         icon.style.top = Math.round(pos.y - 32) + 'px';
@@ -3728,6 +3738,12 @@
                     saved.iconEl.style.left = saved.origLeft;
                     saved.iconEl.style.top = saved.origTop;
                     saved.iconEl.classList.remove('jan-locked');
+                    // Restore mobile flow layout
+                    if (isMobile()) {
+                        saved.iconEl.style.position = 'relative';
+                        saved.iconEl.style.left = '';
+                        saved.iconEl.style.top = '';
+                    }
                 }
             });
 
