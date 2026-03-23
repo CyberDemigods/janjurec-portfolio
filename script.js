@@ -3411,39 +3411,74 @@
             try { janAudio.play(); } catch(ex) {}
             window._janAudio = janAudio;
 
-            // 1) Rain of Jan heads on desktop
+            // 1) Rain of Jan heads on desktop — Canvas-based for performance
             var desktop = document.querySelector('.desktop');
-            var rainInterval = setInterval(function() {
-                if (!window._janActive) return;
-                var head = document.createElement('img');
-                head.src = JAN_AVATAR;
-                head.style.cssText =
-                    'position:absolute;width:48px;height:48px;border-radius:50%;' +
-                    'left:' + Math.round(Math.random() * (window.innerWidth - 48)) + 'px;' +
-                    'top:-60px;z-index:9000;pointer-events:none;' +
-                    'transition:none;';
-                desktop.appendChild(head);
-                var speed = 0.8 + Math.random() * 1.5;
-                var rotation = Math.random() * 360;
-                var rotSpeed = (Math.random() - 0.5) * 10;
-                var posY = -60;
-                var posX = parseInt(head.style.left);
-                var wobble = (Math.random() - 0.5) * 2;
-                function fall() {
-                    posY += speed;
-                    posX += wobble;
-                    rotation += rotSpeed;
-                    head.style.top = posY + 'px';
-                    head.style.left = posX + 'px';
-                    head.style.transform = 'rotate(' + rotation + 'deg)';
-                    if (posY < window.innerHeight + 60) {
-                        requestAnimationFrame(fall);
-                    } else {
-                        if (head.parentNode) head.parentNode.removeChild(head);
-                    }
+            var rainCanvas = document.createElement('canvas');
+            rainCanvas.id = 'jan-rain-canvas';
+            rainCanvas.style.cssText =
+                'position:fixed;top:0;left:0;width:100%;height:100%;' +
+                'z-index:9000;pointer-events:none;';
+            rainCanvas.width = window.innerWidth;
+            rainCanvas.height = window.innerHeight;
+            document.body.appendChild(rainCanvas);
+            var rainCtx = rainCanvas.getContext('2d');
+            var rainHeads = [];
+            var rainImg = new Image();
+            rainImg.src = JAN_AVATAR;
+            var rainSpawnRate = 120; // ms between spawns
+            var rainPerSpawn = 1;
+            var rainSizeMin = 48, rainSizeMax = 48;
+            var lastSpawn = 0;
+
+            function spawnHead(now) {
+                var sz = rainSizeMin + Math.random() * (rainSizeMax - rainSizeMin);
+                rainHeads.push({
+                    x: Math.random() * (rainCanvas.width - sz),
+                    y: -sz - 10,
+                    sz: sz,
+                    speed: (rainSizeMin === rainSizeMax ? 2 : 3) + Math.random() * 4,
+                    rot: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.15,
+                    wobble: (Math.random() - 0.5) * 1.5
+                });
+            }
+
+            var rainRafId = null;
+            function rainLoop(ts) {
+                if (!window._janActive) {
+                    rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+                    return;
                 }
-                requestAnimationFrame(fall);
-            }, 120);
+                rainRafId = requestAnimationFrame(rainLoop);
+                // Spawn
+                if (!lastSpawn || ts - lastSpawn > rainSpawnRate) {
+                    for (var s = 0; s < rainPerSpawn; s++) spawnHead(ts);
+                    lastSpawn = ts;
+                }
+                // Update & draw
+                rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+                for (var i = rainHeads.length - 1; i >= 0; i--) {
+                    var h = rainHeads[i];
+                    h.y += h.speed;
+                    h.x += h.wobble;
+                    h.rot += h.rotSpeed;
+                    if (h.y > rainCanvas.height + h.sz) {
+                        rainHeads.splice(i, 1);
+                        continue;
+                    }
+                    rainCtx.save();
+                    rainCtx.translate(h.x + h.sz / 2, h.y + h.sz / 2);
+                    rainCtx.rotate(h.rot);
+                    rainCtx.beginPath();
+                    rainCtx.arc(0, 0, h.sz / 2, 0, Math.PI * 2);
+                    rainCtx.clip();
+                    rainCtx.drawImage(rainImg, -h.sz / 2, -h.sz / 2, h.sz, h.sz);
+                    rainCtx.restore();
+                }
+            }
+            rainRafId = requestAnimationFrame(rainLoop);
+            window._janRainCanvas = rainCanvas;
+            window._janRainRafId = rainRafId;
 
             // 2+3) After 15 seconds (progress bar 100%) — replace ALL icons and text + smiley
             setTimeout(function() {
@@ -3639,70 +3674,19 @@
             // 4) Increase rain intensity at 5s
             setTimeout(function() {
                 if (!window._janActive) return;
-                clearInterval(rainInterval);
-                rainInterval = setInterval(function() {
-                    if (!window._janActive) return;
-                    for (var i = 0; i < 3; i++) {
-                        var head = document.createElement('img');
-                        head.src = JAN_AVATAR;
-                        head.style.cssText =
-                            'position:absolute;width:' + (32 + Math.random() * 48) + 'px;' +
-                            'height:' + (32 + Math.random() * 48) + 'px;border-radius:50%;' +
-                            'left:' + Math.round(Math.random() * window.innerWidth) + 'px;' +
-                            'top:-80px;z-index:9000;pointer-events:none;';
-                        desktop.appendChild(head);
-                        var speed = 1.2 + Math.random() * 2;
-                        (function(h, s) {
-                            var py = -80;
-                            function fall() {
-                                py += s;
-                                h.style.top = py + 'px';
-                                h.style.transform = 'rotate(' + (py * 2) + 'deg)';
-                                if (py < window.innerHeight + 80) {
-                                    requestAnimationFrame(fall);
-                                } else {
-                                    if (h.parentNode) h.parentNode.removeChild(h);
-                                }
-                            }
-                            requestAnimationFrame(fall);
-                        })(head, speed);
-                    }
-                }, 80);
+                rainSpawnRate = 60;
+                rainPerSpawn = 3;
+                rainSizeMin = 32;
+                rainSizeMax = 72;
             }, 5000);
 
             // 5) After 15 seconds, reduce rain intensity (but keep going)
             setTimeout(function() {
-                clearInterval(rainInterval);
-                rainInterval = setInterval(function() {
-                    if (!window._janActive) return;
-                    var head = document.createElement('img');
-                    head.src = JAN_AVATAR;
-                    head.style.cssText =
-                        'position:absolute;width:48px;height:48px;border-radius:50%;' +
-                        'left:' + Math.round(Math.random() * (window.innerWidth - 48)) + 'px;' +
-                        'top:-60px;z-index:9000;pointer-events:none;';
-                    desktop.appendChild(head);
-                    var speed = 0.8 + Math.random() * 1.5;
-                    var posY = -60;
-                    var posX = parseInt(head.style.left);
-                    var wobble = (Math.random() - 0.5) * 2;
-                    var rotation = Math.random() * 360;
-                    var rotSpeed = (Math.random() - 0.5) * 10;
-                    function fall() {
-                        posY += speed;
-                        posX += wobble;
-                        rotation += rotSpeed;
-                        head.style.top = posY + 'px';
-                        head.style.left = posX + 'px';
-                        head.style.transform = 'rotate(' + rotation + 'deg)';
-                        if (posY < window.innerHeight + 60) {
-                            requestAnimationFrame(fall);
-                        } else {
-                            if (head.parentNode) head.parentNode.removeChild(head);
-                        }
-                    }
-                    requestAnimationFrame(fall);
-                }, 400); // slower spawn rate
+                if (!window._janActive) return;
+                rainSpawnRate = 300;
+                rainPerSpawn = 1;
+                rainSizeMin = 48;
+                rainSizeMax = 48;
             }, 15000);
 
         }
@@ -3718,13 +3702,16 @@
                 window._janAudio = null;
             }
 
-            // Stop rain (intervals check window._janActive)
+            // Stop rain
             window._janActive = false;
-
-            // Remove any remaining falling heads
-            document.querySelectorAll('.desktop img[src*="janek_icon2"]').forEach(function(img) {
-                if (img.style.zIndex === '9000') img.remove();
-            });
+            if (window._janRainRafId) {
+                cancelAnimationFrame(window._janRainRafId);
+                window._janRainRafId = null;
+            }
+            if (window._janRainCanvas && window._janRainCanvas.parentNode) {
+                window._janRainCanvas.parentNode.removeChild(window._janRainCanvas);
+                window._janRainCanvas = null;
+            }
 
             if (!_janSavedState) {
                 // No saved state — just reload language
