@@ -5691,12 +5691,13 @@
 
                 // Shadow/glow
                 ctx.font = 'bold ' + Math.round(fontSize) + 'px Impact, Arial Black, sans-serif';
-                ctx.fillStyle = 'rgba(255,80,0,0.25)';
+                var isJan = window._janArmageddonActive;
+                ctx.fillStyle = isJan ? 'rgba(255,220,0,0.3)' : 'rgba(255,80,0,0.25)';
                 ctx.fillText(speechText.toUpperCase(), 2, 2);
 
                 // Main text
-                ctx.fillStyle = '#fff';
-                ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillStyle = isJan ? '#FFD700' : '#fff';
+                ctx.strokeStyle = isJan ? 'rgba(100,70,0,0.8)' : 'rgba(0,0,0,0.6)';
                 ctx.lineWidth = 3;
                 ctx.strokeText(speechText.toUpperCase(), 0, 0);
                 ctx.fillText(speechText.toUpperCase(), 0, 0);
