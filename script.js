@@ -5217,7 +5217,6 @@
 
         function playCollectSound(collectCount) {
             if (!gameAc) return;
-            if (window._janArmageddonActive) return;
             if (collectCount > 0 && collectCount % 10 === 0) {
                 // Every 10th: speech-like "pyyyyszna cebula"
                 playSpeech(gameAc);
