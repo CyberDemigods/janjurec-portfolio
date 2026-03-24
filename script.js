@@ -51,13 +51,12 @@
                 icon.style.left = savedPositions[key].x + 'px';
                 icon.style.top = savedPositions[key].y + 'px';
             } else {
-                // First visit: scatter icons randomly across the desktop
-                var taskbarH = 36;
-                var iconW = 75, iconH = 75;
-                var maxX = Math.max(200, window.innerWidth - iconW - padX);
-                var maxY = Math.max(200, window.innerHeight - taskbarH - iconH - padY);
-                icon.style.left = Math.floor(Math.random() * maxX) + 'px';
-                icon.style.top = Math.floor(Math.random() * maxY) + 'px';
+                // First visit: scatter icons in center 800x800 square
+                var boxW = 800, boxH = 800;
+                var offsetX = Math.max(0, Math.round((window.innerWidth - boxW) / 2));
+                var offsetY = Math.max(0, Math.round((window.innerHeight - 36 - boxH) / 2));
+                icon.style.left = (offsetX + Math.floor(Math.random() * Math.min(boxW, window.innerWidth) - 75)) + 'px';
+                icon.style.top = (offsetY + Math.floor(Math.random() * Math.min(boxH, window.innerHeight - 36) - 75)) + 'px';
             }
 
             // Double click opens window
