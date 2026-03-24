@@ -5653,6 +5653,7 @@
                             } else {
                                 var janSfx = ['jan!', 'kremowka!', 'jan jan!', 'mniam jan!', 'JAAAAN!'];
                                 speechText = janSfx[Math.floor(Math.random() * janSfx.length)];
+                                speechDuration = 2000;
                             }
                         } else if (score % 10 === 0) {
                             speechText = 'Pyyyyszna cebula! Wcale nie czuc\u0301 bieda\u0328!';
