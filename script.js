@@ -1153,9 +1153,9 @@
             '~/about.txt': function() {
                 addLine('Jan Jurec', 'success');
                 addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
-                addLine('"Python, AWS, Linux. Cool stuff."');
-                addLine('Location: Gorzow Wielkopolski, Poland');
-                addLine('Remote since 2018 (before it was cool)');
+                addLine('Stack: AWS, bare metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
+                addLine('Location: Poland · Remote since 2018');
+                addLine('BSc Computer Science, Wroclaw Uni of Science and Tech');
             },
             '~/experience.log': function() {
                 addLine('=== EXPERIENCE ===', 'info');
@@ -3052,9 +3052,9 @@
                 case 'whoami':
                     addLine('Jan Jurec', 'success');
                     addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
-                    addLine('"Python, AWS, Linux. Cool stuff."');
-                    addLine('Location: Gorzow Wielkopolski, Poland');
-                    addLine('Remote since 2018 (before it was cool)');
+                    addLine('Stack: AWS, bare metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
+                    addLine('Location: Poland · Remote since 2018');
+                    addLine('BSc Computer Science, Wroclaw Uni of Science and Tech');
                     break;
 
                 case 'skills':
