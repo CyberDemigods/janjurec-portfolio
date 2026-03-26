@@ -30,109 +30,8 @@
         return 'ontouchstart' in window || window.innerWidth <= 768;
     }
 
-    // ===== DEMIGLASS — macOS Liquid Glass =====
-    // Drag refraction: edge lens visible only while dragging icons/windows
-    var _dragGlassOpts = {
-        blur: 0,
-        saturate: 1.0,
-        brightness: 1.0,
-        borderRadius: 12,
-        specular: 0.4,
-        edgeLight: 0.5,
-        refraction: 40,
-        edgeLensRefraction: true,
-        edgeInner: 45,
-        edgeOuter: 85,
-        tint: 'rgba(255,255,255,0.02)',
-        shadow: false,
-        border: false,
-        interactive: false,
-    };
-    var _dragGlassIconOpts = {
-        blur: 0,
-        saturate: 1.0,
-        brightness: 1.0,
-        borderRadius: 8,
-        specular: 0.35,
-        edgeLight: 0.4,
-        refraction: 30,
-        edgeLensRefraction: true,
-        edgeInner: 35,
-        edgeOuter: 80,
-        tint: 'rgba(255,255,255,0.02)',
-        shadow: false,
-        border: false,
-        interactive: false,
-    };
-    // Start menu: frosted glass panel
-    var _menuGlassOpts = {
-        blur: 24,
-        saturate: 1.8,
-        brightness: 1.05,
-        borderRadius: 14,
-        specular: 0.25,
-        edgeLight: 0.3,
-        refraction: 0,
-        tint: 'rgba(40,40,40,0.55)',
-        shadow: true,
-        interactive: true,
-    };
-
-    function _isMacosTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'macos';
-    }
-
-    function _applyDragGlass(el, type) {
-        if (!window.DemiGlass || !_isMacosTheme()) return;
-        if (el._lgId) return;
-        // Save original styles before DemiGlass mutates them
-        el._dgSaved = {
-            overflow: el.style.overflow,
-            borderRadius: el.style.borderRadius,
-            background: el.style.background,
-            position: el.style.position,
-            backdropFilter: el.style.backdropFilter,
-            webkitBackdropFilter: el.style.webkitBackdropFilter,
-            boxShadow: el.style.boxShadow,
-        };
-        var opts = type === 'icon' ? _dragGlassIconOpts : _dragGlassOpts;
-        DemiGlass.init(el, opts);
-    }
-
-    function _removeDragGlass(el) {
-        if (!window.DemiGlass) return;
-        if (el._lgId) DemiGlass.destroy(el);
-        // Restore original styles
-        if (el._dgSaved) {
-            var s = el._dgSaved;
-            el.style.overflow = s.overflow;
-            el.style.borderRadius = s.borderRadius;
-            el.style.background = s.background;
-            el.style.position = s.position;
-            el.style.backdropFilter = s.backdropFilter;
-            el.style.webkitBackdropFilter = s.webkitBackdropFilter;
-            el.style.boxShadow = s.boxShadow;
-            delete el._dgSaved;
-        }
-    }
-
-    var _startMenuGlass = null;
-    function _applyStartMenuGlass() {
-        if (!window.DemiGlass || !_isMacosTheme()) return;
-        var menu = document.getElementById('startMenu');
-        if (!menu || menu._lgId) return;
-        DemiGlass.init(menu, _menuGlassOpts);
-    }
-    function _removeStartMenuGlass() {
-        if (!window.DemiGlass) return;
-        var menu = document.getElementById('startMenu');
-        if (menu && menu._lgId) DemiGlass.destroy(menu);
-    }
-
-    function _refreshGlass() {
-        if (!window.DemiGlass) return;
-        DemiGlass.destroyAll();
-    }
+    // ===== DEMIGLASS — disabled, existing CSS handles macOS glass =====
+    function _refreshGlass() {}
 
     function initDesktopIcons() {
         var icons = document.querySelectorAll('.desktop-icon');
@@ -191,7 +90,6 @@
                     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                         if (!isDragging) {
                             icon.classList.add('dragging');
-                            _applyDragGlass(icon, 'icon');
                         }
                         isDragging = true;
                     }
@@ -205,7 +103,6 @@
                 function onUp() {
                     document.removeEventListener('mousemove', onMove);
                     document.removeEventListener('mouseup', onUp);
-                    _removeDragGlass(icon);
                     icon.classList.remove('dragging');
                     icon.style.zIndex = '';
                     if (isDragging) {
@@ -595,7 +492,6 @@
             offsetY = e.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
-            _applyDragGlass(win, 'window');
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
@@ -612,7 +508,6 @@
             offsetY = touch.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
-            _applyDragGlass(win, 'window');
             document.addEventListener('touchmove', onDragTouch, { passive: false });
             document.addEventListener('touchend', stopDrag);
         }
@@ -655,7 +550,6 @@
                     dragTarget.style.left = Math.max(0, Math.round((window.innerWidth - w) / 2)) + 'px';
                     dragTarget.style.top = Math.max(0, Math.round((window.innerHeight - h) / 2 - 30)) + 'px';
                 }
-                _removeDragGlass(dragTarget);
                 dragTarget.classList.remove('dragging');
             }
             dragTarget = null;
@@ -708,11 +602,6 @@
         startBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             startMenu.classList.toggle('hidden');
-            if (!startMenu.classList.contains('hidden')) {
-                _applyStartMenuGlass();
-            } else {
-                _removeStartMenuGlass();
-            }
         });
 
         // Start menu items
