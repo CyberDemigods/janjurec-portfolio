@@ -856,7 +856,7 @@
     // Specular
     this.spec = document.createElement('div');
     this.spec.style.cssText =
-      'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;' +
+      'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:9999;' +
       'opacity:' + o.specular + ';' +
       'background:linear-gradient(170deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.06) 30%, transparent 55%);';
 
@@ -864,7 +864,7 @@
     if (o.border) {
       this.borderEl = document.createElement('div');
       this.borderEl.style.cssText =
-        'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:6;' +
+        'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:10000;' +
         'border:0.5px solid rgba(255,255,255,0.18);' +
         'border-top-color:rgba(255,255,255,0.35);' +
         'border-bottom-color:rgba(255,255,255,0.06);';
@@ -873,7 +873,7 @@
     // Inner shadow
     this.innerShadow = document.createElement('div');
     this.innerShadow.style.cssText =
-      'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:4;' +
+      'position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:9998;' +
       'box-shadow:inset 0 -1px 3px rgba(0,0,0,0.04), inset 0 1px 2px rgba(255,255,255,0.05);';
 
     this.el.appendChild(this.spec);

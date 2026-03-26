@@ -98,10 +98,15 @@
         // Remove existing preserveStyles glass first, then apply drag glass
         if (el._lgId) DemiGlass.destroy(el);
         DemiGlass.init(el, opts);
+        // Make window content semi-transparent during drag
+        if (el.classList.contains('window')) {
+            el.classList.add('dg-drag-transparent');
+        }
     }
 
     function _removeDragGlass(el) {
         if (!window.DemiGlass) return;
+        el.classList.remove('dg-drag-transparent');
         if (el._lgId) DemiGlass.destroy(el);
         // Re-apply preserveStyles glass for windows (not icons)
         if (el.classList.contains('window') && !el.classList.contains('hidden') && _isMacosTheme()) {
