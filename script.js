@@ -43,6 +43,27 @@
         border: true, shadow: false,
         interactive: true,
     };
+    // Drag-only: full refraction with edge lens (temporarily overrides styles during drag)
+    var _dragGlassOpts = {
+        blur: 8, saturate: 1.5, brightness: 1.06,
+        refraction: 30,
+        edgeLensRefraction: true,
+        edgeInner: 40, edgeOuter: 85,
+        specular: 0.35, edgeLight: 0.5,
+        border: true, shadow: false,
+        interactive: false,
+        borderRadius: 16,
+    };
+    var _iconDragGlassOpts = {
+        blur: 6, saturate: 1.4, brightness: 1.05,
+        refraction: 25,
+        edgeLensRefraction: true,
+        edgeInner: 35, edgeOuter: 80,
+        specular: 0.3, edgeLight: 0.4,
+        border: true, shadow: false,
+        interactive: false,
+        borderRadius: 10,
+    };
 
     function _isMacosTheme() {
         return document.documentElement.getAttribute('data-theme') === 'macos';
@@ -70,6 +91,22 @@
         if (!window.DemiGlass) return;
         var menu = document.getElementById('startMenu');
         if (menu && menu._lgId) DemiGlass.destroy(menu);
+    }
+
+    function _applyDragGlass(el, opts) {
+        if (!window.DemiGlass || !_isMacosTheme()) return;
+        // Remove existing preserveStyles glass first, then apply drag glass
+        if (el._lgId) DemiGlass.destroy(el);
+        DemiGlass.init(el, opts);
+    }
+
+    function _removeDragGlass(el) {
+        if (!window.DemiGlass) return;
+        if (el._lgId) DemiGlass.destroy(el);
+        // Re-apply preserveStyles glass for windows (not icons)
+        if (el.classList.contains('window') && !el.classList.contains('hidden') && _isMacosTheme()) {
+            DemiGlass.init(el, _glassOpts);
+        }
     }
 
     function _refreshGlass() {
@@ -138,6 +175,7 @@
                     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                         if (!isDragging) {
                             icon.classList.add('dragging');
+                            _applyDragGlass(icon, _iconDragGlassOpts);
                         }
                         isDragging = true;
                     }
@@ -152,6 +190,7 @@
                     document.removeEventListener('mousemove', onMove);
                     document.removeEventListener('mouseup', onUp);
                     icon.classList.remove('dragging');
+                    _removeDragGlass(icon);
                     icon.style.zIndex = '';
                     if (isDragging) {
                         // Save position
@@ -336,6 +375,7 @@
         let offsetX = startX - rect.left;
         let offsetY = startY - rect.top;
         bringToFront(win);
+        _applyDragGlass(win, _dragGlassOpts);
 
         function getTaskbarHeight() {
             const tb = document.querySelector('.taskbar');
@@ -356,6 +396,7 @@
         }
 
         function onUp() {
+            _removeDragGlass(win);
             document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', onMove);
             document.removeEventListener(isTouch ? 'touchend' : 'mouseup', onUp);
         }
@@ -541,6 +582,7 @@
             offsetY = e.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
+            _applyDragGlass(win, _dragGlassOpts);
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
@@ -557,6 +599,7 @@
             offsetY = touch.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
+            _applyDragGlass(win, _dragGlassOpts);
             document.addEventListener('touchmove', onDragTouch, { passive: false });
             document.addEventListener('touchend', stopDrag);
         }
@@ -600,6 +643,7 @@
                     dragTarget.style.top = Math.max(0, Math.round((window.innerHeight - h) / 2 - 30)) + 'px';
                 }
                 dragTarget.classList.remove('dragging');
+                _removeDragGlass(dragTarget);
             }
             dragTarget = null;
             document.removeEventListener('mousemove', onDrag);
