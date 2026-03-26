@@ -85,6 +85,16 @@
     function _applyDragGlass(el, type) {
         if (!window.DemiGlass || !_isMacosTheme()) return;
         if (el._lgId) return;
+        // Save original styles before DemiGlass mutates them
+        el._dgSaved = {
+            overflow: el.style.overflow,
+            borderRadius: el.style.borderRadius,
+            background: el.style.background,
+            position: el.style.position,
+            backdropFilter: el.style.backdropFilter,
+            webkitBackdropFilter: el.style.webkitBackdropFilter,
+            boxShadow: el.style.boxShadow,
+        };
         var opts = type === 'icon' ? _dragGlassIconOpts : _dragGlassOpts;
         DemiGlass.init(el, opts);
     }
@@ -92,6 +102,18 @@
     function _removeDragGlass(el) {
         if (!window.DemiGlass) return;
         if (el._lgId) DemiGlass.destroy(el);
+        // Restore original styles
+        if (el._dgSaved) {
+            var s = el._dgSaved;
+            el.style.overflow = s.overflow;
+            el.style.borderRadius = s.borderRadius;
+            el.style.background = s.background;
+            el.style.position = s.position;
+            el.style.backdropFilter = s.backdropFilter;
+            el.style.webkitBackdropFilter = s.webkitBackdropFilter;
+            el.style.boxShadow = s.boxShadow;
+            delete el._dgSaved;
+        }
     }
 
     var _startMenuGlass = null;
