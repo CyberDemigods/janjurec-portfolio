@@ -148,9 +148,17 @@
                 icon.style.left = '';
                 icon.style.top = '';
             } else if (savedPositions[key]) {
-                icon.style.left = savedPositions[key].x + 'px';
-                icon.style.top = savedPositions[key].y + 'px';
-            } else {
+                var sx = savedPositions[key].x, sy = savedPositions[key].y;
+                // Reset if saved position is off-screen
+                if (sx < -50 || sx > window.innerWidth - 20 || sy < -50 || sy > window.innerHeight - 60) {
+                    delete savedPositions[key];
+                    try { localStorage.setItem('jan-portfolio-icon-pos', JSON.stringify(savedPositions)); } catch(e) {}
+                } else {
+                    icon.style.left = sx + 'px';
+                    icon.style.top = sy + 'px';
+                }
+            }
+            if (!mobile && !icon.style.left) {
                 // First visit: semi-organized grouped layout with slight randomness
                 var basePositions = {
                     // Top group: CV/portfolio
