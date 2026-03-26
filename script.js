@@ -30,8 +30,81 @@
         return 'ontouchstart' in window || window.innerWidth <= 768;
     }
 
-    // ===== DEMIGLASS — disabled, existing CSS handles macOS glass =====
-    function _refreshGlass() {}
+    // ===== DEMIGLASS — macOS Liquid Glass via overlay divs =====
+    // We never apply DemiGlass to the actual element (it mutates styles).
+    // Instead we insert an overlay div and apply glass to that.
+    var _dragGlassOpts = {
+        blur: 0, saturate: 1.0, brightness: 1.0,
+        borderRadius: 12, specular: 0.4, edgeLight: 0.5,
+        refraction: 40, edgeLensRefraction: true,
+        edgeInner: 45, edgeOuter: 85,
+        tint: 'rgba(255,255,255,0.02)',
+        shadow: false, border: false, interactive: false,
+    };
+    var _dragGlassIconOpts = {
+        blur: 0, saturate: 1.0, brightness: 1.0,
+        borderRadius: 8, specular: 0.35, edgeLight: 0.4,
+        refraction: 30, edgeLensRefraction: true,
+        edgeInner: 35, edgeOuter: 80,
+        tint: 'rgba(255,255,255,0.02)',
+        shadow: false, border: false, interactive: false,
+    };
+    var _menuGlassOpts = {
+        blur: 24, saturate: 1.8, brightness: 1.05,
+        borderRadius: 14, specular: 0.25, edgeLight: 0.3,
+        refraction: 0,
+        tint: 'rgba(40,40,40,0.55)',
+        shadow: true, interactive: true,
+    };
+
+    function _isMacosTheme() {
+        return document.documentElement.getAttribute('data-theme') === 'macos';
+    }
+
+    function _applyDragGlass(el, type) {
+        if (!window.DemiGlass || !_isMacosTheme()) return;
+        if (el._dgOverlay) return;
+        var overlay = document.createElement('div');
+        overlay.className = 'dg-overlay';
+        overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;overflow:hidden;';
+        el.insertBefore(overlay, el.firstChild);
+        el._dgOverlay = overlay;
+        DemiGlass.init(overlay, type === 'icon' ? _dragGlassIconOpts : _dragGlassOpts);
+    }
+
+    function _removeDragGlass(el) {
+        if (!el._dgOverlay) return;
+        if (el._dgOverlay._lgId) DemiGlass.destroy(el._dgOverlay);
+        el._dgOverlay.remove();
+        delete el._dgOverlay;
+    }
+
+    function _applyStartMenuGlass() {
+        if (!window.DemiGlass || !_isMacosTheme()) return;
+        var menu = document.getElementById('startMenu');
+        if (!menu || menu._dgOverlay) return;
+        var overlay = document.createElement('div');
+        overlay.className = 'dg-overlay';
+        overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;overflow:hidden;';
+        menu.insertBefore(overlay, menu.firstChild);
+        menu._dgOverlay = overlay;
+        DemiGlass.init(overlay, _menuGlassOpts);
+    }
+
+    function _removeStartMenuGlass() {
+        var menu = document.getElementById('startMenu');
+        if (!menu || !menu._dgOverlay) return;
+        if (menu._dgOverlay._lgId) DemiGlass.destroy(menu._dgOverlay);
+        menu._dgOverlay.remove();
+        delete menu._dgOverlay;
+    }
+
+    function _refreshGlass() {
+        if (!window.DemiGlass) return;
+        DemiGlass.destroyAll();
+        // Clean up any leftover overlays
+        document.querySelectorAll('.dg-overlay').forEach(function(o) { o.remove(); });
+    }
 
     function initDesktopIcons() {
         var icons = document.querySelectorAll('.desktop-icon');
@@ -90,6 +163,7 @@
                     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                         if (!isDragging) {
                             icon.classList.add('dragging');
+                            _applyDragGlass(icon, 'icon');
                         }
                         isDragging = true;
                     }
@@ -103,6 +177,7 @@
                 function onUp() {
                     document.removeEventListener('mousemove', onMove);
                     document.removeEventListener('mouseup', onUp);
+                    _removeDragGlass(icon);
                     icon.classList.remove('dragging');
                     icon.style.zIndex = '';
                     if (isDragging) {
@@ -492,6 +567,7 @@
             offsetY = e.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
+            _applyDragGlass(win, 'window');
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
@@ -508,6 +584,7 @@
             offsetY = touch.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
+            _applyDragGlass(win, 'window');
             document.addEventListener('touchmove', onDragTouch, { passive: false });
             document.addEventListener('touchend', stopDrag);
         }
@@ -550,6 +627,7 @@
                     dragTarget.style.left = Math.max(0, Math.round((window.innerWidth - w) / 2)) + 'px';
                     dragTarget.style.top = Math.max(0, Math.round((window.innerHeight - h) / 2 - 30)) + 'px';
                 }
+                _removeDragGlass(dragTarget);
                 dragTarget.classList.remove('dragging');
             }
             dragTarget = null;
@@ -602,6 +680,11 @@
         startBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             startMenu.classList.toggle('hidden');
+            if (!startMenu.classList.contains('hidden')) {
+                _applyStartMenuGlass();
+            } else {
+                _removeStartMenuGlass();
+            }
         });
 
         // Start menu items
