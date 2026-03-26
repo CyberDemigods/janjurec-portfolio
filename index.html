@@ -19,10 +19,6 @@
     </script>
 </head>
 <body>
-    <!-- SVG filters for macOS liquid glass refraction (populated by initLiquidGlass in script.js) -->
-    <svg class="macos-liquid-glass-svg" id="liquidGlassSvg" xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;pointer-events:none">
-        <defs id="liquidGlassDefs"></defs>
-    </svg>
 
     <!-- ==================== LOADING SCREEN ==================== -->
     <div class="boot-screen" id="bootScreen">
@@ -843,6 +839,7 @@
             </div>
             <div class="paint-menubar">
                 <span class="paint-menu-item" data-tool="save">File: Save</span>
+                <span class="paint-menu-item" data-tool="download">File: Download</span>
                 <span class="paint-menu-item" data-tool="undo">Edit: Undo</span>
                 <span class="paint-menu-item" data-tool="clear">Edit: Clear</span>
             </div>
@@ -1124,7 +1121,7 @@
     <script src="i18n.js"></script>
     <script src="wallpapers.js"></script>
     <script src="questions.js"></script>
-    <script src="liquid-glass.js"></script>
+    <script src="demiglass.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -30,6 +30,47 @@
         return 'ontouchstart' in window || window.innerWidth <= 768;
     }
 
+    // ===== DEMIGLASS — macOS Liquid Glass =====
+    var _glassOpts = {
+        blur: 16,
+        saturate: 1.6,
+        brightness: 1.08,
+        borderRadius: 10,
+        specular: 0.3,
+        edgeLight: 0.4,
+        refraction: 12,
+        edgeLensRefraction: true,
+        edgeInner: 40,
+        edgeOuter: 90,
+        tint: 'rgba(255,255,255,0.06)',
+        shadow: true,
+        interactive: true,
+    };
+
+    function _isMacosTheme() {
+        return document.documentElement.getAttribute('data-theme') === 'macos';
+    }
+
+    function _applyGlass(win) {
+        if (!window.DemiGlass || !_isMacosTheme()) return;
+        if (win._lgId) return; // already applied
+        DemiGlass.init(win, _glassOpts);
+    }
+
+    function _removeGlass(win) {
+        if (!window.DemiGlass) return;
+        if (win._lgId) DemiGlass.destroy(win);
+    }
+
+    function _refreshGlass() {
+        if (!window.DemiGlass) return;
+        DemiGlass.destroyAll();
+        if (!_isMacosTheme()) return;
+        document.querySelectorAll('.window:not(.hidden)').forEach(function(win) {
+            DemiGlass.init(win, _glassOpts);
+        });
+    }
+
     function initDesktopIcons() {
         var icons = document.querySelectorAll('.desktop-icon');
         var colGap = 90, rowGap = 90, padX = 16, padY = 16;
@@ -87,7 +128,6 @@
                     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                         if (!isDragging) {
                             icon.classList.add('dragging');
-                            if (window.LiquidGlass) LiquidGlass.apply(icon, 'icon');
                         }
                         isDragging = true;
                     }
@@ -96,13 +136,11 @@
                         var newTop = iconStartY + dy;
                         icon.style.left = newLeft + 'px';
                         icon.style.top = newTop + 'px';
-                        if (window.LiquidGlass) LiquidGlass.updatePosition(icon);
                     }
                 }
                 function onUp() {
                     document.removeEventListener('mousemove', onMove);
                     document.removeEventListener('mouseup', onUp);
-                    if (window.LiquidGlass) LiquidGlass.remove(icon);
                     icon.classList.remove('dragging');
                     icon.style.zIndex = '';
                     if (isDragging) {
@@ -189,6 +227,7 @@
             const win = document.getElementById('window-' + name);
             if (!win) return;
             win.classList.remove('hidden');
+            _applyGlass(win);
             bringToFront(win);
             updateTaskbarButtons();
             // Autoplay Rick when Winamp opens
@@ -239,6 +278,7 @@
 
         // Add to desktop
         document.querySelector('.desktop').appendChild(clone);
+        _applyGlass(clone);
         bringToFront(clone);
         updateTaskbarButtons();
     }
@@ -343,6 +383,7 @@
         }
 
         playCloseSound();
+        _removeGlass(win);
 
         // Stop Winamp playback when closing
         if (name === 'winamp') {
@@ -489,7 +530,6 @@
             offsetY = e.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
-            if (window.LiquidGlass) LiquidGlass.apply(win, 'window');
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
@@ -506,7 +546,6 @@
             offsetY = touch.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
-            if (window.LiquidGlass) LiquidGlass.apply(win, 'window');
             document.addEventListener('touchmove', onDragTouch, { passive: false });
             document.addEventListener('touchend', stopDrag);
         }
@@ -525,7 +564,6 @@
             y = Math.max(0, Math.min(maxY, y));
             dragTarget.style.left = x + 'px';
             dragTarget.style.top = y + 'px';
-            if (window.LiquidGlass) LiquidGlass.updatePosition(dragTarget);
         }
 
         function onDragTouch(e) {
@@ -539,7 +577,6 @@
             y = Math.max(0, Math.min(maxY, y));
             dragTarget.style.left = x + 'px';
             dragTarget.style.top = y + 'px';
-            if (window.LiquidGlass) LiquidGlass.updatePosition(dragTarget);
         }
 
         function stopDrag() {
@@ -552,7 +589,6 @@
                     dragTarget.style.top = Math.max(0, Math.round((window.innerHeight - h) / 2 - 30)) + 'px';
                 }
                 dragTarget.classList.remove('dragging');
-                if (window.LiquidGlass) LiquidGlass.remove(dragTarget);
             }
             dragTarget = null;
             document.removeEventListener('mousemove', onDrag);
@@ -683,8 +719,8 @@
                 applyWallpaperForTheme(theme);
                 updateBrowserTheme();
                 updateBrowserDesktopIcon();
-                // Re-init liquid glass for macOS
-                if (window.LiquidGlass) LiquidGlass.reinit();
+                // Re-init glass for macOS
+                _refreshGlass();
                 // Handle Safari inception on theme switch
                 var browserWin = document.getElementById('window-browser');
                 if (browserWin && !browserWin.classList.contains('hidden')) {
@@ -6156,6 +6192,8 @@
                     performUndo();
                 } else if (t === 'save') {
                     savePainting();
+                } else if (t === 'download') {
+                    downloadPainting(canvas.toDataURL('image/png'), document.getElementById('paintStatus'));
                 }
             });
         });
@@ -7203,8 +7241,8 @@
         updateBrowserTheme();
         updateBrowserDesktopIcon();
 
-        // Initialize liquid glass for macOS glass effects
-        if (window.LiquidGlass) LiquidGlass.init();
+        // Initialize glass for macOS
+        _refreshGlass();
 
         // Reveal desktop now that theme + wallpaper are applied
         var desktopEl = document.getElementById('desktop');
