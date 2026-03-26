@@ -208,6 +208,7 @@
 [data-theme="macos"] .btn-maximize:hover { background: #1fb934 !important; }
 
 /* Frosted glass windows - enhanced liquid glass */
+/* backdrop-filter managed by DemiGlass when active; CSS fallback otherwise */
 [data-theme="macos"] .window {
     backdrop-filter: blur(60px) saturate(200%) brightness(1.04);
     -webkit-backdrop-filter: blur(60px) saturate(200%) brightness(1.04);
@@ -218,7 +219,7 @@
             rgba(246, 246, 246, 0.72) 30%,
             rgba(240, 240, 240, 0.68) 70%,
             rgba(230, 230, 230, 0.55) 100%
-        );
+        ) !important;
     border: 0.5px solid rgba(0,0,0,0.12);
     border-top: 0.5px solid rgba(255,255,255,0.7);
     box-shadow:
@@ -433,7 +434,7 @@
             rgba(80, 80, 100, 0.18) 0%,
             rgba(40, 40, 50, 0.50) 50%,
             rgba(20, 20, 30, 0.60) 100%
-        );
+        ) !important;
     box-shadow:
         0 24px 80px rgba(0,0,0,0.4),
         0 0 60px rgba(0,0,0,0.15),
@@ -492,13 +493,7 @@
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ---- Liquid Glass: Start Menu Refraction (Chromium only) ---- */
-@supports (backdrop-filter: url(#liquid-glass-menu)) {
-    [data-theme="macos"] .start-menu-item:hover {
-        backdrop-filter: url(#liquid-glass-menu) blur(2px) saturate(180%);
-        -webkit-backdrop-filter: url(#liquid-glass-menu) blur(2px) saturate(180%);
-    }
-}
+/* Start menu item refraction handled by DemiGlass */
 
 /* Hide menubar on macOS */
 [data-theme="macos"] .window-menubar {

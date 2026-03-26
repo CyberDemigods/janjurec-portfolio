@@ -32,13 +32,15 @@
 
     // ===== DEMIGLASS — macOS Liquid Glass =====
     var _glassOpts = {
-        preserveStyles: true,
-        refraction: 25,
+        blur: 20, saturate: 2.0, brightness: 1.05,
+        refraction: 40,
         edgeLensRefraction: true,
-        edgeInner: 35, edgeOuter: 80,
+        edgeInner: 30, edgeOuter: 80,
         specular: 0.3, edgeLight: 0.4,
         border: true, shadow: false,
         interactive: true,
+        borderRadius: 12,
+        tint: 'rgba(255,255,255,0.01)',
     };
     var _menuGlassOpts = {
         preserveStyles: true,
