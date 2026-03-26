@@ -43,16 +43,17 @@
         border: true, shadow: false,
         interactive: true,
     };
-    // Drag-only: full refraction with edge lens (temporarily overrides styles during drag)
+    // Drag-only: edge lens refraction (temporarily overrides styles during drag)
     var _dragGlassOpts = {
-        blur: 8, saturate: 1.5, brightness: 1.06,
-        refraction: 30,
+        blur: 6, saturate: 1.4, brightness: 1.05,
+        refraction: 25,
         edgeLensRefraction: true,
-        edgeInner: 40, edgeOuter: 85,
-        specular: 0.35, edgeLight: 0.5,
+        edgeInner: 35, edgeOuter: 80,
+        specular: 0.3, edgeLight: 0.4,
         border: true, shadow: false,
         interactive: false,
-        borderRadius: 16,
+        borderRadius: 12,
+        tint: 'rgba(255,255,255,0.04)',
     };
     var _iconDragGlassOpts = {
         blur: 6, saturate: 1.4, brightness: 1.05,
@@ -63,6 +64,7 @@
         border: true, shadow: false,
         interactive: false,
         borderRadius: 10,
+        tint: 'rgba(255,255,255,0.04)',
     };
 
     function _isMacosTheme() {

@@ -246,16 +246,11 @@
     -webkit-backdrop-filter: blur(65px) saturate(210%) brightness(1.06);
 }
 
-/* Drag transparency - window becomes see-through with refraction during drag */
+/* Drag transparency - window content fades so refraction shows through */
 [data-theme="macos"] .window.dg-drag-transparent .window-titlebar,
 [data-theme="macos"] .window.dg-drag-transparent .window-body {
-    opacity: 0.35;
-    transition: opacity 0.15s ease;
-}
-[data-theme="macos"] .window.dg-drag-transparent {
-    background: rgba(255,255,255,0.08) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    opacity: 0.25;
+    transition: opacity 0.12s ease;
 }
 
 /* Specular highlight on titlebar - bright gradient top edge */
