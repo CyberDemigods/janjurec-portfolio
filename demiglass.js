@@ -828,6 +828,12 @@
       var bd = bdParts.join(' ');
       s.webkitBackdropFilter = bd;
       s.backdropFilter = bd;
+    } else if (preserve && this._filter && !this._useWebGL) {
+      // preserveStyles + refraction: prepend SVG filter to existing CSS backdrop-filter
+      var existing = computed.backdropFilter || computed.webkitBackdropFilter || '';
+      var withFilter = 'url(#' + this._filter.id + ') ' + existing;
+      s.webkitBackdropFilter = withFilter;
+      s.backdropFilter = withFilter;
     }
 
     // WebGL fallback: displacement via GPU shader
@@ -953,9 +959,11 @@
       s.backdropFilter = sv.backdropFilter;
       s.webkitBackdropFilter = sv.webkitBackdropFilter;
       s.boxShadow = sv.boxShadow;
-    } else if (this._saved && this._preserve && this._changedPosition) {
-      // Only restore position if we actually changed it
-      this.el.style.position = this._saved.position;
+    } else if (this._saved && this._preserve) {
+      if (this._changedPosition) this.el.style.position = this._saved.position;
+      // Restore backdrop-filter if we modified it (refraction + preserveStyles)
+      this.el.style.backdropFilter = this._saved.backdropFilter;
+      this.el.style.webkitBackdropFilter = this._saved.webkitBackdropFilter;
     }
   };
 

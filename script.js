@@ -32,7 +32,10 @@
 
     // ===== DEMIGLASS — macOS Liquid Glass =====
     var _glassOpts = {
-        preserveStyles: true,  // don't touch background/overflow/backdrop-filter/borderRadius
+        preserveStyles: true,
+        refraction: 25,
+        edgeLensRefraction: true,
+        edgeInner: 35, edgeOuter: 80,
         specular: 0.3, edgeLight: 0.4,
         border: true, shadow: false,
         interactive: true,
