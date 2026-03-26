@@ -1124,15 +1124,16 @@
         var fileReadMap = {
             '~/about.txt': function() {
                 addLine('Jan Jurec', 'success');
-                addLine('Senior DevOps Engineer | MLOps | Backend');
+                addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
                 addLine('"Python, AWS, Linux. Cool stuff."');
                 addLine('Location: Gorzow Wielkopolski, Poland');
                 addLine('Remote since 2018 (before it was cool)');
             },
             '~/experience.log': function() {
                 addLine('=== EXPERIENCE ===', 'info');
-                addLine('2024-now   CEO @ InnovationsEX Solutions-pol');
-                addLine('2023-now   Infra Specialist @ Zdrowa (charity)');
+                addLine('2025-now   Sr Software Eng / MLOps @ Santander');
+                addLine('2024-2025  Sr MLOps Engineer @ Nordea (1y)');
+                addLine('2023-2025  Infra Specialist @ Zdrowa (charity)');
                 addLine('2021-2024  Sr DevOps/MLOps @ TUI (3y4m)');
                 addLine('2019-2024  Software Engineer @ 3e9 Systems (5y)');
                 addLine('2020-2022  Python Mentor @ Kodilla (2y4m)');
@@ -3022,7 +3023,7 @@
 
                 case 'whoami':
                     addLine('Jan Jurec', 'success');
-                    addLine('Senior DevOps Engineer | MLOps | Backend');
+                    addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
                     addLine('"Python, AWS, Linux. Cool stuff."');
                     addLine('Location: Gorzow Wielkopolski, Poland');
                     addLine('Remote since 2018 (before it was cool)');
@@ -3040,8 +3041,9 @@
 
                 case 'experience':
                     addLine('=== EXPERIENCE ===', 'info');
-                    addLine('2024-now   CEO @ InnovationsEX Solutions-pol');
-                    addLine('2023-now   Infra Specialist @ Zdrowa (charity)');
+                    addLine('2025-now   Sr Software Eng / MLOps @ Santander');
+                    addLine('2024-2025  Sr MLOps Engineer @ Nordea (1y)');
+                    addLine('2023-2025  Infra Specialist @ Zdrowa (charity)');
                     addLine('2021-2024  Sr DevOps/MLOps @ TUI (3y4m)');
                     addLine('2019-2024  Software Engineer @ 3e9 Systems (5y)');
                     addLine('2020-2022  Python Mentor @ Kodilla (2y4m)');
@@ -7409,8 +7411,8 @@
 
         // Update page title based on language
         const titles = {
-            en: 'Jan Jurec - Senior DevOps Engineer',
-            pl: 'Jan Jurec - Starszy Inżynier DevOps',
+            en: 'Jan Jurec - Senior Software Engineer',
+            pl: 'Jan Jurec - Starszy Inżynier Oprogramowania',
             klingon: 'Jan Jurec - DevOps la\' nIvqu\''
         };
         document.title = titles[lang] || titles.en;

@@ -44,7 +44,7 @@ const TRANSLATIONS = {
         'start': 'Start',
 
         // About content
-        'about-title': 'Senior DevOps Engineer | MLOps | Backend',
+        'about-title': 'Senior Software Engineer w/ MLOps & Agents Mentor',
         'about-location': '\ud83d\udccd Gorz\u00f3w Wielkopolski, Poland',
         'about-tagline': '"Python, AWS, Linux. Cool stuff."',
         'about-bio-1': 'Versatile and experienced professional excelling in both DevOps and software engineering. Primary skills include <strong>AWS</strong>, <strong>Python</strong>, and <strong>DevOps</strong>, with a strong emphasis on Infrastructure as Code using Terraform + CDK, and CI/CD administration.',
@@ -54,7 +54,7 @@ const TRANSLATIONS = {
         'about-status-2': 'Remote since 2018',
 
         // Experience
-        'exp-status-1': '8 positions',
+        'exp-status-1': '9 positions',
         'exp-status-2': '10+ years in tech',
 
         // Skills
@@ -185,7 +185,7 @@ const TRANSLATIONS = {
 
         'start': 'Start',
 
-        'about-title': 'Starszy In\u017cynier DevOps | MLOps | Backend',
+        'about-title': 'Starszy In\u017cynier Oprogramowania w/ MLOps & Mentor Agent\u00f3w',
         'about-location': '\ud83d\udccd Gorz\u00f3w Wielkopolski, Polska',
         'about-tagline': '"Python, AWS, Linux. Fajne rzeczy."',
         'about-bio-1': 'Wszechstronny i do\u015bwiadczony profesjonalista, bieg\u0142y zar\u00f3wno w DevOps jak i in\u017cynierii oprogramowania. G\u0142\u00f3wne umiej\u0119tno\u015bci to <strong>AWS</strong>, <strong>Python</strong> i <strong>DevOps</strong>, z naciskiem na Infrastructure as Code (Terraform + CDK) oraz administracj\u0119 CI/CD.',
@@ -194,7 +194,7 @@ const TRANSLATIONS = {
         'about-status-1': '10+ lat do\u015bwiadczenia',
         'about-status-2': 'Zdalnie od 2018',
 
-        'exp-status-1': '8 stanowisk',
+        'exp-status-1': '9 stanowisk',
         'exp-status-2': '10+ lat w IT',
 
         'skills-status-1': '35+ umiej\u0119tno\u015bci',
@@ -315,7 +315,7 @@ const TRANSLATIONS = {
 
         'start': 'yImev\'egh!',
 
-        'about-title': 'DevOps la\' \u2013 tlhIngan nIvbogh | MLOps | Backend',
+        'about-title': 'Software Engineer la\' nIvbogh | MLOps | Agents ghojmoHwI\'',
         'about-location': '\ud83d\udccd Gorz\u00f3w Wielkopolski, tera\' Sep',
         'about-tagline': '"Python, AWS, Linux. Doch pov."',
         'about-bio-1': 'SuvwI\' po\' DevOps je software engineering. laH potlh: <strong>AWS</strong>, <strong>Python</strong>, <strong>DevOps</strong>. Infrastructure as Code lo\'taH \u2013 Terraform + CDK, CI/CD SeHwI\'.',
@@ -324,7 +324,7 @@ const TRANSLATIONS = {
         'about-status-1': 'DIS 10 boq tu\'lu\'',
         'about-status-2': 'najHa\' 2018 vo\'',
 
-        'exp-status-1': 'quS 8',
+        'exp-status-1': 'quS 9',
         'exp-status-2': 'DIS 10 boq \'ej nIv',
 
         'skills-status-1': 'laH 35+',
