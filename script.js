@@ -30,24 +30,14 @@
         return 'ontouchstart' in window || window.innerWidth <= 768;
     }
 
-    // ===== DEMIGLASS — macOS Liquid Glass via overlay divs =====
-    // We never apply DemiGlass to the actual element (it mutates styles).
-    // Instead we insert an overlay div and apply glass to that.
-    var _dragGlassOpts = {
-        blur: 0, saturate: 1.0, brightness: 1.0,
-        borderRadius: 12, specular: 0.4, edgeLight: 0.5,
-        refraction: 40, edgeLensRefraction: true,
-        edgeInner: 45, edgeOuter: 85,
-        tint: 'rgba(255,255,255,0.02)',
-        shadow: false, border: false, interactive: false,
-    };
-    var _dragGlassIconOpts = {
-        blur: 0, saturate: 1.0, brightness: 1.0,
-        borderRadius: 8, specular: 0.35, edgeLight: 0.4,
-        refraction: 30, edgeLensRefraction: true,
-        edgeInner: 35, edgeOuter: 80,
-        tint: 'rgba(255,255,255,0.02)',
-        shadow: false, border: false, interactive: false,
+    // ===== DEMIGLASS — macOS Liquid Glass =====
+    var _glassOpts = {
+        blur: 16, saturate: 1.6, brightness: 1.08,
+        borderRadius: 10, specular: 0.3, edgeLight: 0.4,
+        refraction: 12, edgeLensRefraction: true,
+        edgeInner: 40, edgeOuter: 90,
+        tint: 'rgba(255,255,255,0.06)',
+        shadow: true, interactive: true,
     };
     var _menuGlassOpts = {
         blur: 24, saturate: 1.8, brightness: 1.05,
@@ -61,49 +51,37 @@
         return document.documentElement.getAttribute('data-theme') === 'macos';
     }
 
-    function _applyDragGlass(el, type) {
+    function _applyGlass(win) {
         if (!window.DemiGlass || !_isMacosTheme()) return;
-        if (el._dgOverlay) return;
-        var overlay = document.createElement('div');
-        overlay.className = 'dg-overlay';
-        overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;overflow:hidden;';
-        el.insertBefore(overlay, el.firstChild);
-        el._dgOverlay = overlay;
-        DemiGlass.init(overlay, type === 'icon' ? _dragGlassIconOpts : _dragGlassOpts);
+        if (win._lgId) return;
+        DemiGlass.init(win, _glassOpts);
     }
 
-    function _removeDragGlass(el) {
-        if (!el._dgOverlay) return;
-        if (el._dgOverlay._lgId) DemiGlass.destroy(el._dgOverlay);
-        el._dgOverlay.remove();
-        delete el._dgOverlay;
+    function _removeGlass(win) {
+        if (!window.DemiGlass) return;
+        if (win._lgId) DemiGlass.destroy(win);
     }
 
     function _applyStartMenuGlass() {
         if (!window.DemiGlass || !_isMacosTheme()) return;
         var menu = document.getElementById('startMenu');
-        if (!menu || menu._dgOverlay) return;
-        var overlay = document.createElement('div');
-        overlay.className = 'dg-overlay';
-        overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;overflow:hidden;';
-        menu.insertBefore(overlay, menu.firstChild);
-        menu._dgOverlay = overlay;
-        DemiGlass.init(overlay, _menuGlassOpts);
+        if (!menu || menu._lgId) return;
+        DemiGlass.init(menu, _menuGlassOpts);
     }
 
     function _removeStartMenuGlass() {
+        if (!window.DemiGlass) return;
         var menu = document.getElementById('startMenu');
-        if (!menu || !menu._dgOverlay) return;
-        if (menu._dgOverlay._lgId) DemiGlass.destroy(menu._dgOverlay);
-        menu._dgOverlay.remove();
-        delete menu._dgOverlay;
+        if (menu && menu._lgId) DemiGlass.destroy(menu);
     }
 
     function _refreshGlass() {
         if (!window.DemiGlass) return;
         DemiGlass.destroyAll();
-        // Clean up any leftover overlays
-        document.querySelectorAll('.dg-overlay').forEach(function(o) { o.remove(); });
+        if (!_isMacosTheme()) return;
+        document.querySelectorAll('.window:not(.hidden)').forEach(function(win) {
+            DemiGlass.init(win, _glassOpts);
+        });
     }
 
     function initDesktopIcons() {
@@ -163,7 +141,6 @@
                     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                         if (!isDragging) {
                             icon.classList.add('dragging');
-                            _applyDragGlass(icon, 'icon');
                         }
                         isDragging = true;
                     }
@@ -177,7 +154,6 @@
                 function onUp() {
                     document.removeEventListener('mousemove', onMove);
                     document.removeEventListener('mouseup', onUp);
-                    _removeDragGlass(icon);
                     icon.classList.remove('dragging');
                     icon.style.zIndex = '';
                     if (isDragging) {
@@ -264,7 +240,7 @@
             const win = document.getElementById('window-' + name);
             if (!win) return;
             win.classList.remove('hidden');
-
+            _applyGlass(win);
             bringToFront(win);
             updateTaskbarButtons();
             // Autoplay Rick when Winamp opens
@@ -315,7 +291,7 @@
 
         // Add to desktop
         document.querySelector('.desktop').appendChild(clone);
-
+        _applyGlass(clone);
         bringToFront(clone);
         updateTaskbarButtons();
     }
@@ -420,6 +396,7 @@
         }
 
         playCloseSound();
+        _removeGlass(win);
 
 
         // Stop Winamp playback when closing
@@ -567,7 +544,6 @@
             offsetY = e.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
-            _applyDragGlass(win, 'window');
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
         }
@@ -584,7 +560,6 @@
             offsetY = touch.clientY - rect.top;
             bringToFront(win);
             win.classList.add('dragging');
-            _applyDragGlass(win, 'window');
             document.addEventListener('touchmove', onDragTouch, { passive: false });
             document.addEventListener('touchend', stopDrag);
         }
@@ -627,7 +602,6 @@
                     dragTarget.style.left = Math.max(0, Math.round((window.innerWidth - w) / 2)) + 'px';
                     dragTarget.style.top = Math.max(0, Math.round((window.innerHeight - h) / 2 - 30)) + 'px';
                 }
-                _removeDragGlass(dragTarget);
                 dragTarget.classList.remove('dragging');
             }
             dragTarget = null;

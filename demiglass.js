@@ -784,6 +784,16 @@
   GlassElement.prototype._build = function() {
     var o = this.o;
     var s = this.el.style;
+    // Save original styles for restore on destroy
+    this._saved = {
+      position: s.position,
+      overflow: s.overflow,
+      borderRadius: s.borderRadius,
+      background: s.background,
+      backdropFilter: s.backdropFilter,
+      webkitBackdropFilter: s.webkitBackdropFilter,
+      boxShadow: s.boxShadow,
+    };
     if (!s.position || s.position === 'static') s.position = 'relative';
     s.overflow = 'hidden';
     s.borderRadius = o.borderRadius + 'px';
@@ -918,6 +928,18 @@
     [this.spec, this.innerShadow, this.borderEl].forEach(function(e) { if (e) e.remove(); });
     if (this._filter) this._filter.svg.remove();
     this.el.classList.remove('demiglass');
+    // Restore original styles
+    if (this._saved) {
+      var s = this.el.style;
+      var sv = this._saved;
+      s.position = sv.position;
+      s.overflow = sv.overflow;
+      s.borderRadius = sv.borderRadius;
+      s.background = sv.background;
+      s.backdropFilter = sv.backdropFilter;
+      s.webkitBackdropFilter = sv.webkitBackdropFilter;
+      s.boxShadow = sv.boxShadow;
+    }
   };
 
   // =================================================================
