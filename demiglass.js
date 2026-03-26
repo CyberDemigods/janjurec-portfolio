@@ -764,6 +764,7 @@
       shadow: true,
       tint: 'rgba(255,255,255,0.06)',
       interactive: true,
+      preserveStyles: false, // true = only add visual layers, don't touch element styles
     };
     this.o = {};
     for (var k in d) this.o[k] = opts && opts[k] !== undefined ? opts[k] : d[k];
@@ -784,6 +785,8 @@
   GlassElement.prototype._build = function() {
     var o = this.o;
     var s = this.el.style;
+    var preserve = o.preserveStyles;
+
     // Save original styles for restore on destroy
     this._saved = {
       position: s.position,
@@ -794,10 +797,17 @@
       webkitBackdropFilter: s.webkitBackdropFilter,
       boxShadow: s.boxShadow,
     };
-    if (!s.position || s.position === 'static') s.position = 'relative';
-    s.overflow = 'hidden';
-    s.borderRadius = o.borderRadius + 'px';
-    s.background = o.tint;
+    this._preserve = preserve;
+
+    if (!preserve) {
+      if (!s.position || s.position === 'static') s.position = 'relative';
+      s.overflow = 'hidden';
+      s.borderRadius = o.borderRadius + 'px';
+      s.background = o.tint;
+    } else {
+      // Only ensure position is not static (needed for child overlays)
+      if (!s.position || s.position === 'static') s.position = 'relative';
+    }
     this.el.classList.add('demiglass');
 
     // SVG refraction
@@ -809,12 +819,14 @@
     // Detect Safari fallback — use WebGL for lens modes
     this._useWebGL = hasRefraction && this._filter && this._filter.mapURI && !testBackdropUrl();
 
-    var bdParts = [];
-    if (this._filter && !this._useWebGL) bdParts.push('url(#' + this._filter.id + ')');
-    bdParts.push('blur(' + o.blur + 'px) saturate(' + o.saturate + ') brightness(' + o.brightness + ')');
-    var bd = bdParts.join(' ');
-    s.webkitBackdropFilter = bd;
-    s.backdropFilter = bd;
+    if (!preserve) {
+      var bdParts = [];
+      if (this._filter && !this._useWebGL) bdParts.push('url(#' + this._filter.id + ')');
+      bdParts.push('blur(' + o.blur + 'px) saturate(' + o.saturate + ') brightness(' + o.brightness + ')');
+      var bd = bdParts.join(' ');
+      s.webkitBackdropFilter = bd;
+      s.backdropFilter = bd;
+    }
 
     // WebGL fallback: displacement via GPU shader
     this._gl = null;
@@ -928,8 +940,8 @@
     [this.spec, this.innerShadow, this.borderEl].forEach(function(e) { if (e) e.remove(); });
     if (this._filter) this._filter.svg.remove();
     this.el.classList.remove('demiglass');
-    // Restore original styles
-    if (this._saved) {
+    // Restore original styles (only if we modified them)
+    if (this._saved && !this._preserve) {
       var s = this.el.style;
       var sv = this._saved;
       s.position = sv.position;
@@ -939,6 +951,9 @@
       s.backdropFilter = sv.backdropFilter;
       s.webkitBackdropFilter = sv.webkitBackdropFilter;
       s.boxShadow = sv.boxShadow;
+    } else if (this._saved && this._preserve) {
+      // Only restore position if we changed it
+      this.el.style.position = this._saved.position;
     }
   };
 

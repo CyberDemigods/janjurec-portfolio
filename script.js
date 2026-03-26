@@ -32,19 +32,16 @@
 
     // ===== DEMIGLASS — macOS Liquid Glass =====
     var _glassOpts = {
-        blur: 16, saturate: 1.6, brightness: 1.08,
-        borderRadius: 10, specular: 0.3, edgeLight: 0.4,
-        refraction: 12, edgeLensRefraction: true,
-        edgeInner: 40, edgeOuter: 90,
-        tint: 'rgba(255,255,255,0.06)',
-        shadow: true, interactive: true,
+        preserveStyles: true,  // don't touch background/overflow/backdrop-filter/borderRadius
+        specular: 0.3, edgeLight: 0.4,
+        border: true, shadow: false,
+        interactive: true,
     };
     var _menuGlassOpts = {
-        blur: 24, saturate: 1.8, brightness: 1.05,
-        borderRadius: 14, specular: 0.25, edgeLight: 0.3,
-        refraction: 0,
-        tint: 'rgba(40,40,40,0.55)',
-        shadow: true, interactive: true,
+        preserveStyles: true,
+        specular: 0.25, edgeLight: 0.3,
+        border: true, shadow: false,
+        interactive: true,
     };
 
     function _isMacosTheme() {
