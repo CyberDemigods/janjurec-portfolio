@@ -61,7 +61,7 @@ const TRANSLATIONS = {
         'exp-status-2': '10+ years in tech',
 
         // Skills
-        'skills-status-1': '35+ skills',
+        'skills-status-1': '40+ skills',
         'skills-status-2': '4 LinkedIn assessments passed',
         'cat-cloud': 'Cloud & Infrastructure',
         'cat-lang': 'Languages & Frameworks',
@@ -203,7 +203,7 @@ const TRANSLATIONS = {
         'exp-status-1': '9 stanowisk',
         'exp-status-2': '10+ lat w IT',
 
-        'skills-status-1': '35+ umiej\u0119tno\u015bci',
+        'skills-status-1': '40+ umiej\u0119tno\u015bci',
         'skills-status-2': '4 testy LinkedIn zdane',
         'cat-cloud': 'Chmura i Infrastruktura',
         'cat-lang': 'J\u0119zyki i Frameworki',

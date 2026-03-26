@@ -1153,7 +1153,7 @@
             '~/about.txt': function() {
                 addLine('Jan Jurec', 'success');
                 addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
-                addLine('Stack: AWS, bare metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
+                addLine('Stack: AWS, pure metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
                 addLine('Location: Poland · Remote since 2018');
                 addLine('BSc Computer Science, Wroclaw Uni of Science and Tech');
             },
@@ -1171,10 +1171,11 @@
             },
             '~/skills.cfg': function() {
                 addLine('=== SKILLS ===', 'info');
-                addLine('Cloud:      AWS, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker');
-                addLine('Languages:  Python, FastAPI, Django, Flask, PHP');
+                addLine('Cloud:      AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker');
+                addLine('AI/ML:      MCPs, Agents, RAGs, Claude, LLMs, MLOps, MLflow, SageMaker');
+                addLine('Languages:  Python, FastAPI, Django, Flask, bash, PHP');
                 addLine('DevOps:     Docker, Kubernetes, GitLab CI/CD, Jenkins, Ansible');
-                addLine('Data/ML:    MLOps, MLflow, Glue, Data Pipeline, SageMaker');
+                addLine('Data:       SQL, vector DBs, noSQL, Glue, Data Pipelines');
                 addLine('Tools:      Git, Linux, Datadog, SonarQube');
                 addLine('Testing:    pytest, unit/e2e/smoke/perf tests');
             },
@@ -3052,17 +3053,18 @@
                 case 'whoami':
                     addLine('Jan Jurec', 'success');
                     addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
-                    addLine('Stack: AWS, bare metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
+                    addLine('Stack: AWS, pure metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
                     addLine('Location: Poland · Remote since 2018');
                     addLine('BSc Computer Science, Wroclaw Uni of Science and Tech');
                     break;
 
                 case 'skills':
                     addLine('=== SKILLS ===', 'info');
-                    addLine('Cloud:      AWS, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker');
-                    addLine('Languages:  Python, FastAPI, Django, Flask, PHP');
+                    addLine('Cloud:      AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker');
+                    addLine('AI/ML:      MCPs, Agents, RAGs, Claude, LLMs, MLOps, MLflow, SageMaker');
+                    addLine('Languages:  Python, FastAPI, Django, Flask, bash, PHP');
                     addLine('DevOps:     Docker, Kubernetes, GitLab CI/CD, Jenkins, Ansible');
-                    addLine('Data/ML:    MLOps, MLflow, Glue, Data Pipeline, SageMaker');
+                    addLine('Data:       SQL, vector DBs, noSQL, Glue, Data Pipelines');
                     addLine('Tools:      Git, Linux, Datadog, SonarQube');
                     addLine('Testing:    pytest, unit/e2e/smoke/perf tests');
                     break;
