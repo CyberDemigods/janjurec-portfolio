@@ -798,15 +798,17 @@
       boxShadow: s.boxShadow,
     };
     this._preserve = preserve;
+    this._changedPosition = false;
 
+    var computed = window.getComputedStyle(this.el);
     if (!preserve) {
-      if (!s.position || s.position === 'static') s.position = 'relative';
+      if (computed.position === 'static') { s.position = 'relative'; this._changedPosition = true; }
       s.overflow = 'hidden';
       s.borderRadius = o.borderRadius + 'px';
       s.background = o.tint;
     } else {
       // Only ensure position is not static (needed for child overlays)
-      if (!s.position || s.position === 'static') s.position = 'relative';
+      if (computed.position === 'static') { s.position = 'relative'; this._changedPosition = true; }
     }
     this.el.classList.add('demiglass');
 
@@ -951,8 +953,8 @@
       s.backdropFilter = sv.backdropFilter;
       s.webkitBackdropFilter = sv.webkitBackdropFilter;
       s.boxShadow = sv.boxShadow;
-    } else if (this._saved && this._preserve) {
-      // Only restore position if we changed it
+    } else if (this._saved && this._preserve && this._changedPosition) {
+      // Only restore position if we actually changed it
       this.el.style.position = this._saved.position;
     }
   };
