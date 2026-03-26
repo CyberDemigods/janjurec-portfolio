@@ -408,7 +408,17 @@
     filter: brightness(0.92);
 }
 
-/* Start button - interactive brightness */
+/* Start button - move to right side of dock, interactive brightness */
+[data-theme="macos"] .start-button {
+    order: 3;
+    margin-left: auto;
+}
+[data-theme="macos"] .taskbar-windows {
+    order: 1;
+}
+[data-theme="macos"] .taskbar-tray {
+    order: 2;
+}
 [data-theme="macos"] .start-btn {
     transition: filter 0.15s ease, background 0.15s ease;
 }
@@ -426,6 +436,8 @@
 
 /* Start Menu - liquid glass panel */
 [data-theme="macos"] .start-menu {
+    left: auto;
+    right: 0;
     backdrop-filter: blur(60px) saturate(220%) brightness(1.04);
     -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.04);
     background:

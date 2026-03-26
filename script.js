@@ -151,12 +151,40 @@
                 icon.style.left = savedPositions[key].x + 'px';
                 icon.style.top = savedPositions[key].y + 'px';
             } else {
-                // First visit: scatter icons in center 800x800 square
-                var boxW = 800, boxH = 800;
-                var offsetX = Math.max(0, Math.round((window.innerWidth - boxW) / 2));
-                var offsetY = Math.max(0, Math.round((window.innerHeight - 36 - boxH) / 2));
-                icon.style.left = (offsetX + Math.floor(Math.random() * Math.min(boxW, window.innerWidth) - 75)) + 'px';
-                icon.style.top = (offsetY + Math.floor(Math.random() * Math.min(boxH, window.innerHeight - 36) - 75)) + 'px';
+                // First visit: semi-organized grouped layout with slight randomness
+                var basePositions = {
+                    // Top group: CV/portfolio
+                    'experience':       { x: 0.38, y: 0.12 },
+                    'recommendations':  { x: 0.30, y: 0.22 },
+                    'projects':         { x: 0.55, y: 0.18 },
+                    'education':        { x: 0.63, y: 0.18 },
+                    // Middle group: info
+                    'contact':          { x: 0.46, y: 0.30 },
+                    'about':            { x: 0.56, y: 0.38 },
+                    'skills':           { x: 0.70, y: 0.40 },
+                    // Lower-left group: tools
+                    'terminal':         { x: 0.25, y: 0.52 },
+                    'paint':            { x: 0.33, y: 0.52 },
+                    'winamp':           { x: 0.29, y: 0.62 },
+                    'notepad':          { x: 0.20, y: 0.64 },
+                    // Bottom group: apps/games
+                    'browser':          { x: 0.52, y: 0.60 },
+                    'tetris':           { x: 0.44, y: 0.74 },
+                    'breakout':         { x: 0.52, y: 0.74 },
+                };
+                var bp = basePositions[key];
+                var areaW = Math.min(window.innerWidth - 80, 700);
+                var areaH = Math.min(window.innerHeight - 120, 600);
+                var areaX = Math.max(20, Math.round((window.innerWidth - areaW) / 2));
+                var areaY = Math.max(20, Math.round((window.innerHeight - 36 - areaH) / 2));
+                var jitter = 25; // slight randomness
+                if (bp) {
+                    icon.style.left = Math.round(areaX + bp.x * areaW + (Math.random() - 0.5) * jitter) + 'px';
+                    icon.style.top = Math.round(areaY + bp.y * areaH + (Math.random() - 0.5) * jitter) + 'px';
+                } else {
+                    icon.style.left = Math.round(areaX + Math.random() * areaW) + 'px';
+                    icon.style.top = Math.round(areaY + Math.random() * areaH) + 'px';
+                }
             }
 
             // Double click opens window
@@ -776,7 +804,7 @@
     // ===== THEME SWITCHER =====
     function initThemeSwitcher() {
         const allBtns = document.querySelectorAll('[data-theme]');
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'win98';
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'winxp';
 
         updateActiveThemeBtn(currentTheme);
 
@@ -857,7 +885,7 @@
     // ===== WALLPAPER SYSTEM =====
     function initWallpapers() {
         const desktop = document.getElementById('desktop');
-        const theme = document.documentElement.getAttribute('data-theme') || 'win98';
+        const theme = document.documentElement.getAttribute('data-theme') || 'winxp';
 
         // Apply saved or default wallpaper
         applyWallpaperForTheme(theme);
@@ -899,7 +927,7 @@
         const picker = document.getElementById('wallpaperPicker');
         const list = document.getElementById('wallpaperList');
         const preview = document.getElementById('wallpaperPreview');
-        const theme = document.documentElement.getAttribute('data-theme') || 'win98';
+        const theme = document.documentElement.getAttribute('data-theme') || 'winxp';
         const wallpapers = WALLPAPERS[theme] || [];
 
         list.innerHTML = '';
@@ -1045,7 +1073,7 @@
 
         document.getElementById('ctx-about-os').addEventListener('click', () => {
             menu.classList.add('hidden');
-            const theme = document.documentElement.getAttribute('data-theme') || 'win98';
+            const theme = document.documentElement.getAttribute('data-theme') || 'winxp';
             const names = { win98: 'Windows 98', winxp: 'Windows XP', macos: 'macOS Sonoma', linux: 'Ubuntu 24.04 LTS' };
             alert('🖥️ ' + (names[theme] || theme) + '\n\nJan Jurec Portfolio OS\nVersion 2.1.37\n\n"Python, AWS, Linux. Cool stuff."\n\n⚔️ Forged by CyberDemigods\nhttps://cyberdemigods.com');
         });
@@ -1275,7 +1303,7 @@
                 addLine('  neofetch      - System info');
                 addLine('');
                 addLine('System:', 'info');
-                addLine('  theme [name]  - Switch OS (win98/winxp/macos/linux)');
+                addLine('  theme [name]  - Switch OS (winxp/macos/linux)');
                 addLine('  clear         - Clear terminal');
                 addLine('  exit          - Close terminal');
                 addLine('  date          - Current date');
@@ -1305,7 +1333,7 @@
         };
 
         function getCurrentTheme() {
-            return document.documentElement.getAttribute('data-theme') || 'win98';
+            return document.documentElement.getAttribute('data-theme') || 'winxp';
         }
 
         function resolvePath(input) {
@@ -1534,7 +1562,7 @@
                     terminalMode = 'normal';
                     addLine('');
                     var promptEl = document.getElementById('terminalPrompt');
-                    var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                    var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                     updatePrompt(theme);
                     scrollTerminal();
                 } else if (terminalMode === 'python') {
@@ -1542,7 +1570,7 @@
                     addLine('>>> ');
                     addLine('Exiting Python...', 'info');
                     var promptEl = document.getElementById('terminalPrompt');
-                    var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                    var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                     updatePrompt(theme);
                     scrollTerminal();
                 } else {
@@ -1564,7 +1592,7 @@
                 }
                 if (terminalMode === 'pin' || terminalMode === 'vim') {
                     terminalMode = 'normal';
-                    var thm = document.documentElement.getAttribute('data-theme') || 'win98';
+                    var thm = document.documentElement.getAttribute('data-theme') || 'winxp';
                     updatePrompt(thm);
                 }
                 scrollTerminal();
@@ -1994,7 +2022,7 @@
                 // Show the holy easter egg
                 showJP2EasterEgg();
                 var promptEl = document.getElementById('terminalPrompt');
-                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                 updatePrompt(theme);
             } else {
                 addLine('  ❌ ACCESS DENIED. Wrong PIN.', 'error');
@@ -2002,7 +2030,7 @@
                 addLine('');
                 terminalMode = 'normal';
                 var promptEl = document.getElementById('terminalPrompt');
-                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                 updatePrompt(theme);
             }
         }
@@ -2047,7 +2075,7 @@
                 terminalMode = 'normal';
                 addLine('Exiting Python...', 'info');
                 var promptEl = document.getElementById('terminalPrompt');
-                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                 updatePrompt(theme);
                 return;
             }
@@ -2223,7 +2251,7 @@
             if (vimSawTimer) { clearTimeout(vimSawTimer); vimSawTimer = null; }
             stopVimDrone();
             stopVimFocusTrap();
-            var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+            var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
             updatePrompt(theme);
             // Restore hidden buttons and terminal body
             var termWin = document.getElementById('window-terminal');
@@ -2340,7 +2368,7 @@
                 }
             } else {
                 terminalMode = 'normal';
-                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                 updatePrompt(theme);
                 addLine('  Wise choice. Real devs use VS Code anyway.', 'success');
             }
@@ -2903,7 +2931,7 @@
                 window._vimActive = false;
                 terminalMode = 'normal';
                 stopVimFocusTrap();
-                var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+                var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
                 updatePrompt(theme);
             }, 5000);
         }
@@ -3013,7 +3041,7 @@
                     addLine('  exit          - Close terminal');
                     addLine('');
                     addLine('  neofetch      - System info');
-                    addLine('  theme [name]  - Switch OS (win98/winxp/macos/linux)');
+                    addLine('  theme [name]  - Switch OS (winxp/macos/linux)');
                     addLine('  cowsay [msg]  - Moo');
                     addLine('');
                     addLine('  Tip: try ls, explore files with cat,', 'info');
@@ -3082,7 +3110,7 @@
                     break;
 
                 case 'neofetch':
-                    var nfTheme = document.documentElement.getAttribute('data-theme') || 'win98';
+                    var nfTheme = document.documentElement.getAttribute('data-theme') || 'winxp';
                     var osNames = { win98: 'Windows 98', winxp: 'Windows XP', macos: 'macOS Sonoma', linux: 'Ubuntu 24.04 LTS' };
                     addLine('        .--.          jan@portfolio', 'success');
                     addLine('       |o_o |         ─────────────', 'success');
@@ -3389,7 +3417,7 @@
                             addLine('Theme switched to: ' + t, 'success');
                             updatePrompt(t);
                         } else {
-                            addLine('Unknown theme. Available: win98, winxp, macos, linux', 'error');
+                            addLine('Unknown theme. Available: winxp, macos, linux', 'error');
                         }
                     } else if (lower.startsWith('cowsay ')) {
                         var msg = cmd.substring(7).trim() || 'moo';
@@ -4395,7 +4423,7 @@
             winampMasterGain = winampAc.createGain();
             winampMasterGain.connect(winampAc.destination);
             // Set initial master volume (on Windows it stays at 1.0 regardless of slider)
-            var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+            var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
             if (theme !== 'win98' && theme !== 'winxp') {
                 winampMasterGain.gain.setValueAtTime(parseInt(volSlider.value) / 100, winampAc.currentTime);
             }
@@ -5077,7 +5105,7 @@
     var browserLoadingShown = false;
 
     function getBrowserType() {
-        var theme = document.documentElement.getAttribute('data-theme') || 'win98';
+        var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
         if (theme === 'win98' || theme === 'winxp') return 'ie';
         if (theme === 'macos') return 'safari';
         return 'tor';

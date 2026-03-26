@@ -15,6 +15,7 @@ const TRANSLATIONS = {
         'icon-terminal': 'Terminal',
         'icon-paint': 'Paint',
         'icon-winamp': 'Winamp',
+        'icon-notepad': 'Notepad',
         'icon-browser': 'Tor Browser',
 
         // Window titles
@@ -160,6 +161,7 @@ const TRANSLATIONS = {
         'icon-terminal': 'Terminal',
         'icon-paint': 'Paint',
         'icon-winamp': 'Winamp',
+        'icon-notepad': 'Notatnik',
         'icon-browser': 'Przeglądarka Tor',
 
         'title-winamp': 'Winamp',
@@ -290,6 +292,7 @@ const TRANSLATIONS = {
         'icon-terminal': 'De\'wI\'',
         'icon-paint': 'rItlh',
         'icon-winamp': 'QoQ muchHom',
+        'icon-notepad': 'ghItlh',
         'icon-browser': 'HaSta QumwI\'',
 
         'title-winamp': 'QoQ muchHom',
