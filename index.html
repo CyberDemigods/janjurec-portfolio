@@ -5,16 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jan Jurec - Senior Software Engineer</title>
     <link rel="icon" type="image/png" href="favicon.png">
+    <meta property="og:title" content="Jan Jurec — Senior Software Engineer">
+    <meta property="og:description" content="Interactive OS-themed portfolio. Python, AWS, AI/ML, DevOps.">
+    <meta property="og:image" content="https://www.jurec.pl/og-image.png">
+    <meta property="og:url" content="https://www.jurec.pl">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Jan Jurec — Senior Software Engineer">
+    <meta name="twitter:description" content="Interactive OS-themed portfolio. Python, AWS, AI/ML, DevOps.">
+    <meta name="twitter:image" content="https://www.jurec.pl/og-image.png">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="themes/win98.css">
+    <!-- win98 theme removed -->
     <link rel="stylesheet" href="themes/winxp.css">
     <link rel="stylesheet" href="themes/macos.css">
     <link rel="stylesheet" href="themes/linux.css">
     <!-- Apply saved theme immediately to prevent flash of default theme on cached visits -->
     <script>
         (function() {
-            var t = new URLSearchParams(window.location.search).get('theme') || localStorage.getItem('jan-portfolio-theme');
-            if (t) document.documentElement.setAttribute('data-theme', t);
+            var t = new URLSearchParams(window.location.search).get('theme') || localStorage.getItem('jan-portfolio-theme') || 'winxp';
+            document.documentElement.setAttribute('data-theme', t);
+            // Show correct boot variant immediately (all start hidden in HTML)
+            document.addEventListener('DOMContentLoaded', function() {
+                var id = t === 'macos' ? 'bootMacos' : t === 'linux' ? 'bootLinux' : 'bootWinxp';
+                var el = document.getElementById(id);
+                if (el) el.classList.remove('hidden');
+                var boot = document.getElementById('bootScreen');
+                if (boot && t === 'macos') boot.classList.add('boot-theme-macos');
+                if (boot && t === 'linux') boot.classList.add('boot-theme-linux');
+                // Set correct loading text immediately so hardcoded "Starting Windows XP..." never shows
+                var bt = document.getElementById('bootText');
+                if (bt) {
+                    var txts = { winxp: 'Starting Windows XP...', macos: 'Loading macOS...', linux: 'Booting GNU/Linux...' };
+                    bt.textContent = txts[t] || txts.winxp;
+                }
+                // Set correct click text
+                var bc = document.getElementById('bootClickStart');
+                if (bc && t === 'linux') bc.textContent = '> press any key to boot_';
+            });
         })();
     </script>
 </head>
@@ -23,25 +50,45 @@
     <!-- ==================== LOADING SCREEN ==================== -->
     <div class="boot-screen" id="bootScreen">
         <div class="boot-content">
-            <div class="boot-logo">
-                <div class="boot-flag">
-                    <div class="flag-piece red"></div>
-                    <div class="flag-piece green"></div>
-                    <div class="flag-piece blue"></div>
-                    <div class="flag-piece yellow"></div>
+            <!-- Windows XP boot -->
+            <div class="boot-variant boot-winxp hidden" id="bootWinxp">
+                <div class="boot-logo">
+                    <div class="boot-flag">
+                        <div class="flag-piece red"></div>
+                        <div class="flag-piece green"></div>
+                        <div class="flag-piece blue"></div>
+                        <div class="flag-piece yellow"></div>
+                    </div>
+                    <div class="boot-text-logo">
+                        <span class="boot-win">Windows</span><span class="boot-xp">XP</span>
+                    </div>
                 </div>
-                <div class="boot-text-logo">
-                    <span class="boot-win">Windows</span><span class="boot-98">98</span>
-                </div>
+            </div>
+            <!-- macOS boot -->
+            <div class="boot-variant boot-macos hidden" id="bootMacos">
+                <div class="boot-apple-logo"><svg viewBox="0 0 170 170" width="80" height="80" fill="#fff"><path d="M150.4 130.3c-2.4 5.5-5.2 10.6-8.4 15.2-4.4 6.3-8 10.7-10.8 13.1-4.3 4-8.9 6-13.8 6.1-3.5 0-7.8-1-12.7-3-5-2-9.6-3-13.8-3-4.4 0-9.1 1-14.2 3-5.1 2-9.2 3.1-12.4 3.2-4.7.2-9.4-1.9-14.2-6.2-3-2.6-6.8-7.1-11.2-13.5-4.8-6.9-8.7-14.9-11.8-24C23.7 112 22 102.2 22 92.7c0-10.9 2.4-20.3 7.1-28.2 3.7-6.3 8.6-11.3 14.8-15 6.2-3.6 12.8-5.5 20-5.6 3.7 0 8.6 1.2 14.7 3.4 6 2.3 9.9 3.4 11.6 3.4 1.3 0 5.6-1.4 12.9-4.1 6.9-2.5 12.7-3.6 17.5-3.1 12.9 1 22.6 6.1 29 15.2-11.6 7-17.3 16.8-17.2 29.3.1 9.8 3.6 17.9 10.7 24.3 3.2 3 6.7 5.4 10.7 7-.9 2.5-1.8 4.9-2.8 7.1zM119.1 7c0 7.6-2.8 14.8-8.3 21.4-6.6 7.8-14.7 12.3-23.4 11.6-.1-.9-.2-1.9-.2-3 0-7.4 3.2-15.2 8.8-21.7 2.8-3.2 6.4-5.9 10.7-8 4.3-2.1 8.4-3.2 12.2-3.4.1 1.1.2 2.1.2 3.1z"/></svg></div>
+            </div>
+            <!-- Linux boot -->
+            <div class="boot-variant boot-linux hidden" id="bootLinux">
+                <pre class="boot-tux">
+   .--.
+  |o_o |
+  |:_/ |
+ //   \ \
+(|     | )
+/'\_   _/`\
+\___)=(___/
+                </pre>
+                <div class="boot-linux-text">GNU/Linux</div>
             </div>
             <div class="boot-user">
-                <img src="https://avatars.githubusercontent.com/u/20413685?v=4&s=64" alt="Jan Jurec" class="boot-avatar">
+                <img src="jurec.jpg" alt="Jan Jurec" class="boot-avatar">
                 <span class="boot-username">Jan Jurec</span>
             </div>
-            <div class="boot-mobile-hint">Windows 98 was designed for desktop viewing experience. Rotate or use a PC for best results!</div>
+            <div class="boot-mobile-hint">This portfolio was designed for desktop viewing experience. Rotate or use a PC for best results!</div>
             <div class="boot-progress-area">
                 <div class="boot-click-start" id="bootClickStart">Click anywhere to start...</div>
-                <div class="boot-loading-text hidden" id="bootText">Starting Windows 98...</div>
+                <div class="boot-loading-text hidden" id="bootText"></div>
                 <div class="boot-progress-bar hidden" id="bootProgressBar">
                     <div class="boot-progress-fill" id="bootProgress"></div>
                 </div>
@@ -129,7 +176,7 @@
             <div class="window-body">
                 <div class="about-content">
                     <div class="about-header">
-                        <img src="https://avatars.githubusercontent.com/u/20413685?v=4" alt="Jan Jurec" class="avatar">
+                        <img src="jurec.jpg" alt="Jan Jurec" class="avatar">
                         <div class="about-info">
                             <h1>Jan Jurec</h1>
                             <p class="title" data-i18n="about-title">Senior Software Engineer w/ MLOps & Agents Mentor</p>
@@ -166,104 +213,104 @@
                 </div>
             </div>
             <div class="window-menubar">
-                <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+                <span data-i18n="menu-file">File</span><span data-i18n="menu-edit">Edit</span><span data-i18n="menu-view">View</span><span data-i18n="menu-help">Help</span>
             </div>
             <div class="window-body window-body-scroll">
                 <div class="experience-timeline">
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Senior Software Engineer w/ MLOps & Agents Mentor</h3>
+                            <h3 data-i18n="exp-santander-title">Senior Software Engineer w/ MLOps & Agents Mentor</h3>
                             <span class="exp-company">Santander Bank Polska</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Jul 2025 – Present</span>
-                            <span class="exp-location">Poznań, Poland · Remote</span>
-                            <span class="exp-type">Contract</span>
+                            <span class="exp-location" data-i18n="exp-santander-loc">Poznań, Poland · Remote</span>
+                            <span class="exp-type" data-i18n="exp-santander-type">Contract</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Modernized a core AI platform: decomposed a monolithic solution into microservices with clearer ownership and better scalability</li>
-                            <li>Delivered AI-powered SDLC tools across the org – LLM chatbot workflows, document analysis, Jira ticket analysis, test generation, image classification</li>
-                            <li>Improved platform reliability through better performance, logging, observability, deep code reviews, and fewer lines of more maintainable code</li>
-                            <li>Created multiple MCP servers, subagent specifications and internal Python package for database communication</li>
-                            <li>Key technical contributor: resolving production issues, reducing code complexity, and bringing strong Unix and platform troubleshooting expertise</li>
+                            <li data-i18n="exp-santander-1">Modernized a core AI platform: decomposed a monolithic solution into microservices with clearer ownership and better scalability</li>
+                            <li data-i18n="exp-santander-2">Delivered AI-powered SDLC tools across the org – LLM chatbot workflows, document analysis, Jira ticket analysis, test generation, image classification</li>
+                            <li data-i18n="exp-santander-3">Improved platform reliability through better performance, logging, observability, deep code reviews, and fewer lines of more maintainable code</li>
+                            <li data-i18n="exp-santander-4">Created multiple MCP servers, subagent specifications and internal Python package for database communication</li>
+                            <li data-i18n="exp-santander-5">Key technical contributor: resolving production issues, reducing code complexity, and bringing strong Unix and platform troubleshooting expertise</li>
                         </ul>
                         <div class="exp-skills">MLOps · Docker · Python · MCP · LLM · Microservices · Observability</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Senior MLOps Engineer</h3>
+                            <h3 data-i18n="exp-nordea-title">Senior MLOps Engineer</h3>
                             <span class="exp-company">Nordea</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Sep 2024 – Aug 2025 · 1 yr</span>
-                            <span class="exp-location">Gdańsk, Poland · Hybrid</span>
-                            <span class="exp-type">Contract</span>
+                            <span class="exp-location" data-i18n="exp-nordea-loc">Gdańsk, Poland · Hybrid</span>
+                            <span class="exp-type" data-i18n="exp-nordea-type">Contract</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Contributed to MLOps, RAG, and AI platform solutions supporting ML workflows and scalable AI/ML adoption</li>
-                            <li>Set up infrastructure-as-code foundations for structured, repeatable cloud provisioning</li>
-                            <li>Designed reliable data pipelines – efficient, well orchestrated, and production ready</li>
-                            <li>Helped define foundations for teams to build, deploy, and operate AI/ML solutions in a compliant, scalable way</li>
-                            <li>Reduced manual effort and operational risk in a standardized AWS and Terraform ecosystem</li>
+                            <li data-i18n="exp-nordea-1">Contributed to MLOps, RAG, and AI platform solutions supporting ML workflows and scalable AI/ML adoption</li>
+                            <li data-i18n="exp-nordea-2">Set up infrastructure-as-code foundations for structured, repeatable cloud provisioning</li>
+                            <li data-i18n="exp-nordea-3">Designed reliable data pipelines – efficient, well orchestrated, and production ready</li>
+                            <li data-i18n="exp-nordea-4">Helped define foundations for teams to build, deploy, and operate AI/ML solutions in a compliant, scalable way</li>
+                            <li data-i18n="exp-nordea-5">Reduced manual effort and operational risk in a standardized AWS and Terraform ecosystem</li>
                         </ul>
                         <div class="exp-skills">MLOps · RAG · AWS · Terraform · Data Pipelines</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Infrastructure Specialist & WordPress Wizard</h3>
+                            <h3 data-i18n="exp-charity-title">Infrastructure Specialist & WordPress Wizard</h3>
                             <span class="exp-company">Zdrowa, tylko ma białaczkę</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">May 2023 – Jul 2025 · 2 yrs 3 mos</span>
-                            <span class="exp-location">Lubuskie, Poland · Hybrid</span>
-                            <span class="exp-type">Freelance · Charity</span>
+                            <span class="exp-location" data-i18n="exp-charity-loc">Lubuskie, Poland · Hybrid</span>
+                            <span class="exp-type" data-i18n="exp-charity-type">Freelance · Charity</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Set up and manage custom WordPress instance with data retention and high availability using EC2 and LAMP</li>
+                            <li data-i18n="exp-charity-1">Set up and manage custom WordPress instance with data retention and high availability using EC2 and LAMP</li>
                         </ul>
                         <div class="exp-skills">EC2 · WordPress · LAMP · Domain Management · DevOps</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Senior DevOps Engineer w/ MLOps & Backend</h3>
+                            <h3 data-i18n="exp-tui-title">Senior DevOps Engineer w/ MLOps & Backend</h3>
                             <span class="exp-company">TUI</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">May 2021 – Aug 2024 · 3 yrs 4 mos</span>
-                            <span class="exp-location">Europe · Remote</span>
-                            <span class="exp-type">Freelance</span>
+                            <span class="exp-location" data-i18n="exp-tui-loc">Europe · Remote</span>
+                            <span class="exp-type" data-i18n="exp-tui-type">Freelance</span>
                         </div>
-                        <p class="exp-highlight">🦆 Foundational member of Machine Learning Lab created by Principal ML Engineer at TUI 🦆</p>
+                        <p class="exp-highlight" data-i18n="exp-tui-highlight">🦆 Foundational member of Machine Learning Lab created by Principal ML Engineer at TUI 🦆</p>
                         <div class="exp-section">
-                            <h4>ML Projects and Pipelines</h4>
+                            <h4 data-i18n="exp-tui-section-1">ML Projects and Pipelines</h4>
                             <ul class="exp-details">
-                                <li>Implementing and maintaining ML-specific pipelines (StepFunctions, Sagemaker, Glue, ECS)</li>
-                                <li>Designing projects using team's AI solutions (Sagemaker) with added API logic</li>
-                                <li>Improving self-hosted MLflow server – security fixes + automated upgrades</li>
-                                <li>Improving Data Ingestion with AWS Data Pipeline and Glue</li>
-                                <li>Supporting the first AI assistant and RAG pipeline at TUI</li>
+                                <li data-i18n="exp-tui-1">Implementing and maintaining ML-specific pipelines (StepFunctions, Sagemaker, Glue, ECS)</li>
+                                <li data-i18n="exp-tui-2">Designing projects using team's AI solutions (Sagemaker) with added API logic</li>
+                                <li data-i18n="exp-tui-3">Improving self-hosted MLflow server – security fixes + automated upgrades</li>
+                                <li data-i18n="exp-tui-4">Improving Data Ingestion with AWS Data Pipeline and Glue</li>
+                                <li data-i18n="exp-tui-5">Supporting the first AI assistant and RAG pipeline at TUI</li>
                             </ul>
                         </div>
                         <div class="exp-section">
-                            <h4>Internal Tools and Infrastructure</h4>
+                            <h4 data-i18n="exp-tui-section-2">Internal Tools and Infrastructure</h4>
                             <ul class="exp-details">
-                                <li>Created internal tools package (bash, boto3, threading, docker)</li>
-                                <li>Deployed endpoint handling millions of requests/day</li>
-                                <li>Designed multi-env deployments (Terraform, CDK, CloudFormation)</li>
-                                <li>Designed and maintained CI/CD pipelines (GitLab)</li>
-                                <li>Rolled out code quality steps into dozens of pipelines (black, pylint, sonarqube, tests)</li>
-                                <li>Integrated Sonarqube, Datadog dashboards, AWS Security Hub</li>
+                                <li data-i18n="exp-tui-6">Created internal tools package (bash, boto3, threading, docker)</li>
+                                <li data-i18n="exp-tui-7">Deployed endpoint handling millions of requests/day</li>
+                                <li data-i18n="exp-tui-8">Designed multi-env deployments (Terraform, CDK, CloudFormation)</li>
+                                <li data-i18n="exp-tui-9">Designed and maintained CI/CD pipelines (GitLab)</li>
+                                <li data-i18n="exp-tui-10">Rolled out code quality steps into dozens of pipelines (black, pylint, sonarqube, tests)</li>
+                                <li data-i18n="exp-tui-11">Integrated Sonarqube, Datadog dashboards, AWS Security Hub</li>
                             </ul>
                         </div>
                         <div class="exp-section">
-                            <h4>External Collaboration and API Design</h4>
+                            <h4 data-i18n="exp-tui-section-3">External Collaboration and API Design</h4>
                             <ul class="exp-details">
-                                <li>Collaborating with external teams (FastAPI, Lambda, ECR, SQS, SNS, Sagemaker)</li>
-                                <li>Enhancing API performance and stability</li>
+                                <li data-i18n="exp-tui-12">Collaborating with external teams (FastAPI, Lambda, ECR, SQS, SNS, Sagemaker)</li>
+                                <li data-i18n="exp-tui-13">Enhancing API performance and stability</li>
                             </ul>
                         </div>
                         <div class="exp-skills">Terraform · SageMaker · StepFunctions · Glue · FastAPI · Docker · GitLab CI/CD · Datadog</div>
@@ -271,94 +318,94 @@
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Remote Software Engineer</h3>
+                            <h3 data-i18n="exp-3e9-title">Remote Software Engineer</h3>
                             <span class="exp-company">3e9 Systems</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Sep 2019 – Aug 2024 · 5 yrs</span>
-                            <span class="exp-location">Europe · Remote</span>
-                            <span class="exp-type">Freelance</span>
+                            <span class="exp-location" data-i18n="exp-3e9-loc">Europe · Remote</span>
+                            <span class="exp-type" data-i18n="exp-3e9-type">Freelance</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Python GUI for distributed IoT system (websockets, PyQt5, AWS Lambda, Greengrass)</li>
-                            <li>Backend service for real-time communication (MS and Google mail APIs)</li>
-                            <li>Odoo ERP/CRM features for Take&Go autonomous stores</li>
-                            <li>Dockerized FastAPI project template for microservices</li>
-                            <li>Async microservices for debit card payment (idempotency)</li>
-                            <li>Migration from bare-metal to AWS (ECS + Lambda Python)</li>
-                            <li>Architecture design and documentation for cloud migration</li>
+                            <li data-i18n="exp-3e9-1">Python GUI for distributed IoT system (websockets, PyQt5, AWS Lambda, Greengrass)</li>
+                            <li data-i18n="exp-3e9-2">Backend service for real-time communication (MS and Google mail APIs)</li>
+                            <li data-i18n="exp-3e9-3">Odoo ERP/CRM features for Take&Go autonomous stores</li>
+                            <li data-i18n="exp-3e9-4">Dockerized FastAPI project template for microservices</li>
+                            <li data-i18n="exp-3e9-5">Async microservices for debit card payment (idempotency)</li>
+                            <li data-i18n="exp-3e9-6">Migration from bare-metal to AWS (ECS + Lambda Python)</li>
+                            <li data-i18n="exp-3e9-7">Architecture design and documentation for cloud migration</li>
                         </ul>
                         <div class="exp-skills">Terraform · FastAPI · Docker · AWS · Python · CI/CD · MLOps</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Python Mentor</h3>
+                            <h3 data-i18n="exp-kodilla-title">Python Mentor</h3>
                             <span class="exp-company">Kodilla</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Jul 2020 – Oct 2022 · 2 yrs 4 mos</span>
-                            <span class="exp-location">Wrocław, Poland</span>
-                            <span class="exp-type">Contract</span>
+                            <span class="exp-location" data-i18n="exp-kodilla-loc">Wrocław, Poland</span>
+                            <span class="exp-type" data-i18n="exp-kodilla-type">Contract</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Backend, Big Data, Data Science, Machine Learning, Automated Testing</li>
+                            <li data-i18n="exp-kodilla-1">Backend, Big Data, Data Science, Machine Learning, Automated Testing</li>
                         </ul>
                         <div class="exp-skills">Python · Linux · Git · FastAPI · Docker · Data Engineering</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Software Engineer</h3>
+                            <h3 data-i18n="exp-xebia-title">Software Engineer</h3>
                             <span class="exp-company">Xebia Poland</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Aug 2018 – Aug 2019 · 1 yr 1 mo</span>
-                            <span class="exp-location">Wrocław, Poland</span>
-                            <span class="exp-type">Full-time</span>
+                            <span class="exp-location" data-i18n="exp-xebia-loc">Wrocław, Poland</span>
+                            <span class="exp-type" data-i18n="exp-xebia-type">Full-time</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Migrating client's infrastructure to AWS using Terraform, Puppet, Packer</li>
-                            <li>Designing CI/CD solution for AWS microservices</li>
-                            <li>Developing and peer-reviewing Python3 code for AWS Lambda</li>
-                            <li>Running AWS practical workshops for certification prep</li>
+                            <li data-i18n="exp-xebia-1">Migrating client's infrastructure to AWS using Terraform, Puppet, Packer</li>
+                            <li data-i18n="exp-xebia-2">Designing CI/CD solution for AWS microservices</li>
+                            <li data-i18n="exp-xebia-3">Developing and peer-reviewing Python3 code for AWS Lambda</li>
+                            <li data-i18n="exp-xebia-4">Running AWS practical workshops for certification prep</li>
                         </ul>
                         <div class="exp-skills">Terraform · AWS · Python · Docker · DevOps</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Software Engineer</h3>
+                            <h3 data-i18n="exp-clearcode-title">Software Engineer</h3>
                             <span class="exp-company">Clearcode (Avenga)</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Jun 2017 – Aug 2018 · 1 yr 3 mos</span>
-                            <span class="exp-location">Wrocław, Poland</span>
-                            <span class="exp-type">Part-time</span>
+                            <span class="exp-location" data-i18n="exp-clearcode-loc">Wrocław, Poland</span>
+                            <span class="exp-type" data-i18n="exp-clearcode-type">Part-time</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Designing DMP and exchange (AdTech) systems on AWS</li>
-                            <li>Hamburg-Wrocław 10-person team, infra/dev focus</li>
-                            <li>Project: &lt;20ms @ 30k rps modular AWS system</li>
+                            <li data-i18n="exp-clearcode-1">Designing DMP and exchange (AdTech) systems on AWS</li>
+                            <li data-i18n="exp-clearcode-2">Hamburg-Wrocław 10-person team, infra/dev focus</li>
+                            <li data-i18n="exp-clearcode-3">Project: &lt;20ms @ 30k rps modular AWS system</li>
                         </ul>
                         <div class="exp-skills">Python · AWS · Docker · Databricks · Datadog · Ansible</div>
                     </div>
 
                     <div class="exp-item">
                         <div class="exp-header">
-                            <h3>Working Student → Summer Trainee</h3>
+                            <h3 data-i18n="exp-nokia-title">Working Student → Summer Trainee</h3>
                             <span class="exp-company">Nokia</span>
                         </div>
                         <div class="exp-meta">
                             <span class="exp-date">Jul 2016 – Jun 2017 · 1 yr</span>
-                            <span class="exp-location">Wrocław, Poland</span>
-                            <span class="exp-type">Part-time</span>
+                            <span class="exp-location" data-i18n="exp-nokia-loc">Wrocław, Poland</span>
+                            <span class="exp-type" data-i18n="exp-nokia-type">Part-time</span>
                         </div>
                         <ul class="exp-details">
-                            <li>Telco data analysis with Jupyter, bokeh, pandas</li>
-                            <li>Machine learning team (numpy, sklearn)</li>
-                            <li>CI and Docker for existing codebase (Jenkins, GitLab CI)</li>
-                            <li>Python 2→3 migration, unit and functional tests</li>
+                            <li data-i18n="exp-nokia-1">Telco data analysis with Jupyter, bokeh, pandas</li>
+                            <li data-i18n="exp-nokia-2">Machine learning team (numpy, sklearn)</li>
+                            <li data-i18n="exp-nokia-3">CI and Docker for existing codebase (Jenkins, GitLab CI)</li>
+                            <li data-i18n="exp-nokia-4">Python 2→3 migration, unit and functional tests</li>
                         </ul>
                         <div class="exp-skills">Python · Linux · Git · Docker · Flask</div>
                     </div>
@@ -385,7 +432,7 @@
                 </div>
             </div>
             <div class="window-menubar">
-                <span>File</span><span>Action</span><span>View</span><span>Help</span>
+                <span data-i18n="menu-file">File</span><span data-i18n="menu-action">Action</span><span data-i18n="menu-view">View</span><span data-i18n="menu-help">Help</span>
             </div>
             <div class="window-body window-body-scroll">
                 <div class="skills-tree">
@@ -395,9 +442,9 @@
                             <span class="tree-icon">☁️</span> Cloud & Infrastructure
                         </div>
                         <div class="skill-cat-items">
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Amazon Web Services (AWS) <span class="skill-badge verified">✓ Certified</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Amazon Web Services (AWS) <span class="skill-badge verified" data-i18n="skill-certified">✓ Certified</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Microsoft Azure</div>
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Terraform <span class="skill-endorsement">12 endorsements</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Terraform <span class="skill-endorsement" data-i18n="skill-endorsements">12 endorsements</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> AWS CDK & CloudFormation</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Amazon EC2</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> AWS Lambda</div>
@@ -407,32 +454,32 @@
                     </div>
 
                     <div class="skill-category">
-                        <div class="skill-cat-header" data-expanded="true">
+                        <div class="skill-cat-header" data-expanded="true" data-i18n="cat-langfw">
                             <span class="tree-toggle">▼</span>
                             <span class="tree-icon">🐍</span> Languages & Frameworks
                         </div>
                         <div class="skill-cat-items">
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Python <span class="skill-badge verified">✓ Assessed</span> <span class="skill-endorsement">23 endorsements</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Python <span class="skill-badge verified" data-i18n="skill-assessed">✓ Assessed</span> <span class="skill-endorsement" data-i18n="skill-endorsements">23 endorsements</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> FastAPI</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Django / DRF</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Flask</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Bash</div>
-                            <div class="skill-item"><span class="tree-leaf">├─</span> REST APIs <span class="skill-badge verified">✓ Assessed</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> REST APIs <span class="skill-badge verified" data-i18n="skill-assessed">✓ Assessed</span></div>
                             <div class="skill-item"><span class="tree-leaf">└─</span> PHP / WordPress</div>
                         </div>
                     </div>
 
                     <div class="skill-category">
-                        <div class="skill-cat-header" data-expanded="true">
+                        <div class="skill-cat-header" data-expanded="true" data-i18n="cat-devops">
                             <span class="tree-toggle">▼</span>
                             <span class="tree-icon">🔧</span> DevOps & Tools
                         </div>
                         <div class="skill-cat-items">
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Docker <span class="skill-endorsement">12 endorsements</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Docker <span class="skill-endorsement" data-i18n="skill-endorsements">12 endorsements</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Kubernetes</div>
-                            <div class="skill-item"><span class="tree-leaf">├─</span> CI/CD (GitLab, Jenkins) <span class="skill-endorsement">5 endorsements</span></div>
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Git <span class="skill-badge verified">✓ Assessed</span></div>
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Linux <span class="skill-badge verified">✓ Assessed</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> CI/CD (GitLab, Jenkins) <span class="skill-endorsement" data-i18n="skill-endorsements">5 endorsements</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Git <span class="skill-badge verified" data-i18n="skill-assessed">✓ Assessed</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Linux <span class="skill-badge verified" data-i18n="skill-assessed">✓ Assessed</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Datadog</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> SonarQube</div>
                             <div class="skill-item"><span class="tree-leaf">└─</span> Ansible</div>
@@ -440,7 +487,7 @@
                     </div>
 
                     <div class="skill-category">
-                        <div class="skill-cat-header" data-expanded="true">
+                        <div class="skill-cat-header" data-expanded="true" data-i18n="cat-ai">
                             <span class="tree-toggle">▼</span>
                             <span class="tree-icon">🧠</span> AI, Data & ML
                         </div>
@@ -448,7 +495,7 @@
                             <div class="skill-item"><span class="tree-leaf">├─</span> MCP Servers & Agents</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> RAG (Retrieval-Augmented Generation)</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> LLMs (Claude, GPT)</div>
-                            <div class="skill-item"><span class="tree-leaf">├─</span> MLOps <span class="skill-endorsement">4 endorsements</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> MLOps <span class="skill-endorsement" data-i18n="skill-endorsements">4 endorsements</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> Data Engineering</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> SQL / Vector DBs / NoSQL</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> AWS Glue & Data Pipelines</div>
@@ -457,12 +504,12 @@
                     </div>
 
                     <div class="skill-category">
-                        <div class="skill-cat-header" data-expanded="true">
+                        <div class="skill-cat-header" data-expanded="true" data-i18n="cat-testing">
                             <span class="tree-toggle">▼</span>
                             <span class="tree-icon">🧪</span> Testing & Quality
                         </div>
                         <div class="skill-cat-items">
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Unit Testing <span class="skill-endorsement">8 endorsements</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Unit Testing <span class="skill-endorsement" data-i18n="skill-endorsements">8 endorsements</span></div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> E2E / Smoke / Performance Tests</div>
                             <div class="skill-item"><span class="tree-leaf">├─</span> pytest</div>
                             <div class="skill-item"><span class="tree-leaf">└─</span> pylint / black / pre-commit</div>
@@ -470,13 +517,13 @@
                     </div>
 
                     <div class="skill-category">
-                        <div class="skill-cat-header" data-expanded="true">
+                        <div class="skill-cat-header" data-expanded="true" data-i18n="cat-languages">
                             <span class="tree-toggle">▼</span>
                             <span class="tree-icon">🗣️</span> Languages
                         </div>
                         <div class="skill-cat-items">
-                            <div class="skill-item"><span class="tree-leaf">├─</span> Polish <span class="skill-badge native">Native</span></div>
-                            <div class="skill-item"><span class="tree-leaf">└─</span> English <span class="skill-badge">Professional Working</span></div>
+                            <div class="skill-item"><span class="tree-leaf">├─</span> Polish <span class="skill-badge native" data-i18n="skill-native">Native</span></div>
+                            <div class="skill-item"><span class="tree-leaf">└─</span> English <span class="skill-badge" data-i18n="skill-professional">Professional Working</span></div>
                         </div>
                     </div>
                 </div>
@@ -501,7 +548,7 @@
                 </div>
             </div>
             <div class="window-menubar">
-                <span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Help</span>
+                <span data-i18n="menu-file">File</span><span data-i18n="menu-edit">Edit</span><span data-i18n="menu-view">View</span><span data-i18n="menu-favorites">Favorites</span><span data-i18n="menu-help">Help</span>
             </div>
             <div class="window-body window-body-scroll">
                 <div class="file-explorer">
@@ -510,7 +557,7 @@
                         <div class="file-info">
                             <a href="https://github.com/janjur/readable-pylint-messages" target="_blank" class="file-name">readable-pylint-messages</a>
                             <span class="file-stars">★ 148</span>
-                            <p class="file-desc">List of pylint human readable message ids and dev readable codes</p>
+                            <p class="file-desc" data-i18n="proj-pylint-desc">List of pylint human readable message ids and dev readable codes</p>
                             <span class="file-lang">Python</span>
                         </div>
                     </div>
@@ -518,7 +565,7 @@
                         <div class="file-icon">📄</div>
                         <div class="file-info">
                             <a href="https://github.com/janjur/face_unlock" target="_blank" class="file-name">face_unlock</a>
-                            <p class="file-desc">Small package in your face!</p>
+                            <p class="file-desc" data-i18n="proj-faceunlock-desc">Small package in your face!</p>
                             <span class="file-lang">Python</span>
                         </div>
                     </div>
@@ -526,7 +573,7 @@
                         <div class="file-icon">📄</div>
                         <div class="file-info">
                             <a href="https://github.com/janjur/hejtolosowanie" target="_blank" class="file-name">hejtolosowanie</a>
-                            <p class="file-desc">Hejto voting tool</p>
+                            <p class="file-desc" data-i18n="proj-hejtolosowanie-desc">Hejto voting tool</p>
                             <span class="file-lang">Python</span>
                         </div>
                     </div>
@@ -534,7 +581,7 @@
                         <div class="file-icon">📄</div>
                         <div class="file-info">
                             <a href="https://github.com/janjur/multidiary" target="_blank" class="file-name">multidiary</a>
-                            <p class="file-desc">The new reddit</p>
+                            <p class="file-desc" data-i18n="proj-multidiary-desc">The new reddit</p>
                             <span class="file-lang">Python</span>
                         </div>
                     </div>
@@ -542,7 +589,7 @@
                         <div class="file-icon">📄</div>
                         <div class="file-info">
                             <a href="https://github.com/janjur/apteka" target="_blank" class="file-name">apteka</a>
-                            <p class="file-desc">Pharmacy project</p>
+                            <p class="file-desc" data-i18n="proj-apteka-desc">Pharmacy project</p>
                             <span class="file-lang">Python</span>
                         </div>
                     </div>
@@ -550,32 +597,35 @@
                         <div class="file-icon">📄</div>
                         <div class="file-info">
                             <a href="https://github.com/janjur/RNS_x86" target="_blank" class="file-name">RNS_x86</a>
-                            <p class="file-desc">x86 extension for RNS operations</p>
+                            <p class="file-desc" data-i18n="proj-rns-desc">x86 extension for RNS operations</p>
                             <span class="file-lang">Assembly</span>
                         </div>
                     </div>
 
                     <div class="file-separator"></div>
                     <h4 class="file-section-title" data-i18n="proj-workshops">Workshops & Presentations @ TUI</h4>
-                    <div class="file-item">
+                    <div class="file-item slide-item" data-slide="slides/ml-hackathon.jpg">
                         <div class="file-icon">📑</div>
                         <div class="file-info">
-                            <span class="file-name">MLOps Workshop</span>
-                            <p class="file-desc">Hackathon for TUI ML Lab – customer segmentation & end-to-end MLOps workflow. Hosted and mentored participants.</p>
+                            <span class="file-name" data-i18n="proj-mlops-name">MLOps Workshop</span>
+                            <p class="file-desc" data-i18n="proj-mlops-desc">Hackathon for TUI ML Lab – customer segmentation & end-to-end MLOps workflow. Hosted and mentored participants.</p>
+                            <img src="slides/ml-hackathon.jpg" alt="MLOps Workshop" class="slide-thumb" loading="lazy">
                         </div>
                     </div>
-                    <div class="file-item">
+                    <div class="file-item slide-item" data-slide="slides/bedrock-agents.jpg">
                         <div class="file-icon">📑</div>
                         <div class="file-info">
-                            <span class="file-name">Bedrock Agents Presentation</span>
-                            <p class="file-desc">Building AI bots with Amazon Bedrock. Proofreader and Q&A support.</p>
+                            <span class="file-name" data-i18n="proj-bedrock-name">Bedrock Agents Presentation</span>
+                            <p class="file-desc" data-i18n="proj-bedrock-desc">Building AI bots with Amazon Bedrock. Proofreader and Q&A support.</p>
+                            <img src="slides/bedrock-agents.jpg" alt="Bedrock Agents" class="slide-thumb" loading="lazy">
                         </div>
                     </div>
-                    <div class="file-item">
+                    <div class="file-item slide-item" data-slide="slides/stable-diffusion.jpg">
                         <div class="file-icon">📑</div>
                         <div class="file-info">
-                            <span class="file-name">Stable Diffusion Workshop</span>
-                            <p class="file-desc">Deploying Stable Diffusion for text-to-image generation. Hosted and mentored participants.</p>
+                            <span class="file-name" data-i18n="proj-sd-name">Stable Diffusion Workshop</span>
+                            <p class="file-desc" data-i18n="proj-sd-desc">Deploying Stable Diffusion for text-to-image generation. Hosted and mentored participants.</p>
+                            <img src="slides/stable-diffusion.jpg" alt="Stable Diffusion Workshop" class="slide-thumb" loading="lazy">
                         </div>
                     </div>
                 </div>
@@ -600,23 +650,23 @@
                 </div>
             </div>
             <div class="window-menubar">
-                <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+                <span data-i18n="menu-file">File</span><span data-i18n="menu-edit">Edit</span><span data-i18n="menu-view">View</span><span data-i18n="menu-help">Help</span>
             </div>
             <div class="window-body">
                 <div class="education-content">
                     <div class="edu-item">
                         <div class="edu-icon">🏛️</div>
                         <div class="edu-info">
-                            <h3>Wroclaw University of Science and Technology</h3>
-                            <p class="edu-degree">Master's Degree, Computer Science</p>
+                            <h3 data-i18n="edu-university">Wroclaw University of Science and Technology</h3>
+                            <p class="edu-degree" data-i18n="edu-masters">Master's Degree, Computer Science</p>
                             <p class="edu-date">2018 – 2019</p>
                         </div>
                     </div>
                     <div class="edu-item">
                         <div class="edu-icon">🏛️</div>
                         <div class="edu-info">
-                            <h3>Wroclaw University of Science and Technology</h3>
-                            <p class="edu-degree">Bachelor of Science in Engineering, Computer Science</p>
+                            <h3 data-i18n="edu-university">Wroclaw University of Science and Technology</h3>
+                            <p class="edu-degree" data-i18n="edu-bachelors">Bachelor of Science in Engineering, Computer Science</p>
                             <p class="edu-date">2012 – 2017</p>
                         </div>
                     </div>
@@ -625,17 +675,9 @@
                     <div class="edu-item">
                         <div class="edu-icon">🏅</div>
                         <div class="edu-info">
-                            <h3>AWS Certified Solutions Architect – Associate</h3>
+                            <h3 data-i18n="edu-aws-cert">AWS Certified Solutions Architect – Associate</h3>
                             <p class="edu-degree">Amazon Web Services</p>
-                            <p class="edu-date">Issued Jan 2019</p>
-                        </div>
-                    </div>
-                    <div class="edu-item">
-                        <div class="edu-icon">📜</div>
-                        <div class="edu-info">
-                            <h3>Learning Kubernetes</h3>
-                            <p class="edu-degree">LinkedIn Learning</p>
-                            <p class="edu-date">Issued Jul 2024</p>
+                            <p class="edu-date" data-i18n="edu-aws-date">Issued Jan 2019</p>
                         </div>
                     </div>
                 </div>
@@ -660,7 +702,7 @@
                 </div>
             </div>
             <div class="window-menubar">
-                <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+                <span data-i18n="menu-file">File</span><span data-i18n="menu-edit">Edit</span><span data-i18n="menu-view">View</span><span data-i18n="menu-help">Help</span>
             </div>
             <div class="window-body window-body-scroll">
                 <div class="recommendations-list">
@@ -721,10 +763,42 @@
                         <p class="rec-text">"Jan make things happen! He is proactive and result oriented, responsible and technically sound. He is always ready to put all his energy and time to get the job done."</p>
                     </div>
 
+                    <div class="rec-item">
+                        <div class="rec-header">
+                            <strong>Taras Kloba</strong>
+                            <span class="rec-role">Chief Partner Architect, Data & AI @ Microsoft</span>
+                        </div>
+                        <p class="rec-text">"Jan has a solid background in Python development. He's contributed to the backend of a data-driven application, exhibiting commendable technical skills. His readiness to learn new technologies is noteworthy. Jan is a technically skilled professional willing to adapt and learn."</p>
+                    </div>
+
+                    <div class="rec-item">
+                        <div class="rec-header">
+                            <strong>Alex Gros</strong>
+                            <span class="rec-role">Talent Acquisition @ UPPER</span>
+                        </div>
+                        <p class="rec-text">"Jan was an instrumental part in the delivery of a critical infrastructure project for a world renowned travel company. He was onboarded quickly and got up to speed with all the internal workings of the project and team. Any company would be lucky to have Jan."</p>
+                    </div>
+
+                    <div class="rec-item">
+                        <div class="rec-header">
+                            <strong>Patrick Holman</strong>
+                            <span class="rec-role">Founder @ WorkParser</span>
+                        </div>
+                        <p class="rec-text">"Jan did good work on my project, it was complex back-end database work and he handled it well."</p>
+                    </div>
+
+                    <div class="rec-item">
+                        <div class="rec-header">
+                            <strong>Łukasz Małecki</strong>
+                            <span class="rec-role">Full Stack Dev, Quality First</span>
+                        </div>
+                        <p class="rec-text">"Jan is a very open minded person and a good team player. He has strong interests in agile based cooperation. He wasn't scared of asking questions and enabled the team to assess tasks from multiple points of view. Jan can gather requirements and discuss multiple topics with stakeholders."</p>
+                    </div>
+
                 </div>
             </div>
             <div class="window-statusbar">
-                <span data-i18n="rec-status-1">10 recommendations on LinkedIn</span>
+                <span data-i18n="rec-status-1">11 recommendations on LinkedIn</span>
                 <span data-i18n="rec-status-2">All verified colleagues</span>
             </div>
         </div>
@@ -743,7 +817,7 @@
                 </div>
             </div>
             <div class="window-menubar">
-                <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+                <span data-i18n="menu-file">File</span><span data-i18n="menu-edit">Edit</span><span data-i18n="menu-view">View</span><span data-i18n="menu-help">Help</span>
             </div>
             <div class="window-body">
                 <div class="contact-content">
@@ -758,6 +832,10 @@
                     <div class="contact-item">
                         <span class="contact-icon">🐙</span>
                         <a href="https://github.com/janjur" target="_blank">github.com/janjur</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">🌐</span>
+                        <a href="javascript:void(0)" class="contact-website-link" id="contactWebsiteLink">www.jurec.pl</a>
                     </div>
                     <div class="contact-item">
                         <span class="contact-icon">🌍</span>
@@ -851,6 +929,7 @@
                     <div class="winamp-track locked" data-track="tetris" id="winampTetris">&#128274; ???  <span class="winamp-unlock-hint">(score 1000+ in Tetris)</span></div>
                     <div class="winamp-track locked" data-track="breakout" id="winampBreakout">&#128274; ???  <span class="winamp-unlock-hint">(clear a board in Breakout)</span></div>
                     <div class="winamp-track locked" data-track="chocolaterain" id="winampChocolateRain">&#128274; ???  <span class="winamp-unlock-hint">(discover the secret)</span></div>
+                    <div class="winamp-track locked" data-track="januszrage" id="winampJanuszRage">&#128274; ???  <span class="winamp-unlock-hint">(anger the Janusz)</span></div>
                 </div>
             </div>
         </div>
@@ -869,29 +948,29 @@
                 </div>
             </div>
             <div class="paint-menubar">
-                <span class="paint-menu-item" data-tool="save">File: Save</span>
-                <span class="paint-menu-item" data-tool="download">File: Download</span>
-                <span class="paint-menu-item" data-tool="undo">Edit: Undo</span>
-                <span class="paint-menu-item" data-tool="clear">Edit: Clear</span>
+                <span class="paint-menu-item" data-tool="save" data-i18n="paint-file-save">File: Save</span>
+                <span class="paint-menu-item" data-tool="download" data-i18n="paint-file-download">File: Download</span>
+                <span class="paint-menu-item" data-tool="undo" data-i18n="paint-edit-undo">Edit: Undo</span>
+                <span class="paint-menu-item" data-tool="clear" data-i18n="paint-edit-clear">Edit: Clear</span>
             </div>
             <div class="window-body paint-body">
                 <div class="paint-sidebar">
-                    <button class="paint-tool active" data-tool="pencil" title="Pencil">
+                    <button class="paint-tool active" data-tool="pencil" data-i18n-title="paint-tool-pencil" title="Pencil">
                         <svg viewBox="0 0 16 16" width="16" height="16"><path d="M12.1 1.5l2.4 2.4-9 9H3.1v-2.4l9-9z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
                     </button>
-                    <button class="paint-tool" data-tool="brush" title="Brush">
+                    <button class="paint-tool" data-tool="brush" data-i18n-title="paint-tool-brush" title="Brush">
                         <svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 10c0 2 1 4 5 4s5-2 5-4-2-2-5-2-5 0-5 2z" fill="currentColor" opacity="0.3"/><path d="M7 2l4 6H5z" fill="currentColor"/></svg>
                     </button>
-                    <button class="paint-tool" data-tool="eraser" title="Eraser">
+                    <button class="paint-tool" data-tool="eraser" data-i18n-title="paint-tool-eraser" title="Eraser">
                         <svg viewBox="0 0 16 16" width="16" height="16"><rect x="3" y="6" width="10" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="9" width="10" height="4" rx="1" fill="#ffaaaa"/></svg>
                     </button>
-                    <button class="paint-tool" data-tool="fill" title="Fill">
+                    <button class="paint-tool" data-tool="fill" data-i18n-title="paint-tool-fill" title="Fill">
                         <svg viewBox="0 0 16 16" width="16" height="16"><path d="M4 13l5-10 3 3-5 10z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M13 9c1 1.5 0 3-1 3s-1-1.5 0-3l1-1z" fill="#4488ff"/></svg>
                     </button>
-                    <button class="paint-tool" data-tool="spray" title="Spray Can">
+                    <button class="paint-tool" data-tool="spray" data-i18n-title="paint-tool-spray" title="Spray Can">
                         <svg viewBox="0 0 16 16" width="16" height="16"><rect x="5" y="6" width="6" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="6" x2="8" y2="3" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="3" r="0.8" fill="currentColor" opacity="0.5"/><circle cx="5" cy="1.5" r="0.8" fill="currentColor" opacity="0.4"/><circle cx="11" cy="2" r="0.8" fill="currentColor" opacity="0.3"/></svg>
                     </button>
-                    <button class="paint-tool" data-tool="stamp" title="Stamp">
+                    <button class="paint-tool" data-tool="stamp" data-i18n-title="paint-tool-stamp" title="Stamp">
                         <span style="font-size:14px;line-height:16px;">⭐</span>
                     </button>
                     <div class="paint-separator-h"></div>
@@ -937,7 +1016,7 @@
             </div>
             <div class="window-statusbar">
                 <span id="paintCoords">&nbsp;</span>
-                <span id="paintStatus">Ready</span>
+                <span id="paintStatus" data-i18n="paint-status-ready">Ready</span>
             </div>
         </div>
 
@@ -1034,7 +1113,7 @@
                 </div>
                 <div class="browser-url">
                     <span class="browser-url-icon">🧅</span>
-                    <span class="browser-url-text">http://janportf0l1o.onion</span>
+                    <span class="browser-url-text">http://www.jurec.pl</span>
                 </div>
             </div>
             <div class="browser-body">
@@ -1068,7 +1147,7 @@
         <!-- Start Menu -->
         <div class="start-menu hidden" id="startMenu">
             <div class="start-menu-header">
-                <img src="https://avatars.githubusercontent.com/u/20413685?v=4" alt="Jan" class="start-menu-avatar">
+                <img src="jurec.jpg" alt="Jan" class="start-menu-avatar">
                 <span>Jan Jurec</span>
             </div>
             <div class="start-menu-items">
@@ -1084,6 +1163,13 @@
                 <div class="start-menu-item" data-window="winamp">🎵 <span data-i18n="icon-winamp">Winamp</span></div>
                 <div class="start-menu-item" data-window="paint">🎨 <span data-i18n="icon-paint">Paint</span></div>
                 <div class="start-menu-item" data-window="notepad">📝 <span data-i18n="icon-notepad">Notepad</span></div>
+                <div class="start-menu-item start-menu-submenu-parent">🎮 <span data-i18n="start-games">Games</span>
+                    <span class="submenu-arrow">▸</span>
+                    <div class="start-submenu">
+                        <div class="start-menu-item" data-window="tetris">🧱 <span data-i18n="icon-tetris">Tetris</span></div>
+                        <div class="start-menu-item" data-window="breakout">🏓 <span data-i18n="icon-breakout">Breakout</span></div>
+                    </div>
+                </div>
             </div>
             <div class="start-menu-footer">
                 <div class="theme-switcher">
@@ -1099,6 +1185,8 @@
         <div class="taskbar-windows" id="taskbarWindows"></div>
 
         <div class="taskbar-tray">
+            <button class="copilot-toggle" id="copilotToggle" title="Copilot ON/OFF">🐒</button>
+            <div class="tray-separator"></div>
             <div class="lang-switcher-tray">
                 <button class="lang-toggle" id="langToggle" title="Language">EN</button>
                 <div class="lang-dropdown hidden" id="langDropdown">
@@ -1114,6 +1202,25 @@
                 <button class="theme-btn-small" data-theme="linux" title="Linux">🐧</button>
             </div>
             <span class="taskbar-clock" id="clock"></span>
+        </div>
+    </div>
+
+    <!-- Mobile floating settings -->
+    <div class="mobile-fab hidden" id="mobileFab">
+        <button class="mobile-fab-toggle" id="mobileFabToggle">⚙️</button>
+        <div class="mobile-fab-panel hidden" id="mobileFabPanel">
+            <div class="mobile-fab-row">
+                <span>OS:</span>
+                <button class="theme-btn-small" data-theme="winxp">XP</button>
+                <button class="theme-btn-small" data-theme="macos">🍎</button>
+                <button class="theme-btn-small" data-theme="linux">🐧</button>
+            </div>
+            <div class="mobile-fab-row">
+                <span>Lang:</span>
+                <button class="lang-btn" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="pl">PL</button>
+                <button class="lang-btn" data-lang="klingon">tlh</button>
+            </div>
         </div>
     </div>
 

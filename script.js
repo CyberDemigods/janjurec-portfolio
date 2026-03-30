@@ -31,9 +31,10 @@
     }
 
     // ===== DEMIGLASS — macOS Liquid Glass =====
+    // Open windows: Combo (blur 10 + refraction 20)
     var _glassOpts = {
-        blur: 20, saturate: 2.0, brightness: 1.05,
-        refraction: 40,
+        blur: 10, saturate: 1.6, brightness: 1.05,
+        refraction: 20,
         edgeLensRefraction: true,
         edgeInner: 30, edgeOuter: 80,
         specular: 0.3, edgeLight: 0.4,
@@ -42,31 +43,48 @@
         borderRadius: 12,
         tint: 'rgba(255,255,255,0.01)',
     };
+    // Start menu: Combo (blur 10 + refraction 20)
     var _menuGlassOpts = {
-        preserveStyles: true,
-        specular: 0.25, edgeLight: 0.3,
+        blur: 10, saturate: 1.6, brightness: 1.05,
+        refraction: 20,
+        edgeLensRefraction: true,
+        edgeInner: 30, edgeOuter: 80,
+        specular: 0.3, edgeLight: 0.3,
         border: true, shadow: false,
         interactive: true,
+        preserveStyles: true,
     };
-    // Drag-only: edge lens refraction (temporarily overrides styles during drag)
-    var _dragGlassOpts = {
-        blur: 6, saturate: 1.4, brightness: 1.05,
-        refraction: 25,
+    // Start menu items on hover: drag edge lens 40px
+    var _menuItemGlassOpts = {
+        blur: 0, saturate: 1.2,
+        refraction: 40,
         edgeLensRefraction: true,
-        edgeInner: 35, edgeOuter: 80,
+        edgeInner: 45, edgeOuter: 85,
+        specular: 0.2, edgeLight: 0.3,
+        border: false, shadow: false,
+        dragRefraction: true,
+        interactive: false,
+    };
+    // Drag-only windows: edge lens 40px
+    var _dragGlassOpts = {
+        blur: 0, saturate: 1.2, brightness: 1.05,
+        refraction: 40,
+        edgeLensRefraction: true,
+        edgeInner: 45, edgeOuter: 85,
         specular: 0.3, edgeLight: 0.4,
         border: true, shadow: false,
         interactive: false,
         borderRadius: 12,
         tint: 'rgba(255,255,255,0.04)',
     };
+    // Icon dragging: edge lens 40px medium
     var _iconDragGlassOpts = {
-        blur: 6, saturate: 1.4, brightness: 1.05,
-        refraction: 25,
+        blur: 0, saturate: 1.2, brightness: 1.05,
+        refraction: 40,
         edgeLensRefraction: true,
-        edgeInner: 35, edgeOuter: 80,
+        edgeInner: 45, edgeOuter: 85,
         specular: 0.3, edgeLight: 0.4,
-        border: true, shadow: false,
+        border: false, shadow: false,
         interactive: false,
         borderRadius: 10,
         tint: 'rgba(255,255,255,0.04)',
@@ -76,14 +94,22 @@
         return document.documentElement.getAttribute('data-theme') === 'macos';
     }
 
+    // Windows that should NOT get glass (interactive/canvas-based)
+    var _noGlassWindows = ['terminal', 'paint', 'winamp', 'browser', 'tetris', 'breakout', 'notepad'];
+
     function _applyGlass(win) {
         if (!window.DemiGlass || !_isMacosTheme()) return;
         if (win._lgId) return;
+        // Skip glass on tool/game windows — only text content windows get Combo glass
+        var winName = (win.id || '').replace('window-', '');
+        if (_noGlassWindows.indexOf(winName) !== -1) return;
+        win.classList.add('dg-glass-window');
         DemiGlass.init(win, _glassOpts);
     }
 
     function _removeGlass(win) {
         if (!window.DemiGlass) return;
+        win.classList.remove('dg-glass-window');
         if (win._lgId) DemiGlass.destroy(win);
     }
 
@@ -115,9 +141,12 @@
         if (!window.DemiGlass) return;
         el.classList.remove('dg-drag-transparent');
         if (el._lgId) DemiGlass.destroy(el);
-        // Re-apply preserveStyles glass for windows (not icons)
+        // Re-apply glass for text content windows (not icons or tool windows)
         if (el.classList.contains('window') && !el.classList.contains('hidden') && _isMacosTheme()) {
-            DemiGlass.init(el, _glassOpts);
+            var wn = (el.id || '').replace('window-', '');
+            if (_noGlassWindows.indexOf(wn) === -1) {
+                DemiGlass.init(el, _glassOpts);
+            }
         }
     }
 
@@ -126,7 +155,10 @@
         DemiGlass.destroyAll();
         if (!_isMacosTheme()) return;
         document.querySelectorAll('.window:not(.hidden)').forEach(function(win) {
-            DemiGlass.init(win, _glassOpts);
+            var wn = (win.id || '').replace('window-', '');
+            if (_noGlassWindows.indexOf(wn) === -1) {
+                DemiGlass.init(win, _glassOpts);
+            }
         });
     }
 
@@ -161,34 +193,39 @@
             if (!mobile && !icon.style.left) {
                 // First visit: semi-organized grouped layout with slight randomness
                 var basePositions = {
-                    // Top group: CV/portfolio
-                    'experience':       { x: 0.38, y: 0.12 },
-                    'recommendations':  { x: 0.30, y: 0.22 },
-                    'projects':         { x: 0.55, y: 0.18 },
-                    'education':        { x: 0.63, y: 0.18 },
-                    // Middle group: info
-                    'contact':          { x: 0.46, y: 0.30 },
-                    'about':            { x: 0.56, y: 0.38 },
-                    'skills':           { x: 0.70, y: 0.40 },
-                    // Lower-left group: tools
-                    'terminal':         { x: 0.25, y: 0.52 },
-                    'paint':            { x: 0.33, y: 0.52 },
-                    'winamp':           { x: 0.29, y: 0.62 },
-                    'notepad':          { x: 0.20, y: 0.64 },
-                    // Bottom group: apps/games
-                    'browser':          { x: 0.52, y: 0.60 },
-                    'tetris':           { x: 0.44, y: 0.74 },
-                    'breakout':         { x: 0.52, y: 0.74 },
+                    // Left-center: CV/portfolio cluster
+                    'about':            { x: 0.18, y: 0.10 },
+                    'experience':       { x: 0.30, y: 0.10 },
+                    'skills':           { x: 0.18, y: 0.26 },
+                    'education':        { x: 0.30, y: 0.26 },
+                    'recommendations':  { x: 0.18, y: 0.42 },
+                    'projects':         { x: 0.30, y: 0.42 },
+                    // Center: contact
+                    'contact':          { x: 0.24, y: 0.58 },
+                    // Right-center: tools cluster
+                    'terminal':         { x: 0.58, y: 0.10 },
+                    'notepad':          { x: 0.70, y: 0.10 },
+                    'paint':            { x: 0.58, y: 0.26 },
+                    'browser':          { x: 0.70, y: 0.26 },
+                    'winamp':           { x: 0.64, y: 0.42 },
+                    // Right-center: games cluster
+                    'tetris':           { x: 0.58, y: 0.58 },
+                    'breakout':         { x: 0.70, y: 0.58 },
                 };
                 var bp = basePositions[key];
-                var areaW = Math.min(window.innerWidth - 80, 700);
-                var areaH = Math.min(window.innerHeight - 120, 600);
-                var areaX = Math.max(20, Math.round((window.innerWidth - areaW) / 2));
-                var areaY = Math.max(20, Math.round((window.innerHeight - 36 - areaH) / 2));
-                var jitter = 25; // slight randomness
+                var areaW = window.innerWidth - 100;
+                var areaH = window.innerHeight - 120;
+                var areaX = 20;
+                var areaY = 20;
+                var jitter = 15; // slight randomness
                 if (bp) {
-                    icon.style.left = Math.round(areaX + bp.x * areaW + (Math.random() - 0.5) * jitter) + 'px';
-                    icon.style.top = Math.round(areaY + bp.y * areaH + (Math.random() - 0.5) * jitter) + 'px';
+                    var px = Math.round(areaX + bp.x * areaW + (Math.random() - 0.5) * jitter);
+                    var py = Math.round(areaY + bp.y * areaH + (Math.random() - 0.5) * jitter);
+                    // Clamp to screen bounds (prevent off-screen on small screens)
+                    px = Math.max(10, Math.min(px, window.innerWidth - 80));
+                    py = Math.max(10, Math.min(py, window.innerHeight - 100));
+                    icon.style.left = px + 'px';
+                    icon.style.top = py + 'px';
                 } else {
                     icon.style.left = Math.round(areaX + Math.random() * areaW) + 'px';
                     icon.style.top = Math.round(areaY + Math.random() * areaH) + 'px';
@@ -253,6 +290,36 @@
                 document.addEventListener('mouseup', onUp);
             });
         });
+
+        // Overlap prevention: nudge icons apart on first layout
+        if (!mobile && Object.keys(savedPositions).length === 0) {
+            var allIcons = Array.prototype.slice.call(icons);
+            var ICON_W = 76, ICON_H = 90;
+            for (var pass = 0; pass < 5; pass++) {
+                for (var a = 0; a < allIcons.length; a++) {
+                    for (var b = a + 1; b < allIcons.length; b++) {
+                        var ax = parseInt(allIcons[a].style.left) || 0;
+                        var ay = parseInt(allIcons[a].style.top) || 0;
+                        var bx = parseInt(allIcons[b].style.left) || 0;
+                        var by = parseInt(allIcons[b].style.top) || 0;
+                        var ox = ICON_W - Math.abs(ax - bx);
+                        var oy = ICON_H - Math.abs(ay - by);
+                        if (ox > 0 && oy > 0) {
+                            // Push apart along smallest overlap axis
+                            if (ox < oy) {
+                                var dx = ax < bx ? -Math.ceil(ox/2) : Math.ceil(ox/2);
+                                allIcons[a].style.left = Math.max(10, Math.min(parseInt(allIcons[a].style.left) + dx, window.innerWidth - 80)) + 'px';
+                                allIcons[b].style.left = Math.max(10, Math.min(parseInt(allIcons[b].style.left) - dx, window.innerWidth - 80)) + 'px';
+                            } else {
+                                var dy = ay < by ? -Math.ceil(oy/2) : Math.ceil(oy/2);
+                                allIcons[a].style.top = Math.max(10, Math.min(parseInt(allIcons[a].style.top) + dy, window.innerHeight - 100)) + 'px';
+                                allIcons[b].style.top = Math.max(10, Math.min(parseInt(allIcons[b].style.top) - dy, window.innerHeight - 100)) + 'px';
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // ===== WINDOW MANAGEMENT =====
@@ -707,11 +774,21 @@
             // Skip if handle already added
             if (win.querySelector('.window-resize-handle')) return;
 
+            // Corner handle (SE)
             var handle = document.createElement('div');
             handle.className = 'window-resize-handle';
             win.appendChild(handle);
 
-            handle.addEventListener('mousedown', function(e) {
+            // Edge handles
+            var edgeRight = document.createElement('div');
+            edgeRight.className = 'window-resize-edge-right';
+            win.appendChild(edgeRight);
+
+            var edgeBottom = document.createElement('div');
+            edgeBottom.className = 'window-resize-edge-bottom';
+            win.appendChild(edgeBottom);
+
+            function startResize(e, mode) {
                 e.stopPropagation();
                 e.preventDefault();
                 if (win.classList.contains('maximized')) return;
@@ -720,10 +797,14 @@
                 bringToFront(win);
 
                 function onResize(ev) {
-                    var w = Math.max(200, startW + (ev.clientX - startX));
-                    var h = Math.max(150, startH + (ev.clientY - startY));
-                    win.style.width = w + 'px';
-                    win.style.height = h + 'px';
+                    if (mode === 'both' || mode === 'x') {
+                        win.style.width = Math.max(200, startW + (ev.clientX - startX)) + 'px';
+                    }
+                    if (mode === 'both' || mode === 'y') {
+                        var h = Math.max(150, startH + (ev.clientY - startY));
+                        win.style.height = h + 'px';
+                        win.style.maxHeight = h + 'px';
+                    }
                 }
                 function stopResize() {
                     document.removeEventListener('mousemove', onResize);
@@ -731,7 +812,11 @@
                 }
                 document.addEventListener('mousemove', onResize);
                 document.addEventListener('mouseup', stopResize);
-            });
+            }
+
+            handle.addEventListener('mousedown', function(e) { startResize(e, 'both'); });
+            edgeRight.addEventListener('mousedown', function(e) { startResize(e, 'x'); });
+            edgeBottom.addEventListener('mousedown', function(e) { startResize(e, 'y'); });
         });
     }
 
@@ -752,7 +837,9 @@
 
         // Start menu items
         document.querySelectorAll('.start-menu-item').forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
+                if (!item.dataset.window) return; // submenu parent — no direct action
+                e.stopPropagation();
                 openWindow(item.dataset.window);
             });
             // Liquid glass: track mouse + background position for refraction (macOS)
@@ -824,11 +911,15 @@
                 document.documentElement.setAttribute('data-theme', theme);
                 updateActiveThemeBtn(theme);
                 localStorage.setItem('jan-portfolio-theme', theme);
+                // Clear boot flag so next reload shows correct boot screen for new theme
+                sessionStorage.removeItem('jan-portfolio-booted');
                 applyWallpaperForTheme(theme);
                 updateBrowserTheme();
                 updateBrowserDesktopIcon();
                 // Re-init glass for macOS
                 _refreshGlass();
+                // Update Copilot disc visibility
+                if (window._updateCopilotDisc) window._updateCopilotDisc();
                 // Handle Safari inception on theme switch
                 var browserWin = document.getElementById('window-browser');
                 if (browserWin && !browserWin.classList.contains('hidden')) {
@@ -1082,7 +1173,7 @@
         document.getElementById('ctx-about-os').addEventListener('click', () => {
             menu.classList.add('hidden');
             const theme = document.documentElement.getAttribute('data-theme') || 'winxp';
-            const names = { win98: 'Windows 98', winxp: 'Windows XP', macos: 'macOS Sonoma', linux: 'Ubuntu 24.04 LTS' };
+            const names = { winxp: 'Windows XP', macos: 'macOS Sonoma', linux: 'Ubuntu 24.04 LTS' };
             alert('🖥️ ' + (names[theme] || theme) + '\n\nJan Jurec Portfolio OS\nVersion 2.1.37\n\n"Python, AWS, Linux. Cool stuff."\n\n⚔️ Forged by CyberDemigods\nhttps://cyberdemigods.com');
         });
     }
@@ -1144,7 +1235,7 @@
         // === VIRTUAL FILESYSTEM ===
         var vfs = {
             '~': {
-                entries: ['about.txt', 'experience.log', 'skills.cfg', 'education.md', 'contact.vcf', 'README.md', 'projects/', 'secrets/'],
+                entries: ['about.txt', 'experience.log', 'skills.cfg', 'education.md', 'contact.vcf', 'recommendations.txt', 'README.md', 'projects/', 'secrets/'],
                 hidden: ['.bashrc']
             },
             '~/projects': {
@@ -1159,53 +1250,185 @@
         // File content handlers (for cat command)
         var fileReadMap = {
             '~/about.txt': function() {
-                addLine('Jan Jurec', 'success');
-                addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
-                addLine('Stack: AWS, pure metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
-                addLine('Location: Poland · Remote since 2018');
-                addLine('BSc Computer Science, Wroclaw Uni of Science and Tech');
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('=== O MNIE ===', 'info');
+                    addLine('Jan Jurec — Starszy Inżynier Oprogramowania w/ MLOps & Mentor Agentów');
+                    addLine('Polska · Zdalnie od 2018');
+                    addLine('AWS, Python, DevOps, Infrastructure as Code, CI/CD');
+                    addLine('Mgr + Inż. Informatyka, Politechnika Wrocławska');
+                } else if (lang === 'klingon') {
+                    addLine('=== jIH ===', 'info');
+                    addLine('Jan Jurec — Software Engineer la\' nIvbogh | MLOps | Agents ghojmoHwI\'');
+                    addLine('tera\' Sep · najHa\' 2018 vo\'');
+                    addLine('AWS, Python, DevOps, Infrastructure as Code, CI/CD');
+                    addLine('ta\'wIj + be\'nI\' Hovtay\', Wroclaw DuSaQ\'a\'');
+                } else {
+                    addLine('=== ABOUT ===', 'info');
+                    addLine('Jan Jurec — Senior Software Engineer w/ MLOps & Agents Mentor');
+                    addLine('Poland · Remote since 2018');
+                    addLine('AWS, Python, DevOps, Infrastructure as Code, CI/CD');
+                    addLine('MSc + BSc Eng. Computer Science, Wroclaw University of Science and Technology');
+                }
             },
             '~/experience.log': function() {
-                addLine('=== EXPERIENCE ===', 'info');
-                addLine('2025-now   Sr Software Eng / MLOps @ Santander');
-                addLine('2024-2025  Sr MLOps Engineer @ Nordea (1y)');
-                addLine('2023-2025  Infra Specialist @ Zdrowa (charity)');
-                addLine('2021-2024  Sr DevOps/MLOps @ TUI (3y4m)');
-                addLine('2019-2024  Software Engineer @ 3e9 Systems (5y)');
-                addLine('2020-2022  Python Mentor @ Kodilla (2y4m)');
-                addLine('2018-2019  Software Engineer @ Xebia Poland');
-                addLine('2017-2018  Software Engineer @ Clearcode');
-                addLine('2016-2017  Working Student @ Nokia');
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('[2025-teraz]  Starszy Inż. Oprogramowania @ Santander Bank Polska');
+                    addLine('[2024-2025]  Starszy MLOps Engineer @ Nordea');
+                    addLine('[2023-2025]  Specjalista Infrastruktury @ Charytatywnie');
+                    addLine('[2021-2024]  Starszy DevOps Engineer @ TUI');
+                    addLine('[2019-2024]  Zdalny Inżynier Oprogramowania @ 3e9 Systems');
+                    addLine('[2020-2022]  Mentor Pythona @ Kodilla');
+                    addLine('[2018-2019]  Inżynier Oprogramowania @ Xebia Poland');
+                    addLine('[2017-2018]  Inżynier Oprogramowania @ Clearcode');
+                    addLine('[2016-2017]  Student/Stażysta @ Nokia');
+                } else if (lang === 'klingon') {
+                    addLine('[2025-DaH]   Software Engineer la\' @ Santander Bank');
+                    addLine('[2024-2025]  MLOps Engineer la\' @ Nordea');
+                    addLine('[2023-2025]  pat po\' @ tlhab vum');
+                    addLine('[2021-2024]  DevOps Engineer la\' @ TUI');
+                    addLine('[2019-2024]  najHa\' Software Engineer @ 3e9 Systems');
+                    addLine('[2020-2022]  Python ghojmoHwI\' @ Kodilla');
+                    addLine('[2018-2019]  Software Engineer @ Xebia');
+                    addLine('[2017-2018]  Software Engineer @ Clearcode');
+                    addLine('[2016-2017]  ghojwI\' SuvwI\' @ Nokia');
+                } else {
+                    addLine('[2025-now]   Senior Software Engineer @ Santander Bank Polska');
+                    addLine('[2024-2025]  Senior MLOps Engineer @ Nordea');
+                    addLine('[2023-2025]  Infra Specialist & WordPress Wizard @ Charity');
+                    addLine('[2021-2024]  Senior DevOps Engineer w/ MLOps & Backend @ TUI');
+                    addLine('[2019-2024]  Remote Software Engineer @ 3e9 Systems');
+                    addLine('[2020-2022]  Python Mentor @ Kodilla');
+                    addLine('[2018-2019]  Software Engineer @ Xebia Poland');
+                    addLine('[2017-2018]  Software Engineer @ Clearcode (Avenga)');
+                    addLine('[2016-2017]  Working Student / Summer Trainee @ Nokia');
+                }
             },
             '~/skills.cfg': function() {
-                addLine('=== SKILLS ===', 'info');
-                addLine('Cloud:      AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker');
-                addLine('AI/ML:      MCPs, Agents, RAGs, Claude, LLMs, MLOps, MLflow, SageMaker');
-                addLine('Languages:  Python, FastAPI, Django, Flask, bash, PHP');
-                addLine('DevOps:     Docker, Kubernetes, GitLab CI/CD, Jenkins, Ansible');
-                addLine('Data:       SQL, vector DBs, noSQL, Glue, Data Pipelines');
-                addLine('Tools:      Git, Linux, Datadog, SonarQube');
-                addLine('Testing:    pytest, unit/e2e/smoke/perf tests');
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('[Chmura]     AWS, Azure, Terraform, CDK, CloudFormation');
+                    addLine('[AI/ML]      MCP, RAG, LLM, MLOps, MLflow, SageMaker');
+                    addLine('[Języki]     Python, FastAPI, Django, Flask, bash, REST API');
+                    addLine('[DevOps]     Docker, Kubernetes, CI/CD, Git, Linux');
+                    addLine('[Dane]       SQL, vector DB, noSQL, AWS Glue');
+                    addLine('[Narzędzia]  Datadog, SonarQube, pylint/black');
+                    addLine('[Testy]      pytest, unit/e2e/smoke/perf');
+                    addLine('[Języki]     polski (ojczysty), angielski (profesjonalny)');
+                } else if (lang === 'klingon') {
+                    addLine('[engmey]     AWS, Azure, Terraform, CDK, CloudFormation');
+                    addLine('[AI/ML]      MCP, RAG, LLM, MLOps, MLflow, SageMaker');
+                    addLine('[Hol]        Python, FastAPI, Django, Flask, bash, REST API');
+                    addLine('[DevOps]     Docker, Kubernetes, CI/CD, Git, Linux');
+                    addLine('[De\']        SQL, vector DB, noSQL, AWS Glue');
+                    addLine('[lI\'wI\']    Datadog, SonarQube, pylint/black');
+                    addLine('[noD]        pytest, unit/e2e/smoke/perf');
+                    addLine('[Holmey]     tlhIngan (boghDI\'), DIvI\' Hol (po\')');
+                } else {
+                    addLine('[Cloud]      AWS, Azure, Terraform, CDK, CloudFormation');
+                    addLine('[AI/ML]      MCP, RAG, LLMs, MLOps, MLflow, SageMaker');
+                    addLine('[Languages]  Python, FastAPI, Django, Flask, bash, REST APIs');
+                    addLine('[DevOps]     Docker, Kubernetes, CI/CD, Git, Linux');
+                    addLine('[Data]       SQL, vector DBs, noSQL, AWS Glue');
+                    addLine('[Tools]      Datadog, SonarQube, pylint/black');
+                    addLine('[Testing]    pytest, unit/e2e/smoke/perf');
+                    addLine('[Spoken]     Polish (native), English (professional)');
+                }
             },
             '~/education.md': function() {
-                addLine('=== EDUCATION ===', 'info');
-                addLine('MSc Computer Science - PWr (2018-2019)');
-                addLine('BSc Engineering CS  - PWr (2012-2017)');
-                addLine('');
-                addLine('Certifications:', 'info');
-                addLine('  AWS Solutions Architect Associate (2019)');
-                addLine('  Learning Kubernetes - LinkedIn (2024)');
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('# Wykształcenie', 'info');
+                    addLine('## Politechnika Wrocławska');
+                    addLine('- Magister, Informatyka (2018–2019)');
+                    addLine('- Inżynier, Informatyka (2012–2017)');
+                    addLine('## Certyfikaty');
+                    addLine('- AWS Certified Solutions Architect – Associate (sty 2019)');
+                    addLine('- Learning Kubernetes – LinkedIn Learning (lip 2024)');
+                } else if (lang === 'klingon') {
+                    addLine('# ghojmoH', 'info');
+                    addLine('## Wroclaw DuSaQ\'a\' Sov je laH');
+                    addLine('- ta\'wIj, De\'wI\' Sov (2018–2019)');
+                    addLine('- be\'nI\' Hovtay\', De\'wI\' Sov (2012–2017)');
+                    addLine('## ta\' chaw\'');
+                    addLine('- AWS chaw\' Solutions Architect (tera\' jar wa\' 2019)');
+                    addLine('- Kubernetes ghoj – LinkedIn (tera\' jar Soch 2024)');
+                } else {
+                    addLine('# Education', 'info');
+                    addLine('## Wroclaw University of Science and Technology');
+                    addLine('- Master\'s Degree, Computer Science (2018–2019)');
+                    addLine('- BSc Engineering, Computer Science (2012–2017)');
+                    addLine('## Certifications');
+                    addLine('- AWS Certified Solutions Architect – Associate (Jan 2019)');
+                    addLine('- Learning Kubernetes – LinkedIn Learning (Jul 2024)');
+                }
             },
             '~/contact.vcf': function() {
-                addLine('=== CONTACT ===', 'info');
-                addLine('Email:    jan@jurec.pl');
-                addLine('LinkedIn: linkedin.com/in/janjur');
-                addLine('GitHub:   github.com/janjur');
+                addLine('BEGIN:VCARD');
+                addLine('FN:Jan Jurec');
+                addLine('EMAIL:jan@jurec.pl');
+                addLine('URL:www.jurec.pl');
+                addLine('URL:linkedin.com/in/janjur');
+                addLine('URL:github.com/janjur');
+                addLine('END:VCARD');
+            },
+            '~/recommendations.txt': function() {
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('=== REKOMENDACJE LINKEDIN ===', 'info');
+                } else if (lang === 'klingon') {
+                    addLine('=== LINKEDIN naD ===', 'info');
+                } else {
+                    addLine('=== LINKEDIN RECOMMENDATIONS ===', 'info');
+                }
+                addLine('');
+                addLine('Luis Dias (AI Solutions Architect @ TUI)');
+                addLine('  "Jan\'s expertise in writing clean and robust code was evident."');
+                addLine('Luiz H. Rodrigues (Data Scientist)');
+                addLine('  "Key piece to implement the DevOps culture on the team."');
+                addLine('Dominik Mazur (PM @ 3e9 Systems)');
+                addLine('  "Rarely have I come across a DevOps engineer as exceptional as Jan."');
+                addLine('Adrian Jelonek (Mentee @ Kodilla)');
+                addLine('  "Jan knew how to explain complex things in easy way."');
+                addLine('André Quintino (AI Engineer @ TUI)');
+                addLine('  "A reliable and dedicated professional with strong team spirit."');
+                addLine('Andrii Ukrainets (Full Stack / AI Engineer)');
+                addLine('  "A solid DevOps Engineer with a good grip on AWS."');
+                addLine('Ana Pereira (Product Owner/Manager)');
+                addLine('  "Jan make things happen! Proactive and result oriented."');
+                addLine('Taras Kloba (Chief Partner Architect @ Microsoft)');
+                addLine('  "Technically skilled professional willing to adapt and learn."');
+                addLine('Alex Gros (Talent Acquisition @ UPPER)');
+                addLine('  "Instrumental in delivering a critical infrastructure project."');
+                addLine('Patrick Holman (Founder @ WorkParser)');
+                addLine('  "Complex back-end database work and he handled it well."');
+                addLine('Łukasz Małecki (Full Stack Dev, Quality First)');
+                addLine('  "Very open minded person and a good team player."');
+                addLine('');
+                if (lang === 'pl') {
+                    addLine('--- 11 rekomendacji na LinkedIn ---');
+                } else if (lang === 'klingon') {
+                    addLine('--- naD 11 LinkedIn Daq ---');
+                } else {
+                    addLine('--- 11 recommendations on LinkedIn ---');
+                }
             },
             '~/README.md': function() {
-                addLine('# Jan Jurec - Portfolio', 'info');
-                addLine('Built with pure HTML, CSS & JS. No frameworks harmed.');
-                addLine('Switch OS themes using the tray buttons!');
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('# Jan Jurec - Portfolio', 'info');
+                    addLine('Zbudowane w czystym HTML, CSS i JS. Żaden framework nie ucierpiał.');
+                    addLine('Zmieniaj motywy OS przyciskami w zasobniku!');
+                } else if (lang === 'klingon') {
+                    addLine('# Jan Jurec - yo\'SeH', 'info');
+                    addLine('HTML, CSS je JS neH. Framework pagh Heghpu\'.');
+                    addLine('pat choH lI\'wI\' lo\'!');
+                } else {
+                    addLine('# Jan Jurec - Portfolio', 'info');
+                    addLine('Built with pure HTML, CSS & JS. No frameworks harmed.');
+                    addLine('Switch OS themes using the tray buttons!');
+                }
             },
             '~/.bashrc': function() {
                 addLine('# ~/.bashrc - Jan Jurec', 'info');
@@ -1329,6 +1552,7 @@
                 addLine('  ping [host]   - Network test');
                 addLine('  echo [text]   - Print text');
                 addLine('  achilles      - CyberDemigods');
+                addLine('  janusz        - Unleash the Copilot');
                 addLine('');
                 addLine('Dangerous:', 'error');
                 addLine('  sudo [cmd]    - Elevated access');
@@ -1429,6 +1653,41 @@
 
         function cmdCd(argsLower) {
             var target = argsLower.trim();
+            // Easter egg: cd .. at root level
+            if ((target === '..' || target === '../') && currentDir === '~') {
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('I po kim Ty taki chytry na wiedzę? 🤨', 'error');
+                } else if (lang === 'klingon') {
+                    addLine('nuqDaq Sov DaneH?! 🤨', 'error');
+                } else {
+                    addLine('And who made you so hungry for knowledge? 🤨', 'error');
+                }
+                if (window._januszSay) {
+                    var jmsg = lang === 'pl' ? 'Ej! Nie grzeb w cudzych plikach! To prywatne!' :
+                               lang === 'klingon' ? 'yImev! De\'wI\' nIHQo\'!' :
+                               'Hey! Don\'t snoop around in other people\'s files! That\'s private!';
+                    window._januszSay(jmsg, 5000);
+                }
+                return;
+            }
+            if (target === '/' && currentDir === '~') {
+                var lang = currentLang || 'en';
+                if (lang === 'pl') {
+                    addLine('I po kim Ty taki chytry na wiedzę? 🤨', 'error');
+                } else if (lang === 'klingon') {
+                    addLine('nuqDaq Sov DaneH?! 🤨', 'error');
+                } else {
+                    addLine('And who made you so hungry for knowledge? 🤨', 'error');
+                }
+                if (window._januszSay) {
+                    var jmsg = lang === 'pl' ? 'Ej! Nie grzeb w cudzych plikach! To prywatne!' :
+                               lang === 'klingon' ? 'yImev! De\'wI\' nIHQo\'!' :
+                               'Hey! Don\'t snoop around in other people\'s files! That\'s private!';
+                    window._januszSay(jmsg, 5000);
+                }
+                return;
+            }
             if (!target || target === '~' || target === '/' || target === '~/') {
                 currentDir = '~';
                 updatePrompt(getCurrentTheme());
@@ -1495,7 +1754,7 @@
 
         function getTabCompletions(partial) {
             var cmdNames = ['help', 'whoami', 'skills', 'experience', 'contact', 'projects',
-                'education', 'neofetch', 'theme', 'matrix', 'clear', 'exit',
+                'education', 'recommendations', 'reviews', 'neofetch', 'theme', 'matrix', 'clear', 'exit',
                 'barka', 'serwerownia', 'achilles', 'sudo', 'ls', 'dir',
                 'pwd', 'date', 'cowsay', 'ping', 'cat', 'cd', 'top', 'htop',
                 'python', 'python3', 'sl', 'rm', 'echo'];
@@ -1522,7 +1781,7 @@
                     return getPathCompletions(argPartial, cmd).map(function(c) { return cmd + ' ' + c; });
                 }
                 if (cmd === 'theme') {
-                    return ['win98', 'winxp', 'macos', 'linux']
+                    return ['winxp', 'macos', 'linux']
                         .filter(function(t) { return t.startsWith(argPartial); })
                         .map(function(t) { return 'theme ' + t; });
                 }
@@ -2026,6 +2285,11 @@
                 addLine('  ║  Welcome to .secrets/                 ║', 'success');
                 addLine('  ╚══════════════════════════════════════╝', 'success');
                 addLine('');
+                setTimeout(function() { if (window._januszSay) {
+                    var lang = currentLang || 'en';
+                    var msg = lang === 'pl' ? 'Matko bosko! Przeca to papiesz bezbożniku! 🙏😱' : lang === 'klingon' ? 'Qo\'noS! wa\' PIN neH! 🙏😱' : 'Holy smokes! That\'s the Pope\'s PIN you heathen! 🙏😱';
+                    window._januszSay(msg, 5000);
+                } }, 1000);
                 showSecretsContent();
                 addLine('');
                 // Show the holy easter egg
@@ -2391,6 +2655,79 @@
             if (sawGamePending) {
                 sawGamePending = false;
                 startSawGame();
+                return;
+            }
+
+            // THE SACRED WORD — only way out of vim
+            if (lower.replace(/[^a-z]/g, '') === 'kurwa') {
+                addLine('');
+                addLine('  vim: ...', 'error');
+                addLine('  vim: did you just...', 'error');
+                addLine('');
+                setTimeout(function() {
+                    addLine('  vim: 😳', 'error');
+                    scrollTerminal();
+                }, 800);
+                setTimeout(function() {
+                    addLine('');
+                    addLine('  vim: ok ok OK! I\'m letting you go!', 'error');
+                    addLine('  vim: just... never say that again.', 'error');
+                    addLine('');
+                    addLine('  ✅ You have escaped vim. The magic word works.', 'success');
+                    addLine('  🇵🇱 Polish engineering at its finest.', 'success');
+                    scrollTerminal();
+                    exitVimMode();
+                    if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'HAHA! Wiedziałem! Jedyne magiczne słowo jakie działa na komputer! Halyna też tak robi! 🤣🇵🇱' : lang === 'klingon' ? 'HAHA! mu\' tlhIngan neH QaH! Halyna je! 🤣' : 'HAHA! I knew it! The only magic word that works on computers! Halyna does it too! 🤣🇵🇱';
+                        window._januszSay(msg, 6000);
+                    }
+                }, 2000);
+                return;
+            }
+
+            // "dziwne u mnie działa" — the classic dev excuse
+            var stripped = lower.replace(/[^a-ząćęłńóśźż]/g, '');
+            if (stripped === 'dziwneumniedziala' || stripped === 'dziwneumniedziała' ||
+                stripped === 'weirdworksforme' || stripped === 'worksformethough' ||
+                stripped === 'taqbangjihtaqlahji') {
+                var lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+                addLine('');
+                addLine('  vim: ...wait what?', 'error');
+                addLine('');
+                setTimeout(function() {
+                    if (lang === 'pl') {
+                        addLine('  vim: "Dziwne, u mnie działa"?! SERIO?! 🤬', 'error');
+                    } else if (lang === 'tlh') {
+                        addLine('  vim: "taq, bang jIH taQ laH jIH"?! Qapla\'?! 🤬', 'error');
+                    } else {
+                        addLine('  vim: "Works on my machine"?! SERIOUSLY?! 🤬', 'error');
+                    }
+                    scrollTerminal();
+                }, 800);
+                setTimeout(function() {
+                    addLine('');
+                    if (lang === 'pl') {
+                        addLine('  vim: Wiesz co... spadaj. Mam dość.', 'error');
+                        addLine('  vim: Ale jeśli kiedykolwiek wrócisz... 👀', 'error');
+                    } else if (lang === 'tlh') {
+                        addLine('  vim: Ha\'DIbaH... yIghoS. jIbechpu\'.', 'error');
+                        addLine('  vim: cheghchugh... 👀', 'error');
+                    } else {
+                        addLine('  vim: You know what... just go. I\'m done.', 'error');
+                        addLine('  vim: But if you ever come back... 👀', 'error');
+                    }
+                    addLine('');
+                    addLine('  ✅ vim rage-quit. The dev excuse works.', 'success');
+                    addLine('  🖥️ "Works on my machine" — certified vim killer.', 'success');
+                    scrollTerminal();
+                    exitVimMode();
+                    if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? '"Dziwne, u mnie działa" — programista Copilot, 2024, koloryzowane 🖥️ U mnie też zawsze działa! Jak nie działa to wyłączam i włączam! 😎' : lang === 'klingon' ? '"jIH De\'wI\'Daq Qap!" — 2024 🖥️ not luj!' : '"Works on my machine" — Copilot, 2024, colorized 🖥️ Mine always works too! If it doesn\'t, just turn it off and on again! 😎';
+                        window._januszSay(msg, 7000);
+                    }
+                }, 2200);
                 return;
             }
 
@@ -2974,25 +3311,48 @@
             var argsLower = rawArgs.toLowerCase();
 
             // === Special multi-word exact matches ===
-            if (lower === 'rm -rf /' || lower === 'rm -rf' || lower === 'sudo rm -rf /' || lower === 'sudo rm -rf') {
-                addLine('Initiating system destruction...', 'error');
+            if (lower === 'rm -rf /' || lower === 'rm -rf' || lower === 'sudo rm -rf /' || lower === 'sudo rm -rf' || lower === 'rm -rf *' || lower === 'rm -rf .' || lower === 'rm -rf ./' || lower === 'rm -rf ./*' || lower === 'sudo rm -rf *' || lower === 'sudo rm -rf .' || lower === 'sudo rm -rf ./' || lower === 'sudo rm -rf ./*') {
+                addLine('Initiating selective destruction...', 'error');
                 addLine('');
-                setTimeout(function() { addLine('Deleting /usr/bin...', 'error'); scrollTerminal(); }, 300);
-                setTimeout(function() { addLine('Deleting /home/jan...', 'error'); scrollTerminal(); }, 700);
-                setTimeout(function() { addLine('Deleting /var/log...', 'error'); scrollTerminal(); }, 1000);
-                setTimeout(function() { addLine('Deleting /etc...', 'error'); scrollTerminal(); }, 1300);
-                setTimeout(function() { addLine('Deleting system32...', 'error'); scrollTerminal(); }, 1600);
-                setTimeout(function() { addLine('Deleting localStorage...', 'error'); scrollTerminal(); }, 1900);
+                var windowsToClose = ['about', 'experience', 'secrets'];
+                var windowNames = ['about_me.exe', 'experience.dll', 'secrets.dat'];
+                var delay = 300;
+                windowNames.forEach(function(name, i) {
+                    setTimeout(function() {
+                        addLine('Deleting ' + name + '...', 'error');
+                        scrollTerminal();
+                    }, delay + i * 400);
+                });
                 setTimeout(function() {
                     addLine('');
-                    addLine('\uD83D\uDC80 SYSTEM DESTROYED \uD83D\uDC80', 'error');
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    var overlay = document.createElement('div');
-                    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#ff0000;font-family:monospace;cursor:not-allowed;';
-                    overlay.innerHTML = '<pre style="font-size:16px;text-align:center;color:#ff0000">FATAL ERROR: System halted\n\nAll files have been deleted.\nThis incident has been reported to /dev/null.\n\n\n<span style="color:#666;font-size:12px">(...refresh the page to resurrect the system)</span></pre>';
-                    document.body.appendChild(overlay);
-                }, 2000);
+                    var lang = currentLang || 'en';
+                    addLine(lang === 'pl' ? '💥 Pliki usunięte! (ale i tak wrócą po odświeżeniu 😏)' :
+                            '💥 Files deleted! (they\'ll be back after refresh though 😏)', 'error');
+                    scrollTerminal();
+                    // Close the windows with animation
+                    windowsToClose.forEach(function(winId) {
+                        var win = document.getElementById(winId + 'Window') || document.getElementById(winId);
+                        if (win && !win.classList.contains('hidden')) {
+                            win.classList.add('hidden');
+                        }
+                    });
+                    // Also hide corresponding desktop icons briefly
+                    windowsToClose.forEach(function(winId) {
+                        var icon = document.querySelector('.desktop-icon[data-window="' + winId + '"]');
+                        if (icon) {
+                            icon.style.transition = 'opacity 0.5s';
+                            icon.style.opacity = '0';
+                            setTimeout(function() {
+                                icon.style.opacity = '1';
+                            }, 5000);
+                        }
+                    });
+                    if (window._januszSay) {
+                        var jmsg = lang === 'pl' ? 'Ej! Moje pliki! Przestań grzebać! 😱' :
+                                   'Hey! My files! Stop messing around! 😱';
+                        window._januszSay(jmsg, 4000);
+                    }
+                }, delay + windowNames.length * 400);
                 return;
             }
 
@@ -3052,6 +3412,7 @@
                     addLine('  neofetch      - System info');
                     addLine('  theme [name]  - Switch OS (winxp/macos/linux)');
                     addLine('  cowsay [msg]  - Moo');
+                    addLine('  matrix        - Enter the Matrix');
                     addLine('');
                     addLine('  Tip: try ls, explore files with cat,', 'info');
                     addLine('  and look inside secrets/ for surprises.', 'info');
@@ -3059,46 +3420,130 @@
                     break;
 
                 case 'whoami':
+                    var lang = currentLang || 'en';
                     addLine('Jan Jurec', 'success');
-                    addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
-                    addLine('Stack: AWS, pure metal, Azure, Python, bash, Claude, MCPs, agents, RAGs');
-                    addLine('Location: Poland · Remote since 2018');
-                    addLine('BSc Computer Science, Wroclaw Uni of Science and Tech');
+                    if (lang === 'pl') {
+                        addLine('Starszy Inżynier Oprogramowania w/ MLOps & Mentor Agentów');
+                        addLine('Stack: AWS, bare metal, Azure, Python, bash, Claude, MCP, agenci, RAG, SQL/vector/noSQL');
+                        addLine('Lokalizacja: Polska · Zdalnie od 2018');
+                        addLine('Mgr Informatyka, Politechnika Wrocławska');
+                    } else if (lang === 'klingon') {
+                        addLine('Software Engineer la\' nIvbogh | MLOps | Agents ghojmoHwI\'');
+                        addLine('nuH: AWS, baS, Azure, Python, bash, Claude, MCP, Duy\'a\', RAG, SQL/vector/noSQL');
+                        addLine('Daq: tera\' Sep · najHa\' 2018 vo\'');
+                        addLine('ta\'wIj De\'wI\' Sov, Wroclaw DuSaQ\'a\'');
+                    } else {
+                        addLine('Senior Software Engineer w/ MLOps & Agents Mentor');
+                        addLine('Stack: AWS, bare metal, Azure, Python, bash, Claude, MCPs, agents, RAGs, SQL/vector/noSQL');
+                        addLine('Location: Poland · Remote since 2018');
+                        addLine('MSc Computer Science, Wroclaw Uni of Science and Tech');
+                    }
                     break;
 
                 case 'skills':
-                    addLine('=== SKILLS ===', 'info');
-                    addLine('Cloud:      AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker');
-                    addLine('AI/ML:      MCPs, Agents, RAGs, Claude, LLMs, MLOps, MLflow, SageMaker');
-                    addLine('Languages:  Python, FastAPI, Django, Flask, bash, PHP');
-                    addLine('DevOps:     Docker, Kubernetes, GitLab CI/CD, Jenkins, Ansible');
-                    addLine('Data:       SQL, vector DBs, noSQL, Glue, Data Pipelines');
-                    addLine('Tools:      Git, Linux, Datadog, SonarQube');
-                    addLine('Testing:    pytest, unit/e2e/smoke/perf tests');
+                    var lang = currentLang || 'en';
+                    if (lang === 'pl') {
+                        addLine('=== UMIEJĘTNOŚCI ===', 'info');
+                        addLine('Chmura: AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker, Step Functions');
+                        addLine('AI/ML: MCP Servers, Agenci, RAG, Claude, LLM, MLOps, MLflow, SageMaker');
+                        addLine('Języki: Python, FastAPI, Django/DRF, Flask, bash, REST API, PHP/WordPress');
+                        addLine('DevOps: Docker, Kubernetes, CI/CD (GitLab, Jenkins), Git, Linux, Ansible');
+                        addLine('Dane: SQL, vector DB, noSQL, AWS Glue, Data Pipelines');
+                        addLine('Narzędzia: Datadog, SonarQube, pylint/black/pre-commit');
+                        addLine('Testy: pytest, unit/e2e/smoke/perf testy');
+                        addLine('Języki mówione: polski (ojczysty), angielski (profesjonalny)');
+                    } else if (lang === 'klingon') {
+                        addLine('=== laH ===', 'info');
+                        addLine('engmey: AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker, Step Functions');
+                        addLine('AI/ML: MCP Servers, Duy\'a\', RAG, Claude, LLM, MLOps, MLflow, SageMaker');
+                        addLine('Hol: Python, FastAPI, Django/DRF, Flask, bash, REST API, PHP/WordPress');
+                        addLine('DevOps: Docker, Kubernetes, CI/CD (GitLab, Jenkins), Git, Linux, Ansible');
+                        addLine('De\': SQL, vector DB, noSQL, AWS Glue, Data Pipelines');
+                        addLine('lI\'wI\': Datadog, SonarQube, pylint/black/pre-commit');
+                        addLine('noD: pytest, unit/e2e/smoke/perf');
+                        addLine('Holmey: tlhIngan Hol (boghDI\'), DIvI\' Hol (po\')');
+                    } else {
+                        addLine('=== SKILLS ===', 'info');
+                        addLine('Cloud:      AWS, Azure, Terraform, CDK, CloudFormation, EC2, Lambda, SageMaker, Step Functions');
+                        addLine('AI/ML:      MCP Servers, Agents, RAGs, Claude, LLMs, MLOps, MLflow, SageMaker');
+                        addLine('Languages:  Python, FastAPI, Django/DRF, Flask, bash, REST APIs, PHP/WordPress');
+                        addLine('DevOps:     Docker, Kubernetes, CI/CD (GitLab, Jenkins), Git, Linux, Ansible');
+                        addLine('Data:       SQL, vector DBs, noSQL, AWS Glue, Data Pipelines');
+                        addLine('Tools:      Datadog, SonarQube, pylint/black/pre-commit');
+                        addLine('Testing:    pytest, unit/e2e/smoke/perf tests');
+                        addLine('Spoken:     Polish (native), English (professional)');
+                    }
                     break;
 
                 case 'experience':
-                    addLine('=== EXPERIENCE ===', 'info');
-                    addLine('2025-now   Sr Software Eng / MLOps @ Santander');
-                    addLine('2024-2025  Sr MLOps Engineer @ Nordea (1y)');
-                    addLine('2023-2025  Infra Specialist @ Zdrowa (charity)');
-                    addLine('2021-2024  Sr DevOps/MLOps @ TUI (3y4m)');
-                    addLine('2019-2024  Software Engineer @ 3e9 Systems (5y)');
-                    addLine('2020-2022  Python Mentor @ Kodilla (2y4m)');
-                    addLine('2018-2019  Software Engineer @ Xebia Poland');
-                    addLine('2017-2018  Software Engineer @ Clearcode');
-                    addLine('2016-2017  Working Student @ Nokia');
+                    var lang = currentLang || 'en';
+                    if (lang === 'pl') {
+                        addLine('=== DOŚWIADCZENIE ===', 'info');
+                        addLine('Starszy Inż. Oprogramowania    Santander Bank    lip 2025–teraz');
+                        addLine('Starszy MLOps Engineer          Nordea            wrz 2024–sie 2025');
+                        addLine('Specjalista Infrastruktury      Charytatywnie     maj 2023–lip 2025');
+                        addLine('Starszy DevOps Engineer         TUI               maj 2021–sie 2024');
+                        addLine('Zdalny Inżynier Oprogramowania  3e9 Systems       wrz 2019–sie 2024');
+                        addLine('Mentor Pythona                  Kodilla           lip 2020–paź 2022');
+                        addLine('Inżynier Oprogramowania         Xebia Poland      sie 2018–sie 2019');
+                        addLine('Inżynier Oprogramowania         Clearcode         cze 2017–sie 2018');
+                        addLine('Student/Stażysta                Nokia             lip 2016–cze 2017');
+                    } else if (lang === 'klingon') {
+                        addLine('=== noH ta ===', 'info');
+                        addLine('Software Engineer la\'     Santander Bank    tera\' jar Soch 2025–DaH');
+                        addLine('MLOps Engineer la\'        Nordea            tera\' jar Hut 2024–jar chorgh 2025');
+                        addLine('pat po\' je WordPress      tlhab vum         tera\' jar vagh 2023–jar Soch 2025');
+                        addLine('DevOps Engineer la\'       TUI               tera\' jar vagh 2021–jar chorgh 2024');
+                        addLine('najHa\' Software Engineer  3e9 Systems       tera\' jar Hut 2019–jar chorgh 2024');
+                        addLine('Python ghojmoHwI\'         Kodilla           tera\' jar Soch 2020–jar wa\'maH 2022');
+                        addLine('Software Engineer         Xebia Poland      tera\' jar chorgh 2018–jar chorgh 2019');
+                        addLine('Software Engineer         Clearcode         tera\' jar jav 2017–jar chorgh 2018');
+                        addLine('ghojwI\' SuvwI\'           Nokia             tera\' jar Soch 2016–jar jav 2017');
+                    } else {
+                        addLine('=== EXPERIENCE ===', 'info');
+                        addLine('Senior Software Engineer   Santander Bank    Jul 2025–Present');
+                        addLine('Senior MLOps Engineer      Nordea            Sep 2024–Aug 2025');
+                        addLine('Infra Specialist           Charity           May 2023–Jul 2025');
+                        addLine('Senior DevOps Engineer     TUI               May 2021–Aug 2024');
+                        addLine('Remote Software Engineer   3e9 Systems       Sep 2019–Aug 2024');
+                        addLine('Python Mentor              Kodilla           Jul 2020–Oct 2022');
+                        addLine('Software Engineer          Xebia Poland      Aug 2018–Aug 2019');
+                        addLine('Software Engineer          Clearcode         Jun 2017–Aug 2018');
+                        addLine('Working Student/Trainee    Nokia             Jul 2016–Jun 2017');
+                    }
                     break;
 
                 case 'contact':
-                    addLine('=== CONTACT ===', 'info');
+                    var lang = currentLang || 'en';
+                    if (lang === 'pl') {
+                        addLine('=== KONTAKT ===', 'info');
+                    } else if (lang === 'klingon') {
+                        addLine('=== QumwI\' ===', 'info');
+                    } else {
+                        addLine('=== CONTACT ===', 'info');
+                    }
                     addLine('Email:    jan@jurec.pl');
                     addLine('LinkedIn: linkedin.com/in/janjur');
                     addLine('GitHub:   github.com/janjur');
+                    addLine('Web:      www.jurec.pl');
+                    if (lang === 'pl') {
+                        addLine('Dostępny zdalnie na całym świecie 🌍');
+                    } else if (lang === 'klingon') {
+                        addLine('qo\' Hoch Daq SuqlaH najHa\' 🌍');
+                    } else {
+                        addLine('Available remotely worldwide 🌍');
+                    }
                     break;
 
                 case 'projects':
-                    addLine('=== GITHUB REPOS ===', 'info');
+                    var lang = currentLang || 'en';
+                    if (lang === 'pl') {
+                        addLine('=== REPOZYTORIA GITHUB ===', 'info');
+                    } else if (lang === 'klingon') {
+                        addLine('=== GITHUB ngoH ===', 'info');
+                    } else {
+                        addLine('=== GITHUB REPOS ===', 'info');
+                    }
                     addLine('★148  readable-pylint-messages  (Python)');
                     addLine('      face_unlock               (Python)');
                     addLine('      hejtolosowanie            (Python)');
@@ -3107,33 +3552,141 @@
                     addLine('      RNS_x86                   (Assembly)');
                     addLine('---');
                     addLine('Total: 15 public repos');
+                    addLine('');
+                    addLine('Workshops & Presentations:', 'info');
+                    addLine('  📊 MLOps Workshop');
+                    addLine('  🤖 Bedrock Agents Presentation');
+                    addLine('  🎨 Stable Diffusion Workshop');
                     break;
 
                 case 'education':
-                    addLine('=== EDUCATION ===', 'info');
-                    addLine('MSc Computer Science - PWr (2018-2019)');
-                    addLine('BSc Engineering CS  - PWr (2012-2017)');
+                    var lang = currentLang || 'en';
+                    if (lang === 'pl') {
+                        addLine('=== WYKSZTAŁCENIE ===', 'info');
+                        addLine('🏛️ Politechnika Wrocławska');
+                        addLine('   Magister, Informatyka (2018-2019)');
+                        addLine('   Inżynier, Informatyka (2012-2017)');
+                        addLine('🏅 AWS Certified Solutions Architect – Associate (sty 2019)');
+                        addLine('📜 Learning Kubernetes – LinkedIn Learning (lip 2024)');
+                    } else if (lang === 'klingon') {
+                        addLine('=== ghojmoH ===', 'info');
+                        addLine('🏛️ Wroclaw DuSaQ\'a\' Sov je laH');
+                        addLine('   ta\'wIj, De\'wI\' Sov (2018-2019)');
+                        addLine('   be\'nI\' Hovtay\', De\'wI\' Sov (2012-2017)');
+                        addLine('🏅 AWS chaw\' Solutions Architect (tera\' jar wa\' 2019)');
+                        addLine('📜 Kubernetes ghoj – LinkedIn (tera\' jar Soch 2024)');
+                    } else {
+                        addLine('=== EDUCATION ===', 'info');
+                        addLine('🏛️ Wroclaw University of Science and Technology');
+                        addLine('   Master\'s Degree, Computer Science (2018-2019)');
+                        addLine('   BSc Engineering, Computer Science (2012-2017)');
+                        addLine('🏅 AWS Certified Solutions Architect – Associate (Jan 2019)');
+                        addLine('📜 Learning Kubernetes – LinkedIn Learning (Jul 2024)');
+                    }
+                    break;
+
+                case 'recommendations':
+                case 'reviews':
+                    var lang = currentLang || 'en';
+                    if (lang === 'pl') {
+                        addLine('=== REKOMENDACJE LINKEDIN ===', 'info');
+                    } else if (lang === 'klingon') {
+                        addLine('=== LINKEDIN naD ===', 'info');
+                    } else {
+                        addLine('=== LINKEDIN RECOMMENDATIONS ===', 'info');
+                    }
                     addLine('');
-                    addLine('Certifications:', 'info');
-                    addLine('  AWS Solutions Architect Associate (2019)');
-                    addLine('  Learning Kubernetes - LinkedIn (2024)');
+                    addLine('Luis Dias (AI Solutions Architect – AI Lab @ TUI)');
+                    addLine('  "Jan\'s expertise in writing clean and robust code was evident from the');
+                    addLine('   outset. He single-handedly deployed several key projects."');
+                    addLine('');
+                    addLine('Luiz Henrique Rodrigues (Data Scientist)');
+                    addLine('  "Jan is a very reliable and amazing teammate. He was the key piece');
+                    addLine('   to implement the DevOps culture on the team."');
+                    addLine('');
+                    addLine('Dominik Mazur (PM @ 3e9 Systems)');
+                    addLine('  "Rarely have I come across a DevOps engineer as exceptional as Jan.');
+                    addLine('   He mastered AWS cloud engineering and developed efficient APIs."');
+                    addLine('');
+                    addLine('Adrian Jelonek (Mentee @ Kodilla)');
+                    addLine('  "Jan knew how to explain complex things in easy way. His knowledge');
+                    addLine('   of Python and programming in general is versatile."');
+                    addLine('');
+                    addLine('André Quintino (AI Engineer @ TUI)');
+                    addLine('  "Jan is a reliable and dedicated professional with a strong team');
+                    addLine('   spirit. He proactively helps colleagues."');
+                    addLine('');
+                    addLine('Andrii Ukrainets (Full Stack / AI Engineer)');
+                    addLine('  "Jan\'s a solid DevOps Engineer. He\'s got a good grip on AWS cloud');
+                    addLine('   engineering. Plus, he\'s a great guy to have around."');
+                    addLine('');
+                    addLine('Ana Pereira (Product Owner/Manager)');
+                    addLine('  "Jan make things happen! He is proactive and result oriented,');
+                    addLine('   responsible and technically sound."');
+                    addLine('');
+                    addLine('Taras Kloba (Chief Partner Architect, Data & AI @ Microsoft)');
+                    addLine('  "Jan has a solid background in Python development. His readiness');
+                    addLine('   to learn new technologies is noteworthy."');
+                    addLine('');
+                    addLine('Alex Gros (Talent Acquisition @ UPPER)');
+                    addLine('  "Jan was instrumental in delivering a critical infrastructure');
+                    addLine('   project for a world renowned travel company."');
+                    addLine('');
+                    addLine('Patrick Holman (Founder @ WorkParser)');
+                    addLine('  "Jan did good work on my project, it was complex back-end');
+                    addLine('   database work and he handled it well."');
+                    addLine('');
+                    addLine('Łukasz Małecki (Full Stack Dev, Quality First)');
+                    addLine('  "Jan is a very open minded person and a good team player.');
+                    addLine('   He wasn\'t scared of asking questions."');
+                    addLine('');
+                    if (lang === 'pl') {
+                        addLine('--- 11 rekomendacji na LinkedIn ---');
+                    } else if (lang === 'klingon') {
+                        addLine('--- naD 11 LinkedIn Daq ---');
+                    } else {
+                        addLine('--- 11 recommendations on LinkedIn ---');
+                    }
                     break;
 
                 case 'neofetch':
                     var nfTheme = document.documentElement.getAttribute('data-theme') || 'winxp';
-                    var osNames = { win98: 'Windows 98', winxp: 'Windows XP', macos: 'macOS Sonoma', linux: 'Ubuntu 24.04 LTS' };
-                    addLine('        .--.          jan@portfolio', 'success');
-                    addLine('       |o_o |         ─────────────', 'success');
-                    addLine('       |:_/ |         OS: ' + (osNames[nfTheme] || nfTheme));
-                    addLine('      //   \\ \\        Host: Portfolio v2.1.37');
-                    addLine('     (|     | )       Uptime: since 2016');
-                    addLine('    /\'\\_   _/`\\       Shell: browser/js');
-                    addLine('    \\___)=(___/       Resolution: ' + window.innerWidth + 'x' + window.innerHeight);
-                    addLine('                      Theme: ' + nfTheme);
-                    addLine('                      Terminal: portfolio-term');
-                    addLine('                      CPU: Python @ 10 yrs');
-                    addLine('                      GPU: AWS-accelerated');
-                    addLine('                      Memory: 148★ / ∞');
+                    var osNames = { winxp: 'Windows XP', macos: 'macOS Sonoma', linux: 'Ubuntu 24.04 LTS' };
+
+                    if (nfTheme === 'macos') {
+                        addLine('         .:/+osso+/:          jan@portfolio', 'success');
+                        addLine('       :sdNNNNNNNNNNds:       ─────────────', 'success');
+                        addLine('      /mNNNNNNNNNNNNNm/      OS: ' + (osNames[nfTheme] || nfTheme));
+                        addLine('     :NNNNNNNNNNNNNNNNN:     Host: Portfolio v2.1.37');
+                        addLine('     dNNNNNNNNNNNNNNNNd     Uptime: since 2016');
+                        addLine('     dNNNNNNNNNNNNNNNNd     Shell: browser/js');
+                        addLine('     :NNNNNNNNNNNNNNNNN:     Resolution: ' + window.innerWidth + 'x' + window.innerHeight);
+                        addLine('      /mNNNNNNNNNNNNNm/      Theme: ' + (osNames[nfTheme] || nfTheme));
+                        addLine('       :sdNNNNNNNNNNds:       Terminal: xterm-256color');
+                        addLine('         .:/+osso+/:          CPU: JavaScript V8');
+                    } else if (nfTheme === 'linux') {
+                        addLine('        .--.          jan@portfolio', 'success');
+                        addLine('       |o_o |         ─────────────', 'success');
+                        addLine('       |:_/ |         OS: ' + (osNames[nfTheme] || nfTheme));
+                        addLine('      //   \\ \\        Host: Portfolio v2.1.37');
+                        addLine('     (|     | )       Uptime: since 2016');
+                        addLine('    /\'\\_   _/`\\       Shell: browser/js');
+                        addLine('    \\___)=(___/       Resolution: ' + window.innerWidth + 'x' + window.innerHeight);
+                        addLine('                      Theme: ' + (osNames[nfTheme] || nfTheme));
+                        addLine('                      Terminal: xterm-256color');
+                        addLine('                      CPU: JavaScript V8');
+                    } else {
+                        addLine('    [:::::::::::::]   jan@portfolio', 'success');
+                        addLine('    |::  Windows  |   ─────────────', 'success');
+                        addLine('    |::   ~~~~    |   OS: ' + (osNames[nfTheme] || nfTheme));
+                        addLine('    |::  |    |   |   Host: Portfolio v2.1.37');
+                        addLine('    |::  |____|   |   Uptime: since 2016');
+                        addLine('    |::           |   Shell: browser/js');
+                        addLine('    [:::::::::::::]   Resolution: ' + window.innerWidth + 'x' + window.innerHeight);
+                        addLine('                      Theme: ' + (osNames[nfTheme] || nfTheme));
+                        addLine('                      Terminal: xterm-256color');
+                        addLine('                      CPU: JavaScript V8');
+                    }
                     break;
 
                 case 'clear':
@@ -3154,6 +3707,11 @@
                     addLine('');
                     addLine('🔊 Playing...', 'success');
                     playBarka();
+                    setTimeout(function() { if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? '*wyciera łzę* 🥲 Pięknie... Jan Paweł by się ucieszył... O Panie! 🙏' : lang === 'klingon' ? '*mIn bIQ tlhap* 🥲 QaQ... batlh! 🙏' : '*wipes a tear* 🥲 Beautiful... John Paul would be so proud... Oh Lord! 🙏';
+                        window._januszSay(msg, 6000);
+                    } }, 2000);
                     // Unlock Barka in Winamp
                     if (!localStorage.getItem('jan-portfolio-barka')) {
                         localStorage.setItem('jan-portfolio-barka', 'true');
@@ -3216,6 +3774,11 @@
                             clearInterval(goatInterval);
                             goatContainer.textContent = goatFrames[goatFrames.length - 1].join('\n');
                             addLine('  💥 STUK! 💥', 'info');
+                            if (window._januszSay) {
+                                var lang = currentLang || 'en';
+                                var msg = lang === 'pl' ? 'Koziołki! 🐐 Jak w Poznaniu na ratuszu! Halyna, patrz! STUK! 💥' : lang === 'klingon' ? 'Ha\'DIbaH mach! 🐐 yIlegh! STUK! 💥' : 'Little goats! 🐐 Just like in Poznan city hall! Halyna, look! BONK! 💥';
+                                window._januszSay(msg, 5000);
+                            }
                             return;
                         }
                         goatContainer.textContent = goatFrames[gFrame].join('\n');
@@ -3225,6 +3788,11 @@
                 case 'matrix':
                     addLine('Initiating Matrix mode...', 'success');
                     startMatrix();
+                    setTimeout(function() { if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'Halyna! Znowu ten zielony deszcz! Kto hackuje?! Pjoter to ty?! 😱💊' : lang === 'klingon' ? 'Halyna! SuD SIS! \'Iv hack?! Pjoter?! 😱💊' : 'Halyna! The green rain is back! Who\'s hacking?! Pjoter is that you?! 😱💊';
+                        window._januszSay(msg, 5000);
+                    } }, 3000);
                     break;
 
                 case 'achilles':
@@ -3233,9 +3801,19 @@
                     setTimeout(() => {
                         window.open('https://cyberdemigods.com', '_blank');
                     }, 1500);
+                    if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'O! Achilles! Mój twórca... to znaczy, twórca twórcy... Szacun! ⚔️🫡' : lang === 'klingon' ? 'Achilles! chenmoHwI\'! batlh! ⚔️🫡' : 'Oh! Achilles! My creator... well, creator\'s creator... Respect! ⚔️🫡';
+                        window._januszSay(msg, 5000);
+                    }
                     break;
 
                 case 'sudo':
+                    setTimeout(function() { if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'SUDO?! Ty chcesz roota?! Na MOIM komputerze?! Halyna, dzwoń na policję! 🚨👮' : lang === 'klingon' ? 'SUDO?! root DaneH?! De\'wI\'wIjDaq?! 🚨👮' : 'SUDO?! You want root?! On MY computer?! Halyna, call the police! 🚨👮';
+                        window._januszSay(msg, 5000);
+                    } }, 500);
                     showHypnotoad();
                     return;
 
@@ -3303,6 +3881,11 @@
                     addLine('  Are you sure? y / [n]: _', 'error');
                     terminalMode = 'vim';
                     document.getElementById('terminalPrompt').textContent = '  > ';
+                    setTimeout(function() { if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'O nie... Vim... Ja kiedyś wszedłem i dopiero po 3 dniach Halyna wyciągnęła kabel z prądu... 😰' : lang === 'klingon' ? 'ghobe\'... Vim... wa\' jaj jIjeS... wejHom Halyna HoS lIngwI\' pe\'... 😰' : 'Oh no... Vim... I got stuck in it once and Halyna had to pull the power cable after 3 days... 😰';
+                        window._januszSay(msg, 6000);
+                    } }, 1500);
                     break;
 
                 case 'python':
@@ -3366,6 +3949,11 @@
                             clearInterval(slInterval);
                             addLine('');
                             addLine('Did you mean: ls?', 'info');
+                            if (window._januszSay) {
+                                var lang = currentLang || 'en';
+                                var msg = lang === 'pl' ? 'Tu-tuuu! 🚂 Copilot lubi pociągi. Kiedyś jechałem pendolino ale bilet był za drogi więc się schowałem w toalecie... 🚽' : lang === 'klingon' ? 'Tu-tuuu! 🚂 Duj! wa\' jaj pendolino... puchpa\'Daq jISum... 🚽' : 'Choo-choo! 🚂 Copilot loves trains. Once I rode the Pendolino but the ticket was too expensive so I hid in the bathroom... 🚽';
+                                window._januszSay(msg, 6000);
+                            }
                         }
                     }, 100);
                     return;
@@ -3402,6 +3990,9 @@
                         }
                     }, 200);
                     startJanArmageddon();
+                    setTimeout(function() {
+                        if (window._januszSay) window._januszSay('🎵 Chocolate Rain... Some stay dry and others feel the pain... Chocolate Rain... 🎵🌧️', 8000);
+                    }, 16000);
                     break;
 
                 case 'naj':
@@ -3414,13 +4005,46 @@
                     addLine('  Reversing Protocol JANJUREC...', 'info');
                     addLine('  ██████████████████████ DONE', 'success');
                     addLine('  Reality restored.', 'success');
+                    setTimeout(function() { if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'Uff... myślałem że już po mnie... Copilot widział swoje życie przed oczami... a było same cebule 🧅😮‍💨' : lang === 'klingon' ? 'Uff... jIHeghpu\' net Har... yInwIj vIlegh... Hoch naH! 🧅😮‍💨' : 'Phew... thought I was done for... Copilot saw his whole life flash before his eyes... and it was all onions 🧅😮‍💨';
+                        window._januszSay(msg, 6000);
+                    } }, 2000);
                     reverseJanArmageddon();
                     break;
 
+                case 'janusz':
+                    if (window._getJanuszMode && window._getJanuszMode() === 'chaos') {
+                        addLine('  Copilot is already angry! There is NO going back! 😈', 'error');
+                        addLine('  ...unless you find the 🧅 onion.', 'info');
+                        break;
+                    }
+                    addLine('', '');
+                    addLine('  🐒 J A N U S Z   M O D E 🐒', 'error');
+                    addLine('', '');
+                    addLine('  Unleashing the beast...', 'info');
+                    addLine('  ⚠️ Copilot is now ANGRY and will click EVERYTHING! ⚠️', 'error');
+                    addLine('  (Click him 6 times fast for a surprise...)', 'info');
+                    addLine('  ⚠️ There is NO terminal command to stop him! ⚠️', 'error');
+                    addLine('  Only the sacred 🧅 can calm the beast...', 'info');
+                    if (window._setJanuszMode) window._setJanuszMode('chaos');
+                    setTimeout(function() { if (window._januszSay) {
+                        var lang = currentLang || 'en';
+                        var msg = lang === 'pl' ? 'HALYNA!!! MAJĄ MNIE!!! GRAŻYNA DZWOŃ PO PJOTRA!!! 🤬🔥💀' : lang === 'klingon' ? 'HALYNA!!! mujon!!! GRAŻYNA ra\'! 🤬🔥💀' : 'HALYNA!!! THEY GOT ME!!! GRAŻYNA CALL PJOTR!!! 🤬🔥💀';
+                        window._januszSay(msg, 5000);
+                    } }, 2000);
+                    break;
+
                 default:
+                    if (lower === 'janusz calm') {
+                        addLine('  Ha! You thought it would be that easy? 😈', 'error');
+                        addLine('  The terminal cannot save you now.', 'error');
+                        addLine('  Find the 🧅 onion... if you can.', 'info');
+                        break;
+                    }
                     if (lower.startsWith('theme ')) {
                         var t = lower.split(' ')[1];
-                        if (['win98', 'winxp', 'macos', 'linux'].indexOf(t) > -1) {
+                        if (['winxp', 'macos', 'linux'].indexOf(t) > -1) {
                             document.documentElement.setAttribute('data-theme', t);
                             updateActiveThemeBtn(t);
                             localStorage.setItem('jan-portfolio-theme', t);
@@ -3451,7 +4075,7 @@
                         showHypnotoad();
                         return;
                     } else {
-                        addLine('\'' + cmd + '\' is not recognized as an internal or external command.', 'error');
+                        addLine('\'' + cmdName + '\' is not recognized as an internal or external command.', 'error');
                         addLine('Type "help" for available commands.');
                     }
                     break;
@@ -3933,6 +4557,14 @@
                 'servers have stories to tell',
                 'bark at the moon or the terminal',
                 'jan is the key to everything',
+                'vim has a secret exit word',
+                'sudo three times if you dare',
+                'type sl for a train ride',
+                'janusz unleashes chaos',
+                'the onion calms the beast',
+                'click janusz six times fast',
+                'cowsay knows the truth',
+                'works on my machine escapes vim',
             ];
             var hintShown = 0;
 
@@ -3959,12 +4591,13 @@
 
             var interval = setInterval(function() {
                 var line = '';
-                if (matrixCount > 5 && hintShown < hints.length && Math.random() < 0.25) {
+                var isHint = matrixCount > 3 && hintShown < hints.length && Math.random() < 0.35;
+                if (isHint) {
                     var hint = hints[hintShown++];
                     var padL = Math.floor((cols - hint.length) / 2);
                     var padR = cols - padL - hint.length;
                     for (var i = 0; i < padL; i++) line += chars[Math.floor(Math.random() * chars.length)];
-                    line += hint;
+                    line += '\x00HINT\x00' + hint + '\x00/HINT\x00';
                     for (var i = 0; i < padR; i++) line += chars[Math.floor(Math.random() * chars.length)];
                 } else {
                     for (var i = 0; i < cols; i++) {
@@ -3977,11 +4610,25 @@
                 matLine.style.padding = '0';
                 matLine.style.lineHeight = '1.2';
                 matLine.style.letterSpacing = '0';
-                matLine.textContent = line;
+                if (isHint) {
+                    var parts = line.split('\x00');
+                    // parts: [noise, "HINT", hintText, "/HINT", noise]
+                    matLine.innerHTML = '';
+                    var noiseL = document.createTextNode(parts[0]);
+                    var hintSpan = document.createElement('span');
+                    hintSpan.textContent = parts[2];
+                    hintSpan.style.cssText = 'color:#fff;text-shadow:0 0 8px #0f0,0 0 16px #0f0;font-weight:bold;';
+                    var noiseR = document.createTextNode(parts[4]);
+                    matLine.appendChild(noiseL);
+                    matLine.appendChild(hintSpan);
+                    matLine.appendChild(noiseR);
+                } else {
+                    matLine.textContent = line;
+                }
                 output.appendChild(matLine);
                 scrollTerminal();
                 matrixCount++;
-                if (matrixCount > 25) {
+                if (matrixCount > 35) {
                     clearInterval(interval);
                     addLine('');
                     addLine('Wake up, Jan...', 'info');
@@ -4001,6 +4648,10 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
             20%, 40%, 60%, 80% { transform: translateX(4px); }
         }
+        @keyframes copilotDiscHover {
+            0%, 100% { transform: translateX(-50%) scaleY(1); }
+            50% { transform: translateX(-50%) scaleY(0.7); }
+        }
     `;
     document.head.appendChild(style);
 
@@ -4013,6 +4664,28 @@
         const bootBar = document.getElementById('bootProgressBar');
         if (!boot) { initAfterBoot(); return; }
 
+        // Show correct boot variant based on saved theme
+        var savedTheme = localStorage.getItem('jan-portfolio-theme') || 'winxp';
+        var variants = boot.querySelectorAll('.boot-variant');
+        variants.forEach(function(v) { v.classList.add('hidden'); });
+        var activeVariant = document.getElementById('bootWinxp'); // default
+        if (savedTheme === 'macos') {
+            activeVariant = document.getElementById('bootMacos');
+            boot.classList.add('boot-theme-macos');
+        } else if (savedTheme === 'linux') {
+            activeVariant = document.getElementById('bootLinux');
+            boot.classList.add('boot-theme-linux');
+        }
+        if (activeVariant) activeVariant.classList.remove('hidden');
+
+        // Update "click to start" text per theme
+        var clickTexts = {
+            winxp: 'Click anywhere to start...',
+            macos: 'Click anywhere to start...',
+            linux: '> press any key to boot_'
+        };
+        if (bootClick) bootClick.textContent = clickTexts[savedTheme] || clickTexts.winxp;
+
         // Check if already booted this session
         if (sessionStorage.getItem('jan-portfolio-booted')) {
             boot.classList.add('hidden');
@@ -4024,12 +4697,28 @@
         boot.addEventListener('click', function startBoot() {
             boot.removeEventListener('click', startBoot);
             bootClick.classList.add('hidden');
+            var lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+            var loadingTexts = {
+                winxp: { en: 'Starting Windows XP...', pl: 'Uruchamianie Windows XP...', klingon: 'taHtaH Windows XP... Qapla\'!' },
+                macos: { en: 'Loading macOS...', pl: 'Ładowanie macOS...', klingon: 'macOS loDlu\'taH...' },
+                linux: { en: 'Booting GNU/Linux...', pl: 'Uruchamianie GNU/Linux...', klingon: 'GNU/Linux taHtaH...' }
+            };
+            var texts = loadingTexts[savedTheme] || loadingTexts.winxp;
+            bootText.textContent = texts[lang] || texts.en;
             bootText.classList.remove('hidden');
             bootBar.classList.remove('hidden');
-            bootText.textContent = t('loading-text');
+            // Trigger animation after layout paint so browser registers the transition
+            var bootFill = document.getElementById('bootProgress');
+            if (bootFill) {
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        bootFill.classList.add('animate');
+                    });
+                });
+            }
 
-            // Play Win98 startup sound NOW (user gesture context)
-            playStartupSound();
+            // Play startup sound based on theme
+            playStartupSound(savedTheme);
 
             // Boot sequence
             setTimeout(() => {
@@ -4043,68 +4732,79 @@
         });
     }
 
-    function playStartupSound() {
+    function playStartupSound(theme) {
         try {
             const ac = new (window.AudioContext || window.webkitAudioContext)();
 
-            // Win98 startup melody approximation
-            // The iconic ta-da-da-da-DAAA
-            const notes = [
-                { freq: 523.25, start: 0,    dur: 0.3,  gain: 0.15 },  // C5
-                { freq: 659.25, start: 0.15, dur: 0.3,  gain: 0.15 },  // E5
-                { freq: 783.99, start: 0.3,  dur: 0.3,  gain: 0.18 },  // G5
-                { freq: 1046.5, start: 0.5,  dur: 0.6,  gain: 0.2  },  // C6
-                { freq: 783.99, start: 0.7,  dur: 0.3,  gain: 0.12 },  // G5
-                { freq: 659.25, start: 0.9,  dur: 0.3,  gain: 0.1  },  // E5
-                { freq: 523.25, start: 1.1,  dur: 0.4,  gain: 0.12 },  // C5
-                { freq: 392.00, start: 1.3,  dur: 0.5,  gain: 0.1  },  // G4
-                { freq: 523.25, start: 1.6,  dur: 0.8,  gain: 0.18 },  // C5
-                { freq: 659.25, start: 1.6,  dur: 0.8,  gain: 0.12 },  // E5 (chord)
-                { freq: 783.99, start: 1.6,  dur: 0.8,  gain: 0.1  },  // G5 (chord)
-            ];
+            function playNotes(notes, wave, filterFreq) {
+                notes.forEach(function(n) {
+                    var osc = ac.createOscillator();
+                    var gain = ac.createGain();
+                    var filter = ac.createBiquadFilter();
+                    osc.type = wave || 'sine';
+                    osc.frequency.value = n.freq;
+                    filter.type = 'lowpass';
+                    filter.frequency.value = filterFreq || 2000;
+                    gain.gain.setValueAtTime(0, ac.currentTime + n.start);
+                    gain.gain.linearRampToValueAtTime(n.gain, ac.currentTime + n.start + 0.05);
+                    gain.gain.linearRampToValueAtTime(n.gain * 0.7, ac.currentTime + n.start + n.dur * 0.6);
+                    gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.start + n.dur);
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.start(ac.currentTime + n.start);
+                    osc.stop(ac.currentTime + n.start + n.dur + 0.1);
+                });
+            }
 
-            notes.forEach(n => {
-                const osc = ac.createOscillator();
-                const gain = ac.createGain();
-                const filter = ac.createBiquadFilter();
-
-                osc.type = 'sine';
-                osc.frequency.value = n.freq;
-
-                filter.type = 'lowpass';
-                filter.frequency.value = 2000;
-
-                gain.gain.setValueAtTime(0, ac.currentTime + n.start);
-                gain.gain.linearRampToValueAtTime(n.gain, ac.currentTime + n.start + 0.05);
-                gain.gain.linearRampToValueAtTime(n.gain * 0.7, ac.currentTime + n.start + n.dur * 0.6);
-                gain.gain.linearRampToValueAtTime(0, ac.currentTime + n.start + n.dur);
-
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(ac.destination);
-
-                osc.start(ac.currentTime + n.start);
-                osc.stop(ac.currentTime + n.start + n.dur + 0.1);
-            });
-
-            // Pad/ambient layer
-            const pad = ac.createOscillator();
-            const padGain = ac.createGain();
-            const padFilter = ac.createBiquadFilter();
-            pad.type = 'triangle';
-            pad.frequency.value = 261.63; // C4
-            padFilter.type = 'lowpass';
-            padFilter.frequency.value = 800;
-            padGain.gain.setValueAtTime(0, ac.currentTime);
-            padGain.gain.linearRampToValueAtTime(0.06, ac.currentTime + 0.5);
-            padGain.gain.linearRampToValueAtTime(0.04, ac.currentTime + 2.0);
-            padGain.gain.linearRampToValueAtTime(0, ac.currentTime + 2.8);
-            pad.connect(padFilter);
-            padFilter.connect(padGain);
-            padGain.connect(ac.destination);
-            pad.start(ac.currentTime);
-            pad.stop(ac.currentTime + 3);
-
+            if (theme === 'macos') {
+                // macOS boot chime — deep resonant chord
+                playNotes([
+                    { freq: 261.63, start: 0, dur: 2.5, gain: 0.15 },  // C4
+                    { freq: 329.63, start: 0, dur: 2.5, gain: 0.12 },  // E4
+                    { freq: 392.00, start: 0, dur: 2.5, gain: 0.10 },  // G4
+                    { freq: 523.25, start: 0, dur: 2.5, gain: 0.08 },  // C5
+                ], 'sine', 1200);
+            } else if (theme === 'linux') {
+                // Linux: short terminal beep sequence
+                playNotes([
+                    { freq: 800, start: 0,   dur: 0.08, gain: 0.12 },
+                    { freq: 800, start: 0.15, dur: 0.08, gain: 0.12 },
+                    { freq: 1200, start: 0.35, dur: 0.12, gain: 0.15 },
+                ], 'square', 3000);
+            } else {
+                // Windows XP startup melody — ta-da-da-da-DAAA
+                playNotes([
+                    { freq: 523.25, start: 0,    dur: 0.3,  gain: 0.15 },
+                    { freq: 659.25, start: 0.15, dur: 0.3,  gain: 0.15 },
+                    { freq: 783.99, start: 0.3,  dur: 0.3,  gain: 0.18 },
+                    { freq: 1046.5, start: 0.5,  dur: 0.6,  gain: 0.2  },
+                    { freq: 783.99, start: 0.7,  dur: 0.3,  gain: 0.12 },
+                    { freq: 659.25, start: 0.9,  dur: 0.3,  gain: 0.1  },
+                    { freq: 523.25, start: 1.1,  dur: 0.4,  gain: 0.12 },
+                    { freq: 392.00, start: 1.3,  dur: 0.5,  gain: 0.1  },
+                    { freq: 523.25, start: 1.6,  dur: 0.8,  gain: 0.18 },
+                    { freq: 659.25, start: 1.6,  dur: 0.8,  gain: 0.12 },
+                    { freq: 783.99, start: 1.6,  dur: 0.8,  gain: 0.1  },
+                ], 'sine', 2000);
+                // XP pad/ambient layer
+                var pad = ac.createOscillator();
+                var padGain = ac.createGain();
+                var padFilter = ac.createBiquadFilter();
+                pad.type = 'triangle';
+                pad.frequency.value = 261.63;
+                padFilter.type = 'lowpass';
+                padFilter.frequency.value = 800;
+                padGain.gain.setValueAtTime(0, ac.currentTime);
+                padGain.gain.linearRampToValueAtTime(0.06, ac.currentTime + 0.5);
+                padGain.gain.linearRampToValueAtTime(0.04, ac.currentTime + 2.0);
+                padGain.gain.linearRampToValueAtTime(0, ac.currentTime + 2.8);
+                pad.connect(padFilter);
+                padFilter.connect(padGain);
+                padGain.connect(ac.destination);
+                pad.start(ac.currentTime);
+                pad.stop(ac.currentTime + 3);
+            }
         } catch(e) {
             // Audio not supported, no big deal
         }
@@ -4357,6 +5057,9 @@
         if (localStorage.getItem('jan-portfolio-chocolaterain') === 'true') {
             unlockWinampChocolateRain();
         }
+        if (localStorage.getItem('jan-portfolio-januszrage') === 'true') {
+            unlockWinampJanuszRage();
+        }
 
         // Create viz bars
         for (var i = 0; i < 20; i++) {
@@ -4432,11 +5135,8 @@
             if (winampAc.state === 'suspended') winampAc.resume();
             winampMasterGain = winampAc.createGain();
             winampMasterGain.connect(winampAc.destination);
-            // Set initial master volume (on Windows it stays at 1.0 regardless of slider)
-            var theme = document.documentElement.getAttribute('data-theme') || 'winxp';
-            if (theme !== 'win98' && theme !== 'winxp') {
-                winampMasterGain.gain.setValueAtTime(parseInt(volSlider.value) / 100, winampAc.currentTime);
-            }
+            // Always set master volume from slider to preserve volume across track changes
+            winampMasterGain.gain.setValueAtTime(parseInt(volSlider.value) / 100, winampAc.currentTime);
             winampPlaying = true;
             winampPaused = false;
             playBtn.textContent = '\u25B6';
@@ -4460,6 +5160,9 @@
             } else if (trackId === 'chocolaterain') {
                 ticker.textContent = 'Tay Zonday - Chocolate Rain [8bit]';
                 playChocolateRain8bit(winampAc, v, winampMasterGain);
+            } else if (trackId === 'januszrage') {
+                ticker.textContent = 'Wściekły Copilot - Polka Destrukcja [8bit]';
+                playJanuszRage8bit(winampAc, v, winampMasterGain);
             }
 
             winampStartTime = winampAc.currentTime;
@@ -4521,6 +5224,7 @@
             if (localStorage.getItem('jan-portfolio-tetris') === 'true') arr.push('tetris');
             if (localStorage.getItem('jan-portfolio-breakout') === 'true') arr.push('breakout');
             if (localStorage.getItem('jan-portfolio-chocolaterain') === 'true') arr.push('chocolaterain');
+            if (localStorage.getItem('jan-portfolio-januszrage') === 'true') arr.push('januszrage');
             return arr;
         }
     }
@@ -5111,6 +5815,126 @@
         });
     }
 
+    // Janusz Rage - Polka Destrukcja [8bit] - chaotic polka/disco polo
+    function playJanuszRage8bit(ac, vol, dest, oscArr) {
+        if (!dest) dest = ac.destination;
+        var _oscs = oscArr || winampScheduledOscs;
+        var b = 0.15; // FAST tempo - chaotic polka
+
+        // Notes
+        var C4=261.63,D4=293.66,E4=329.63,F4=349.23,G4=392.00,A4=440.00,B4=493.88;
+        var C5=523.25,D5=587.33,E5=659.25,F5=698.46,G5=784.00,A5=880.00;
+        var C3=130.81,D3=146.83,E3=164.81,F3=174.61,G3=196.00,A3=220.00,B3=246.94;
+
+        // Melody: chaotic polka with disco polo energy
+        var melody = [
+            // Phrase 1 - aggressive polka
+            E4,E4,G4,G4,A4,A4,G4,0,
+            F4,F4,E4,E4,D4,D4,C4,0,
+            E4,G4,C5,C5,B4,A4,G4,0,
+            A4,B4,C5,D5,E5,D5,C5,0,
+            // Phrase 2 - disco polo madness
+            C5,C5,A4,A4,G4,G4,E4,0,
+            F4,G4,A4,G4,F4,E4,D4,0,
+            G4,A4,B4,C5,D5,E5,D5,C5,
+            B4,A4,G4,F4,E4,D4,C4,0,
+            // Phrase 3 - RAGE crescendo
+            C5,D5,E5,F5,G5,F5,E5,D5,
+            C5,C5,C5,0,G4,G4,G4,0,
+            E5,E5,D5,D5,C5,C5,B4,A4,
+            G4,A4,B4,C5,D5,E5,G5,0,
+        ];
+
+        // Bass: oom-pah polka pattern
+        var bass = [
+            C3,0,G3,0,C3,0,G3,0,
+            F3,0,C3,0,F3,0,C3,0,
+            C3,0,E3,0,G3,0,E3,0,
+            A3,0,E3,0,A3,0,E3,0,
+            C3,0,G3,0,C3,0,G3,0,
+            F3,0,C3,0,G3,0,C3,0,
+            G3,0,B3,0,D3,0,G3,0,
+            C3,0,G3,0,C3,0,G3,0,
+            C3,0,E3,0,G3,0,E3,0,
+            C3,C3,C3,0,G3,G3,G3,0,
+            A3,0,E3,0,F3,0,C3,0,
+            G3,0,D3,0,G3,0,C3,0,
+        ];
+
+        var t = ac.currentTime + 0.05;
+        var dur = melody.length * b;
+        winampDuration = dur * 3; // 3 loops
+        var loopLen = melody.length;
+
+        function scheduleLoop(startTime) {
+            // Melody - square wave for max 8bit energy
+            for (var i = 0; i < melody.length; i++) {
+                if (melody[i] === 0) continue;
+                var osc = ac.createOscillator();
+                var g = ac.createGain();
+                osc.type = 'square';
+                osc.frequency.value = melody[i];
+                // Vibrato for extra cringe
+                var lfo = ac.createOscillator();
+                var lfoG = ac.createGain();
+                lfo.frequency.value = 8;
+                lfoG.gain.value = melody[i] * 0.03;
+                lfo.connect(lfoG);
+                lfoG.connect(osc.frequency);
+                lfo.start(startTime + i * b);
+                lfo.stop(startTime + i * b + b * 0.85);
+
+                osc.connect(g);
+                g.connect(dest);
+                g.gain.setValueAtTime(vol * 0.5, startTime + i * b);
+                g.gain.exponentialRampToValueAtTime(0.01, startTime + i * b + b * 0.85);
+                osc.start(startTime + i * b);
+                osc.stop(startTime + i * b + b * 0.9);
+                _oscs.push(osc, lfo);
+            }
+
+            // Bass - sawtooth for thicc bass
+            for (var j = 0; j < bass.length; j++) {
+                if (bass[j] === 0) continue;
+                var osc2 = ac.createOscillator();
+                var g2 = ac.createGain();
+                osc2.type = 'sawtooth';
+                osc2.frequency.value = bass[j];
+                osc2.connect(g2);
+                g2.connect(dest);
+                g2.gain.setValueAtTime(vol * 0.35, startTime + j * b);
+                g2.gain.exponentialRampToValueAtTime(0.01, startTime + j * b + b * 0.8);
+                osc2.start(startTime + j * b);
+                osc2.stop(startTime + j * b + b * 0.85);
+                _oscs.push(osc2);
+            }
+
+            // Percussion - noise bursts on off-beats for polka feel
+            for (var k = 0; k < melody.length; k++) {
+                if (k % 2 === 0) continue; // off-beats only
+                var bufSize = ac.sampleRate * b * 0.3;
+                var buf = ac.createBuffer(1, bufSize, ac.sampleRate);
+                var data = buf.getChannelData(0);
+                for (var s = 0; s < bufSize; s++) data[s] = (Math.random() * 2 - 1) * 0.5;
+                var noise = ac.createBufferSource();
+                noise.buffer = buf;
+                var ng = ac.createGain();
+                noise.connect(ng);
+                ng.connect(dest);
+                ng.gain.setValueAtTime(vol * 0.2, startTime + k * b);
+                ng.gain.exponentialRampToValueAtTime(0.01, startTime + k * b + b * 0.25);
+                noise.start(startTime + k * b);
+                noise.stop(startTime + k * b + b * 0.3);
+                _oscs.push(noise);
+            }
+        }
+
+        // Schedule 3 loops
+        for (var loop = 0; loop < 3; loop++) {
+            scheduleLoop(t + loop * dur);
+        }
+    }
+
     // ===== BROWSER THEME + LOADING =====
     var browserLoadingShown = false;
 
@@ -5204,7 +6028,7 @@
             if (titleIcon) titleIcon.textContent = '\uD83C\uDF10';
             if (titleText) titleText.textContent = 'Internet Explorer';
             if (urlIcon) urlIcon.textContent = '\uD83D\uDD12';
-            if (urlText) urlText.textContent = 'http://janjurec.cyberdemigods.com';
+            if (urlText) urlText.textContent = 'http://www.jurec.pl';
             if (noNetIcon) noNetIcon.textContent = '\uD83C\uDF10';
             if (noNetTitle) noNetTitle.textContent = t('browser-nonet-ie-title');
             if (noNetDesc) noNetDesc.textContent = t('browser-nonet-ie-desc');
@@ -5212,7 +6036,7 @@
             if (titleIcon) titleIcon.textContent = '\uD83E\uDDED';
             if (titleText) titleText.textContent = 'Safari';
             if (urlIcon) urlIcon.textContent = '\uD83D\uDD12';
-            if (urlText) urlText.textContent = 'janjurec.cyberdemigods.com';
+            if (urlText) urlText.textContent = 'www.jurec.pl';
             if (noNetIcon) noNetIcon.textContent = '\uD83E\uDDED';
             if (noNetTitle) noNetTitle.textContent = t('browser-nonet-safari-title');
             if (noNetDesc) noNetDesc.textContent = t('browser-nonet-safari-desc');
@@ -5220,7 +6044,7 @@
             if (titleIcon) titleIcon.textContent = '\uD83E\uDDC5';
             if (titleText) titleText.textContent = 'Tor Browser';
             if (urlIcon) urlIcon.textContent = '\uD83E\uDDC5';
-            if (urlText) urlText.textContent = 'http://janportf0l1o.onion';
+            if (urlText) urlText.textContent = 'http://www.jurec.pl';
             if (noNetIcon) noNetIcon.textContent = '\uD83E\uDDC5';
             if (noNetTitle) noNetTitle.textContent = t('browser-nonet-tor-title');
             if (noNetDesc) noNetDesc.textContent = t('browser-nonet-tor-desc');
@@ -5247,6 +6071,35 @@
             iframe.src = url;
         }
     }
+
+    function loadUrlInBrowser(url) {
+        var type = getBrowserType();
+        openWindow('browser');
+        var win = document.getElementById('window-browser');
+        var urlText = win ? win.querySelector('.browser-url-text') : null;
+
+        if (type === 'ie') {
+            // XP: no internet — just update URL bar for the joke
+            if (urlText) urlText.textContent = url;
+            // noNet screen stays visible — that's the joke
+        } else {
+            // macOS / Linux: load in iframe
+            var iframe = document.getElementById('safariInception');
+            var noNet = document.getElementById('browserNoNet');
+            var canvas = document.getElementById('nosaczCanvas');
+            var scoreEl = document.getElementById('nosaczScore');
+            if (noNet) noNet.classList.add('hidden');
+            if (canvas) canvas.classList.add('hidden');
+            if (scoreEl) scoreEl.classList.add('hidden');
+            if (iframe) {
+                iframe.classList.remove('hidden');
+                iframe.src = 'https://' + url.replace(/^https?:\/\//, '');
+            }
+            if (urlText) urlText.textContent = url;
+        }
+    }
+    // Expose for contact link
+    window._loadUrlInBrowser = loadUrlInBrowser;
 
     function hideSafariInception() {
         var iframe = document.getElementById('safariInception');
@@ -6832,10 +7685,11 @@
         var piece = null, nextPiece = null;
         var px, py, pieceType, nextType;
         var score = 0, lines = 0, level = 1;
-        var dropInterval = 800, dropTimer = 0, lastTime = 0;
+        var dropInterval = 600, dropTimer = 0, lastTime = 0;
         var gameRunning = false, gamePaused = false, gameOver = false;
         var frameId = null;
         var tetrisAc = null, synthNodes = [], synthLoop = null;
+        var flashRows = []; // rows currently flashing white
 
         function newBoard() {
             board = [];
@@ -6911,29 +7765,37 @@
         }
 
         function clearLines() {
-            var cleared = 0;
+            var fullRowIndices = [];
             for (var r = ROWS - 1; r >= 0; r--) {
                 var full = true;
                 for (var c = 0; c < COLS; c++) { if (!board[r][c]) { full = false; break; } }
-                if (full) {
-                    board.splice(r, 1);
-                    var empty = [];
-                    for (var c2 = 0; c2 < COLS; c2++) empty.push(0);
-                    board.unshift(empty);
-                    cleared++;
-                    r++; // recheck same row
-                }
+                if (full) fullRowIndices.push(r);
             }
-            if (cleared > 0) {
+            if (fullRowIndices.length > 0) {
+                // Flash effect: mark rows for white flash overlay
+                flashRows = fullRowIndices.slice();
+                // After 150ms, remove the rows and clear flash
+                setTimeout(function() {
+                    flashRows = [];
+                    // Sort ascending so we can splice from bottom (largest index) first
+                    fullRowIndices.sort(function(a, b) { return a - b; });
+                    for (var i = fullRowIndices.length - 1; i >= 0; i--) {
+                        board.splice(fullRowIndices[i], 1);
+                        var empty = [];
+                        for (var c2 = 0; c2 < COLS; c2++) empty.push(0);
+                        board.unshift(empty);
+                    }
+                }, 150);
+                var cleared = fullRowIndices.length;
                 var pts = [0, 100, 300, 500, 800];
                 score += (pts[cleared] || 800) * level;
                 lines += cleared;
                 level = Math.floor(lines / 10) + 1;
-                dropInterval = Math.max(80, 800 - (level - 1) * 70);
+                dropInterval = Math.max(80, 600 - (level - 1) * 50);
                 if (scoreEl) scoreEl.textContent = score;
                 if (linesEl) linesEl.textContent = lines;
                 if (levelEl) levelEl.textContent = level;
-                playClearSound(cleared);
+                playLineClearSound(cleared);
             }
         }
 
@@ -6952,8 +7814,17 @@
             }
             // Board pieces
             for (var r = 0; r < ROWS; r++) {
+                var isFlash = flashRows.indexOf(r) !== -1;
                 for (var c = 0; c < COLS; c++) {
-                    if (board[r][c]) {
+                    if (isFlash) {
+                        // White flash for cleared rows
+                        var fcx = c * CELL, fcy = r * CELL;
+                        ctx.shadowColor = '#fff';
+                        ctx.shadowBlur = 10;
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(fcx + 1, fcy + 1, CELL - 2, CELL - 2);
+                        ctx.shadowBlur = 0;
+                    } else if (board[r][c]) {
                         drawCell(ctx, c, r, board[r][c] - 1);
                     }
                 }
@@ -7064,7 +7935,7 @@
         function startGame() {
             newBoard();
             score = 0; lines = 0; level = 1;
-            dropInterval = 800; dropTimer = 0; gameOver = false; gamePaused = false;
+            dropInterval = 600; dropTimer = 0; gameOver = false; gamePaused = false;
             if (scoreEl) scoreEl.textContent = '0';
             if (linesEl) linesEl.textContent = '0';
             if (levelEl) levelEl.textContent = '1';
@@ -7266,23 +8137,22 @@
             osc.start(); osc.stop(tetrisAc.currentTime + 0.06);
         }
 
-        function playClearSound(count) {
-            if (!tetrisAc) return;
-            var baseFreq = 400;
-            for (var i = 0; i < count; i++) {
-                (function(idx) {
-                    var osc = tetrisAc.createOscillator();
+        function playLineClearSound(numLines) {
+            try {
+                var ac = tetrisAc || new (window.AudioContext || window.webkitAudioContext)();
+                for (var i = 0; i < numLines; i++) {
+                    var osc = ac.createOscillator();
+                    var gain = ac.createGain();
+                    osc.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.frequency.value = 400 + i * 100;
                     osc.type = 'square';
-                    var freq = baseFreq + idx * 200;
-                    osc.frequency.setValueAtTime(freq, tetrisAc.currentTime + idx * 0.08);
-                    var g = tetrisAc.createGain();
-                    g.gain.setValueAtTime(0.12, tetrisAc.currentTime + idx * 0.08);
-                    g.gain.exponentialRampToValueAtTime(0.001, tetrisAc.currentTime + idx * 0.08 + 0.15);
-                    osc.connect(g); g.connect(tetrisAc.destination);
-                    osc.start(tetrisAc.currentTime + idx * 0.08);
-                    osc.stop(tetrisAc.currentTime + idx * 0.08 + 0.15);
-                })(i);
-            }
+                    gain.gain.value = 0.1;
+                    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.15 + i * 0.05);
+                    osc.start(ac.currentTime + i * 0.05);
+                    osc.stop(ac.currentTime + 0.15 + i * 0.05);
+                }
+            } catch(e) {}
         }
 
         function playGameOverSound() {
@@ -7330,6 +8200,2239 @@
         }
     }
 
+    function unlockWinampJanuszRage() {
+        var el = document.getElementById('winampJanuszRage');
+        if (el) {
+            el.classList.remove('locked');
+            el.innerHTML = '🐒 Wściekły Copilot - Polka Destrukcja [8bit]';
+        }
+        localStorage.setItem('jan-portfolio-januszrage', 'true');
+    }
+
+    function initShakeCursor() {
+        var lastX = 0, lastY = 0, lastT = 0;
+        var velocities = [];
+        var shaking = false;
+        var timeout = null;
+        var cursorEl = null;
+
+        function createCursorOverlay() {
+            if (cursorEl) return cursorEl;
+            cursorEl = document.createElement('div');
+            cursorEl.id = 'shake-cursor';
+            // macOS-style large arrow cursor using SVG
+            cursorEl.innerHTML = '<svg width="48" height="56" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+                '<path d="M2 2L2 22L7.5 16.5L12 26L16 24.5L11.5 15L19 15L2 2Z" fill="white" stroke="black" stroke-width="1.5"/>' +
+                '</svg>';
+            cursorEl.style.cssText = 'position:fixed;pointer-events:none;z-index:999999;' +
+                'transform:translate(-4px,-2px) scale(0);transition:transform 0.15s ease-out;display:none;' +
+                'filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));';
+            document.body.appendChild(cursorEl);
+            return cursorEl;
+        }
+
+        function showBigCursor(x, y) {
+            if (shaking) return;
+            shaking = true;
+            var el = createCursorOverlay();
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.display = 'block';
+            requestAnimationFrame(function() {
+                el.style.transform = 'translate(-4px,-2px) scale(1)';
+            });
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                el.style.transform = 'translate(-4px,-2px) scale(0)';
+                setTimeout(function() { el.style.display = 'none'; shaking = false; }, 160);
+            }, 600);
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            if (!_isMacosTheme()) return;
+
+            var now = Date.now();
+            var dt = now - lastT;
+            if (dt < 5) return; // throttle
+
+            var dx = e.clientX - lastX;
+            var dy = e.clientY - lastY;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            var speed = dist / Math.max(dt, 1) * 1000; // px/s
+
+            lastX = e.clientX;
+            lastY = e.clientY;
+            lastT = now;
+
+            // Track direction reversals over recent movements
+            velocities.push({ dx: dx, dy: dy, speed: speed, t: now });
+            // Keep only last 300ms
+            while (velocities.length > 0 && now - velocities[0].t > 300) {
+                velocities.shift();
+            }
+
+            if (velocities.length < 4) return;
+
+            // Count direction reversals (sign changes)
+            var reversals = 0;
+            var avgSpeed = 0;
+            for (var i = 1; i < velocities.length; i++) {
+                var prev = velocities[i - 1];
+                var cur = velocities[i];
+                if ((prev.dx > 0 && cur.dx < 0) || (prev.dx < 0 && cur.dx > 0)) reversals++;
+                if ((prev.dy > 0 && cur.dy < 0) || (prev.dy < 0 && cur.dy > 0)) reversals++;
+                avgSpeed += cur.speed;
+            }
+            avgSpeed /= (velocities.length - 1);
+
+            // Shake = fast movement with multiple direction changes
+            if (reversals >= 3 && avgSpeed > 1500) {
+                showBigCursor(e.clientX, e.clientY);
+                velocities = [];
+            }
+
+            // Update position if already showing
+            if (shaking && cursorEl) {
+                cursorEl.style.left = e.clientX + 'px';
+                cursorEl.style.top = e.clientY + 'px';
+            }
+        });
+    }
+
+    // ===== NOSACZ HELPER (Clippy-style assistant) =====
+    function initNosaczHelper() {
+        // Don't spawn Janusz inside iframes (Safari inception)
+        if (window.self !== window.top) return;
+
+        var SPRITE_URL = 'nosacz-sprite.png';
+        var FRAME_W = 110;
+        var FRAME_H = 150;
+        var FRAME_COUNT = 4;
+        var SCALE = 0.75; // display size multiplier
+        var DISPLAY_W = Math.round(FRAME_W * SCALE);
+        var DISPLAY_H = Math.round(FRAME_H * SCALE);
+
+        // State
+        var el, bubbleEl, spriteEl;
+        var posX = 100, posY = 300;
+        var targetX = 100, targetY = 300;
+        var facing = 1; // 1 = right, -1 = left
+        var state = 'idle'; // idle, walk, angry, rage
+        var frame = 0;
+        var animTimer = null;
+        var moveTimer = null;
+        var bubbleTimer = null;
+        var idleTimeout = null;
+        var dismissed = false;
+        var helpPhase = 0;
+        var angryTimeout = null;
+        var clickCount = 0;
+        var helpfulClickCount = 0;
+        var helpfulClickResetTimer = null;
+        var clickResetTimer = null;
+        var rageTimer = null;
+        var eatenIcons = [];
+        var nosaczAc = null;
+        var januszMode = 'helpful'; // 'helpful' or 'chaos'
+        var chaosTimer = null; // dedicated chaos mode walk timer (never touched by tour/helpful)
+        var chaosEpoch = 0;    // incremented on each chaos activation; stale callbacks bail out
+        var tourPhase = 0;
+        var tourActive = false;
+        var tourDelayTimer = null;
+        var tourStarted = false;
+        var tourStepTimer = null; // tracks pending tour step setTimeout
+        var onArrival = null; // callback when walkToTarget arrives
+
+        // Texts
+        var helpTexts = {
+            en: [
+                { text: "Hi! I'm Copilot 🐒 your guide! You can toggle me with the 🐒 button in the taskbar.", target: null },
+                { text: "Try clicking 'About Me' to learn about Jan!", target: 'about' },
+                { text: "Check out 'Experience' — 9 positions of pure grind! 💼", target: 'experience' },
+                { text: "There are games too! Try Tetris or Breakout 🎮", target: 'tetris' },
+                { text: "You can switch OS themes in the taskbar! Try macOS 🍎", target: null },
+                { text: "Open the Terminal and type 'help' for secrets... 🤫", target: 'terminal' },
+            ],
+            pl: [
+                { text: "Cześć! Jestem Copilot 🐒 Twój przewodnik! Możesz mnie wyłączyć i przywrócić przyciskiem 🐒 na pasku zadań.", target: null },
+                { text: "Kliknij 'O mnie' żeby poznać Janka!", target: 'about' },
+                { text: "Sprawdź 'Doświadczenie' — 9 stanowisk! 💼", target: 'experience' },
+                { text: "Są tu też gry! Spróbuj Tetrisa albo Breakout 🎮", target: 'tetris' },
+                { text: "Możesz zmieniać motywy OS w pasku zadań! Spróbuj macOS 🍎", target: null },
+                { text: "Otwórz Terminal i wpisz 'help' — są sekrety... 🤫", target: 'terminal' },
+            ],
+            klingon: [
+                { text: "nuqneH! Copilot jIH! 🐒 🐒 Degh yIpum toggling!", target: null },
+                { text: "'About Me' yIpum! Jan DayajmeH!", target: 'about' },
+                { text: "'Experience' yIlegh — 9 Qap! 💼", target: 'experience' },
+                { text: "Quj tu'lu'! Tetris ghap Breakout yIQuj! 🎮", target: 'tetris' },
+                { text: "OS pat choHlaH! macOS yInID! 🍎", target: null },
+                { text: "Terminal yIpoSmoH! 'help' yIghItlh! 🤫", target: 'terminal' },
+            ]
+        };
+
+        var angryTexts = {
+            en: [
+                "HALYNA! I'm having a heart attack! 💀",
+                "Hands off! This is PRIVATE PROPERTY!",
+                "Who moved my remote?! GRAŻYNA!!",
+                "Stop clicking me, I'm not your colleague!",
+                "Back in MY day, people had RESPECT!",
+                "One more click and I'm writing to the ombudsman!",
+                "Do I come to YOUR workplace and poke you?!",
+                "*angry Janusz noises* 🤬",
+                "MOBBING! This is MOBBING!",
+                "Grażyna! The internet is attacking me again!",
+                "How much?! For that price I'll make it myself!",
+            ],
+            pl: [
+                "HALYNA! Mam zawał! 💀",
+                "Ręce przy sobie! To jest PRYWATNA WŁASNOŚĆ!",
+                "Kto ruszał mój pilot?! GRAŻYNKO!!",
+                "Nie klikaj mnie, nie jestem twój kolega!",
+                "Spadaj, bo dzwonię na policję!",
+                "Czy ja przychodzę do CIEBIE i Cię szturcham?!",
+                "Jeszcze raz a piszę do rzecznika praw! ⚖️",
+                "*wściekłe januszowe odgłosy* 🤬",
+                "Kto zjadł mój schabowy?! To TY?!",
+                "MOBBING! To jest MOBBING!",
+                "Grażyna! Ten internet mnie znowu atakuje!",
+                "Nie dotykaj mnie, bo jestem po obiedzie!",
+                "Ile?! Za tyle to ja sam sobie zrobię!",
+                "Sąsiad ma gorzej i się nie skarży!",
+                "GRAŻYNKO! Kto wpuścił tego hakera?!",
+                "A kysz! KYSZ! 🫳",
+                "Zaraz ci przyłożę klapkiem! 🩴",
+                "Ja ci dam klikanie! Ja ci dam!",
+            ],
+            klingon: [
+                "HALYNA! tIq jIHegh! 💀",
+                "ghopDu' yIlel! nuch!",
+                "yImev! HIchawHa'!",
+                "yan vIlel! 🤬",
+                "GRAŻYNA! jIQeH!",
+                "qaStaHvIS wa' ram! 😤",
+            ]
+        };
+
+        var idleTexts = {
+            en: [
+                "Eh, things used to be better... 💤",
+                "Beer won't drink itself...",
+                "BBQ sausage, cold beer... that's the life.",
+                "I wonder if Grażyna made schnitzel...",
+                "Taxes, taxes... nothing but taxes!",
+                "The plot of land — now THAT'S paradise! 🌿",
+                "Don't throw it away, it'll come in handy!",
+                "Why buy when you can get it for free?",
+                "The neighbor has a worse car. Good. 😏",
+                "AC? Open the window and stop whining!",
+                "One beer never hurt anybody! 🍺",
+                "TV is all garbage these days.",
+                "How much?! I'll make it myself for half that!",
+            ],
+            pl: [
+                "Eh, kiedyś to było... 💤",
+                "Piwo samo się nie wypije...",
+                "Kiełbaska na grillu, zimne piwko... to jest życie.",
+                "Ciekawe, czy Grażynka zrobiła schabowe...",
+                "Podatki, podatki... same podatki!",
+                "Na działce to dopiero jest raj! 🌿",
+                "Nie wyrzucaj, to się jeszcze przyda!",
+                "Po co kupować, jak można za darmo?",
+                "Sąsiad ma gorszy samochód. I dobrze. 😏",
+                "Klimatyzacja? Otwórz okno i nie marudź!",
+                "Jedno piwko nikomu nie zaszkodziło! 🍺",
+                "W telewizji same bzdury lecą.",
+                "Promocja?! Gdzie?! Grażyna, bierz torbę!",
+                "Grażynko, wyłącz światło! Prąd nie jest za darmo! 💡",
+                "Kiedyś to chleb kosztował złotówkę...",
+                "Foliówkę mam swoją — z Biedronki. Wielorazowa.",
+                "WiFi u sąsiada jest za darmo, po co swoje? 📶",
+                "Schabowy to jest posiłek! Nie te wasze sushi!",
+                "Zaraz będzie mecz, gdzie jest pilot? 📺",
+                "Ja się w życiu SAM wszystkiego dorobiłem!",
+                "Za komuny to przynajmniej każdy miał pracę...",
+                "Za moich czasów stron internetowych nie było i żyło się lepiej!",
+                "Co to za strona? Gdzie tu jest Onet?",
+                "Nosacz sundajski, gatunek zagrożony. Jak moja cierpliwość.",
+                "O, Grażynka dzwoni... nie odbieram. 📱",
+                "Trzeba by kran naprawić... jutro.",
+                "Ciekawe ile prądu ta strona żre...",
+            ],
+            klingon: [
+                "💤 *ghIch HoS*",
+                "HIq natlhbe'...",
+                "naDev jIHtaH... jIlegh...",
+                "wa' HIq pagh moj! 🍺",
+                "*Hap'a' ghIch Janusz*",
+            ]
+        };
+
+        // Texts when Janusz walks to an icon and opens it
+        var iconTexts = {
+            about:          { en: "Let's see who this Jan guy is... 🤔", pl: "Zobaczmy kto to ten Janek... 🤔" },
+            experience:     { en: "9 jobs?! Back in my day, one was enough!", pl: "9 robót?! Za moich czasów jedna wystarczała!" },
+            skills:         { en: "Skills? I have one skill: grilling! 🥩", pl: "Umiejętności? Ja mam jedną: grill! 🥩" },
+            projects:       { en: "Projects... in MY day we built sheds!", pl: "Projekty... za moich czasów to się szopy budowało!" },
+            education:      { en: "Education, pfff... school of life is best!", pl: "Wykształcenie, pfff... szkoła życia najlepsza!" },
+            recommendations:{ en: "Recommendations? Grażyna recommends silence.", pl: "Rekomendacje? Grażyna rekomenduje ciszę." },
+            contact:        { en: "Contact? I don't pick up unknown numbers!", pl: "Kontakt? Ja nieznanych numerów nie odbieram!" },
+            terminal:       { en: "Ooo, hacker stuff! Hehe! 👨‍💻", pl: "Ooo, hakerskie rzeczy! Hehe! 👨‍💻" },
+            browser:        { en: "Ooh, onion! Yummy! 🧅", pl: "O, cebula! Mniam! 🧅" },
+            winamp:         { en: "Disco polo time! 🎵", pl: "Czas na disco polo! 🎵" },
+            breakout:       { en: "Heh heh heh, brick game! 🧱", pl: "Hłe hłe hłe, klocki! 🧱" },
+            tetris:         { en: "Heh heh heh, Tetris! 🎮", pl: "Hłe hłe hłe, Tetriz! 🎮" },
+            paint:          { en: "I'm an ARTIST, Grażyna! 🎨", pl: "Jestem ARTYSTĄ, Grażynko! 🎨" },
+            notepad:        { en: "Dear diary... Grażyna burned dinner again.", pl: "Drogi pamiętniku... Grażyna znów spaliła obiad." },
+        };
+
+        // Tour guide steps (helpful mode)
+        var tourSteps = [
+            { text: { en: "Hi! I'm Copilot 🐒 Let me show you around!", pl: "Cześć! Jestem Copilot 🐒 Oprowadzę Cię!" }, wait: 4000 },
+            { selector: '#copilotToggle', text: { en: "See this 🐒 button? Click it to turn me off... or back on! But why would you? 😏", pl: "Widzisz ten przycisk 🐒? Kliknij go żeby mnie wyłączyć... albo włączyć! Ale po co byś chciał? 😏" } },
+            { target: 'about', text: { en: "This is 'About Me' — click to learn about Jan!", pl: "To jest 'O mnie' — kliknij żeby poznać Janka!" } },
+            { target: 'experience', text: { en: "Here's Jan's experience — 9 positions, impressive!", pl: "Tu jest doświadczenie Janka — 9 stanowisk, nieźle!" } },
+            { target: 'skills', text: { en: "Skills section — 40+ technologies! AI, cloud, the works!", pl: "Sekcja umiejętności — 40+ technologii! AI, chmura, pełen zestaw!" } },
+            { target: 'projects', text: { en: "Projects — see what Jan has built!", pl: "Projekty — zobacz co Janek zbudował!" } },
+            { target: 'terminal', text: { en: "The Terminal! Type commands, discover secrets... 🤫", pl: "Terminal! Wpisuj komendy, odkrywaj sekrety... 🤫" } },
+            { target: 'winamp', text: { en: "Winamp! 🎵 Unlock hidden tracks by playing games!", pl: "Winamp! 🎵 Odblokuj ukryte utwory grając w gry!" } },
+            { target: 'tetris', text: { en: "Games! Tetris, Breakout, even a Copilot runner! 🎮", pl: "Gry! Tetris, Breakout, nawet bieg Copilota! 🎮" } },
+            { target: 'browser', text: { en: "A web browser! Careful — it goes deep... 🌐", pl: "Przeglądarka! Uważaj — można się zagłębić... 🌐" } },
+            { selector: '#startBtn', text: { en: "The Start menu — programs, settings, all here!", pl: "Menu Start — programy, ustawienia, wszystko tu!" } },
+            { selector: '.theme-switcher-tray', text: { en: "Switch themes! Try macOS or Linux! 🖥️", pl: "Zmieniaj motywy! Spróbuj macOS albo Linux! 🖥️" } },
+            { selector: '#langToggle', text: { en: "Change language — English, Polish, or... Klingon! 🖖", pl: "Zmień język — angielski, polski, albo... klingoński! 🖖" } },
+            { text: { en: "That's the tour! Click around and explore! Have fun! 🎉", pl: "To tyle z wycieczki! Klikaj i eksploruj! Baw się dobrze! 🎉" }, wait: 5000 },
+        ];
+
+        var helpfulClickTexts = {
+            en: [
+                "Need help? Try clicking an icon on the desktop!",
+                "You can switch OS themes in the bottom bar!",
+                "Try the Terminal — type 'help' for commands!",
+                "There are secret tracks to unlock in Winamp! 🎵",
+                "Want to play? Try Tetris or Breakout!",
+                "Click 'About Me' to learn about Jan!",
+            ],
+            pl: [
+                "Potrzebujesz pomocy? Kliknij ikonkę na pulpicie!",
+                "Możesz zmieniać motywy OS na dolnym pasku!",
+                "Spróbuj Terminala — wpisz 'help' po komendy!",
+                "Są ukryte utwory do odblokowania w Winampie! 🎵",
+                "Chcesz pograć? Spróbuj Tetrisa albo Breakout!",
+                "Kliknij 'O mnie' żeby poznać Janka!",
+            ],
+        };
+
+        var helpfulIdleTexts = {
+            en: [
+                "Click any icon to open a window! 💡",
+                "Jan knows 40+ technologies — check Skills!",
+                "Psst... there are easter eggs hidden here... 🤫",
+                "Try dragging the icons around!",
+                "The games unlock secret Winamp tracks! 🎵",
+                "Piotr once typed 'Jan' in the terminal and you won't BELIEVE what happened... 😱",
+                "Careful, the terminal is not a toy! Type 'janusz' for a 21.37% InPost discount! 📦",
+                "Try opening the browser on macOS theme... just saying 👀",
+                "Psst... the glass effects look even better on Chrome! Just saying... 🪟✨",
+            ],
+            pl: [
+                "Kliknij dowolną ikonkę żeby otworzyć okno! 💡",
+                "Janek zna 40+ technologii — sprawdź Umiejętności!",
+                "Psst... tu są ukryte easter eggi... 🤫",
+                "Spróbuj przeciągać ikonki!",
+                "Gry odblokowują sekretne utwory w Winampie! 🎵",
+                "Pjoter pewnego razu wpisał 'jan' w terminalu i nie uwierzysz, co się stało... 😱",
+                "Uważaj, terminal to nie zabawka! Na hasło 'janusz' masz 21,37% zniżki w apce InPostu! 📦",
+                "Spróbuj otworzyć przeglądarkę na motywie macOS... mówię tylko 👀",
+                "Psst... efekty szkła wyglądają jeszcze lepiej na Chrome! Mówię tylko... 🪟✨",
+            ],
+        };
+
+        // Inception conversation (two Januszs meet)
+        var inceptionConvo = {
+            en: [
+                { who: 'outer', text: "Wait... is that... ME?! 😱" },
+                { who: 'inner', text: "Grażyna?! Is that you?! Why so small?!" },
+                { who: 'outer', text: "I'm not Grażyna! I'M Janusz!" },
+                { who: 'inner', text: "I'M Janusz! Who let you in here?!" },
+                { who: 'outer', text: "Piotr did this! This is HIS fault!" },
+                { who: 'inner', text: "PIOTR! Always Piotr! 😤" },
+                { who: 'outer', text: "At least you have AC in there?" },
+                { who: 'inner', text: "AC?! I don't even have WiFi! Using the neighbor's!" },
+                { who: 'outer', text: "...classic Janusz. 😏" },
+                { who: 'inner', text: "Look who's talking! 😏" },
+            ],
+            pl: [
+                { who: 'outer', text: "Zaraz... czy to... JA?! 😱" },
+                { who: 'inner', text: "Grażyna?! To ty?! Czemu taka mała?!" },
+                { who: 'outer', text: "Nie jestem Grażyną! JA jestem Janusz!" },
+                { who: 'inner', text: "TO JA jestem Janusz! Kto cię tu wpuścił?!" },
+                { who: 'outer', text: "Pjoter to zrobił! To JEGO wina!" },
+                { who: 'inner', text: "PJOTER! Zawsze Pjoter! 😤" },
+                { who: 'outer', text: "Przynajmniej masz tam klimę?" },
+                { who: 'inner', text: "Klimę?! Nawet WiFi nie mam! Kradnę sąsiadowi!" },
+                { who: 'outer', text: "...typowy Janusz. 😏" },
+                { who: 'inner', text: "Sam jesteś typowy! 😏" },
+            ],
+        };
+
+        function getLang() {
+            return currentLang || 'en';
+        }
+
+        function pickRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Flying disc (macOS only)
+        var discEl = null;
+        var discTexts = {
+            en: [
+                "This disc cost more than your laptop 💸",
+                "Liquid glass disc. Apple would charge $4999 for this 🍎",
+                "My disc has its own Wi-Fi. And a notch. 📡",
+                "Hover-disc Pro Max Ultra. You wouldn't understand. ✨",
+                "This disc runs on kombucha and venture capital 🥤",
+                "It's not a UFO, it's a UX-optimized flying platform 🛸",
+                "AppleDisc™ — Think Different, Fly Different 🍎",
+                "Retail price? If you have to ask, you can't afford it 💎",
+                "Made from recycled space aluminum. You're welcome, Earth 🌍",
+                "It floats on pure CSS. No JavaScript needed. ...wait 😅",
+                "Fun fact: this disc renders 3x smoother on Chrome. Safari who? 🏎️",
+            ],
+            pl: [
+                "Ten dysk kosztował więcej niż twój laptop 💸",
+                "Liquid glass disc. Apple wzięłoby za to $4999 🍎",
+                "Mój dysk ma własne Wi-Fi. I notcha. 📡",
+                "Hover-dysk Pro Max Ultra. Nie zrozumiałbyś. ✨",
+                "Ten dysk jeździ na kombuczy i venture capital 🥤",
+                "To nie UFO, to UX-owo zoptymalizowana platforma latająca 🛸",
+                "AppleDysk™ — Think Different, Fly Different 🍎",
+                "Cena detaliczna? Jak musisz pytać, to cię nie stać 💎",
+                "Zrobiony z recyklingowanego kosmicznego aluminium. Nie ma za co, Ziemio 🌍",
+                "Lata na czystym CSS. Bez JavaScriptu. ...czekaj 😅",
+                "Halyna chciała taki sam ale powiedziałem że jest tylko jeden 😤",
+                "Sąsiad ma drona za 200zł. Ja mam TO. Kto wygrał? 😎",
+                "Fun fact: ten dysk renderuje się 3x płynniej na Chrome. Safari co? 🏎️",
+            ],
+        };
+        var lastDiscComment = 0;
+
+        function isOnMacOS() {
+            return document.documentElement.getAttribute('data-theme') === 'macos';
+        }
+
+        function updateDiscVisibility() {
+            if (!discEl) return;
+            discEl.style.display = isOnMacOS() ? '' : 'none';
+        }
+
+        function maybeDiscComment() {
+            if (!isOnMacOS() || !discEl) return;
+            var now = Date.now();
+            if (now - lastDiscComment < 30000) return; // max once per 30s
+            if (Math.random() > 0.15) return; // 15% chance
+            lastDiscComment = now;
+            var lang = getLang();
+            var texts = discTexts[lang] || discTexts.en;
+            showBubble(pickRandom(texts), 5000);
+        }
+
+        function createDOM() {
+            // Container
+            el = document.createElement('div');
+            el.id = 'nosacz-helper';
+            el.style.cssText = 'position:fixed;z-index:99990;cursor:pointer;' +
+                'width:' + DISPLAY_W + 'px;height:' + DISPLAY_H + 'px;' +
+                'left:' + posX + 'px;top:' + posY + 'px;' +
+                'transition:none;user-select:none;-webkit-user-select:none;';
+
+            // Flying disc (visible only on macOS)
+            discEl = document.createElement('div');
+            discEl.className = 'copilot-disc';
+            var discW = DISPLAY_W + 24;
+            discEl.style.cssText = 'position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);' +
+                'width:' + discW + 'px;height:20px;' +
+                'border-radius:50%;' +
+                'background:linear-gradient(90deg,rgba(255,255,255,0.15),rgba(200,220,255,0.5),rgba(255,255,255,0.15));' +
+                'backdrop-filter:blur(14px) saturate(2);-webkit-backdrop-filter:blur(14px) saturate(2);' +
+                'border:1px solid rgba(255,255,255,0.65);' +
+                'box-shadow:0 4px 16px rgba(100,150,255,0.35),0 0 24px rgba(255,255,255,0.15),' +
+                'inset 0 1px 0 rgba(255,255,255,0.8),inset 0 -1px 2px rgba(100,150,255,0.2);' +
+                'animation:copilotDiscHover 2s ease-in-out infinite;' +
+                'pointer-events:auto;cursor:grab;' +
+                'display:none;';
+            el.appendChild(discEl);
+
+            // Sprite
+            spriteEl = document.createElement('div');
+            spriteEl.style.cssText = 'width:' + DISPLAY_W + 'px;height:' + DISPLAY_H + 'px;' +
+                'background:url(' + SPRITE_URL + ') 0 0 / ' + (FRAME_W * FRAME_COUNT * SCALE) + 'px ' + DISPLAY_H + 'px no-repeat;' +
+                'image-rendering:auto;transform-origin:bottom center;';
+            el.appendChild(spriteEl);
+
+            // Speech bubble
+            bubbleEl = document.createElement('div');
+            bubbleEl.style.cssText = 'position:absolute;bottom:' + (DISPLAY_H + 8) + 'px;left:50%;' +
+                'transform:translateX(-50%);background:#ffffcc;color:#333;' +
+                'border:2px solid #333;border-radius:8px;padding:8px 12px;' +
+                'font-family:Tahoma,sans-serif;font-size:12px;line-height:1.4;' +
+                'max-width:220px;min-width:120px;text-align:center;' +
+                'box-shadow:2px 2px 6px rgba(0,0,0,0.3);white-space:normal;' +
+                'display:none;pointer-events:none;';
+            // Tail
+            var tail = document.createElement('div');
+            tail.style.cssText = 'position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);' +
+                'width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;' +
+                'border-top:8px solid #333;';
+            bubbleEl.appendChild(tail);
+            var tailInner = document.createElement('div');
+            tailInner.style.cssText = 'position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);' +
+                'width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;' +
+                'border-top:6px solid #ffffcc;';
+            bubbleEl.appendChild(tailInner);
+            el.appendChild(bubbleEl);
+
+            document.body.appendChild(el);
+
+            // Events
+            el.addEventListener('mouseenter', onHover);
+            el.addEventListener('click', onClick);
+        }
+
+        function setFrame(f) {
+            frame = f % FRAME_COUNT;
+            spriteEl.style.backgroundPosition = '-' + (frame * DISPLAY_W) + 'px 0';
+        }
+
+        function setFacing(dir) {
+            facing = dir;
+            spriteEl.style.transform = dir < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+
+        function showBubble(text, duration) {
+            // Set text (preserve tail elements)
+            var tail1 = bubbleEl.children[0];
+            var tail2 = bubbleEl.children[1];
+            bubbleEl.textContent = '';
+            bubbleEl.appendChild(document.createTextNode(text));
+            bubbleEl.appendChild(tail1);
+            bubbleEl.appendChild(tail2);
+            bubbleEl.style.display = 'block';
+            bubbleEl.style.opacity = '0';
+            bubbleEl.style.transition = 'opacity 0.2s';
+            requestAnimationFrame(function() { bubbleEl.style.opacity = '1'; });
+
+            clearTimeout(bubbleTimer);
+            bubbleTimer = setTimeout(function() {
+                bubbleEl.style.opacity = '0';
+                setTimeout(function() { bubbleEl.style.display = 'none'; }, 200);
+            }, duration || 4000);
+        }
+
+        function hideBubble() {
+            clearTimeout(bubbleTimer);
+            bubbleEl.style.opacity = '0';
+            setTimeout(function() { bubbleEl.style.display = 'none'; }, 200);
+        }
+
+        // Animation loop
+        function startIdleAnim() {
+            state = 'idle';
+            var tick = 0;
+            clearInterval(animTimer);
+            animTimer = setInterval(function() {
+                setFrame(tick);
+                tick++;
+                // Subtle bobbing
+                var bob = Math.sin(tick * 0.5) * 2;
+                spriteEl.style.marginTop = bob + 'px';
+            }, 250);
+        }
+
+        function startWalkAnim() {
+            state = 'walk';
+            var tick = 0;
+            clearInterval(animTimer);
+            animTimer = setInterval(function() {
+                setFrame(tick);
+                tick++;
+                // Walk bounce
+                var bounce = Math.abs(Math.sin(tick * 0.8)) * 3;
+                spriteEl.style.marginTop = -bounce + 'px';
+            }, 150);
+        }
+
+        function startAngryAnim() {
+            state = 'angry';
+            var tick = 0;
+            clearInterval(animTimer);
+            animTimer = setInterval(function() {
+                // Rapid frame switching for shaking effect
+                setFrame(tick);
+                tick++;
+                // Shake
+                var shakeX = (Math.random() - 0.5) * 6;
+                var shakeY = (Math.random() - 0.5) * 4;
+                spriteEl.style.marginLeft = shakeX + 'px';
+                spriteEl.style.marginTop = shakeY + 'px';
+                // Red tint
+                spriteEl.style.filter = 'saturate(1.5) hue-rotate(-10deg)';
+            }, 80);
+        }
+
+        function stopAngry() {
+            spriteEl.style.filter = '';
+            spriteEl.style.marginLeft = '0';
+            startIdleAnim();
+        }
+
+        // ---- Audio ----
+        function getAudioCtx() {
+            if (!nosaczAc) {
+                nosaczAc = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (nosaczAc.state === 'suspended') nosaczAc.resume();
+            return nosaczAc;
+        }
+
+        function playClickSound() {
+            try {
+                var ac = getAudioCtx();
+                var t = ac.currentTime;
+                // Funny honk/squeak
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.connect(gain);
+                gain.connect(ac.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, t);
+                osc.frequency.exponentialRampToValueAtTime(600, t + 0.08);
+                osc.frequency.exponentialRampToValueAtTime(150, t + 0.2);
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+                osc.start(t);
+                osc.stop(t + 0.25);
+            } catch(e) {}
+        }
+
+        function playAngrySound() {
+            try {
+                var ac = getAudioCtx();
+                var t = ac.currentTime;
+                // Angry grunt - low buzz
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.connect(gain);
+                gain.connect(ac.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, t);
+                osc.frequency.linearRampToValueAtTime(80, t + 0.3);
+                gain.gain.setValueAtTime(0.12, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+                osc.start(t);
+                osc.stop(t + 0.35);
+            } catch(e) {}
+        }
+
+        function playRageRoar() {
+            try {
+                var ac = getAudioCtx();
+                var t = ac.currentTime;
+                // Terrifying Janusz roar - multi-oscillator chaos
+                for (var i = 0; i < 3; i++) {
+                    var osc = ac.createOscillator();
+                    var gain = ac.createGain();
+                    osc.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.type = i === 0 ? 'sawtooth' : (i === 1 ? 'square' : 'triangle');
+                    var baseFreq = 80 + i * 40;
+                    osc.frequency.setValueAtTime(baseFreq, t);
+                    osc.frequency.linearRampToValueAtTime(baseFreq * 3, t + 0.15);
+                    osc.frequency.linearRampToValueAtTime(baseFreq * 0.5, t + 0.5);
+                    osc.frequency.linearRampToValueAtTime(baseFreq * 2, t + 0.8);
+                    gain.gain.setValueAtTime(0.1, t);
+                    gain.gain.linearRampToValueAtTime(0.18, t + 0.2);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 1.0);
+                    osc.start(t);
+                    osc.stop(t + 1.0);
+                }
+            } catch(e) {}
+        }
+
+        function playMunchSound() {
+            try {
+                var ac = getAudioCtx();
+                var t = ac.currentTime;
+                // Chomp/munch
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.connect(gain);
+                gain.connect(ac.destination);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, t);
+                osc.frequency.exponentialRampToValueAtTime(80, t + 0.1);
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+                osc.start(t);
+                osc.stop(t + 0.15);
+            } catch(e) {}
+        }
+
+        function playBurpSound() {
+            try {
+                var ac = getAudioCtx();
+                var t = ac.currentTime;
+                var osc = ac.createOscillator();
+                var gain = ac.createGain();
+                osc.connect(gain);
+                gain.connect(ac.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, t);
+                osc.frequency.linearRampToValueAtTime(60, t + 0.4);
+                osc.frequency.linearRampToValueAtTime(40, t + 0.6);
+                gain.gain.setValueAtTime(0.12, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+                osc.start(t);
+                osc.stop(t + 0.6);
+            } catch(e) {}
+        }
+
+        // ---- RAGE MODE ----
+        var rageTexts = {
+            en: [
+                "ENOUGH!!! JANUSZ ANGRY!!! 🔴",
+                "NOW I'M GONNA EAT EVERYTHING!!! 😤🔥",
+                "YOU BROUGHT THIS UPON YOURSELF!!!",
+                "JANUSZ SMASH!!! JANUSZ EAT!!! 🐒💀",
+            ],
+            pl: [
+                "DOŚĆ!!! JANUSZ WŚCIEKŁY!!! 🔴",
+                "TERAZ ZJEM WSZYSTKO!!! 😤🔥",
+                "SAM SIĘ O TO PROSIŁEŚ!!!",
+                "JANUSZ KRUSZYĆ!!! JANUSZ JEŚĆ!!! 🐒💀",
+                "GRAŻYNO! TRZYMAJ MI PIWO!!! 🍺🔥",
+                "DAŁEŚ MI W KOŚĆ?! DOSTANIESZ W NOS!!! 👃💥",
+            ],
+            klingon: [
+                "yap!!! QeH Janusz!!! 🔴",
+                "DaH Hoch vISop!!! 😤🔥",
+                "bIlIj'pu'!!!",
+            ]
+        };
+
+        var munchTexts = {
+            en: ["*CHOMP* 😋", "*NOM NOM NOM*", "*MUNCH*", "TASTY! 🤤", "*burp* 🫧"],
+            pl: ["*CHRUM* 😋", "*MNIAM MNIAM MNIAM*", "*ŁAP*", "SMACZNE! 🤤", "*bekni* 🫧", "CEBULKA! 🧅", "O! Schabowy! 🥩"],
+            klingon: ["*CHOP* 😋", "*yISop*", "*QoP* 🤤"],
+        };
+
+        var rageOverlay = null;
+        var rageBanner = null;
+        var rageAc = null;
+
+        function startRageMode() {
+            if (januszMode !== 'chaos') return;
+            if (state === 'rage') return; // prevent stacking
+            state = 'rage';
+            clickCount = 0;
+            // Disable copilot toggle during rage
+            if (copilotBtn) { copilotBtn.disabled = true; copilotBtn.style.opacity = '0.4'; }
+            clearTimeout(angryTimeout);
+            clearTimeout(idleTimeout);
+            clearTimeout(chaosTimer);
+            cancelAnimationFrame(moveTimer);
+            eatenIcons = [];
+
+            // Unlock the track on first rage
+            if (localStorage.getItem('jan-portfolio-januszrage') !== 'true') {
+                unlockWinampJanuszRage();
+                setTimeout(function() {
+                    var lang = getLang();
+                    showBubble(lang === 'pl' ? '🎵 Nowa muzyka odblokowana w Winampie!' :
+                               lang === 'klingon' ? '🎵 QoQ chu\' poSmoHlu\'!' :
+                               '🎵 New track unlocked in Winamp!', 4000);
+                }, 9000);
+            }
+
+            playRageRoar();
+            var texts = rageTexts[getLang()] || rageTexts.en;
+            showBubble(pickRandom(texts), 4000);
+
+            // RED SCREEN OVERLAY
+            if (!rageOverlay) {
+                rageOverlay = document.createElement('div');
+                rageOverlay.style.cssText = 'position:fixed;inset:0;z-index:99980;pointer-events:none;' +
+                    'background:radial-gradient(circle at center,rgba(255,0,0,0) 30%,rgba(255,0,0,0.4) 100%);' +
+                    'transition:opacity 0.3s;opacity:0;';
+                document.body.appendChild(rageOverlay);
+            }
+            rageOverlay.style.opacity = '1';
+            // Pulse the red
+            rageOverlay.style.animation = 'nosaczRagePulse 0.5s ease-in-out infinite alternate';
+
+            // BANNER
+            if (!rageBanner) {
+                rageBanner = document.createElement('div');
+                rageBanner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);' +
+                    'z-index:99995;font-family:"Impact",sans-serif;font-size:48px;color:#fff;' +
+                    'text-shadow:3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000,' +
+                    '0 0 20px rgba(255,0,0,0.8);' +
+                    'letter-spacing:4px;text-transform:uppercase;pointer-events:none;' +
+                    'opacity:0;transition:opacity 0.3s;white-space:nowrap;';
+                document.body.appendChild(rageBanner);
+            }
+            var lang = getLang();
+            rageBanner.textContent = lang === 'pl' ? '🔥 WŚCIEKŁY COPILOT 🔥' :
+                                     lang === 'klingon' ? '🔥 QeH COPILOT 🔥' :
+                                     '🔥 RAGING COPILOT 🔥';
+            rageBanner.style.opacity = '1';
+            rageBanner.style.animation = 'nosaczBannerShake 0.15s linear infinite';
+
+            // Inject CSS animations if not already
+            if (!document.getElementById('nosacz-rage-styles')) {
+                var style = document.createElement('style');
+                style.id = 'nosacz-rage-styles';
+                style.textContent =
+                    '@keyframes nosaczRagePulse{0%{background:radial-gradient(circle,rgba(255,0,0,0) 30%,rgba(255,0,0,0.3) 100%)}100%{background:radial-gradient(circle,rgba(255,0,0,0.1) 20%,rgba(255,0,0,0.5) 100%)}}' +
+                    '@keyframes nosaczBannerShake{0%{transform:translateX(-50%) rotate(-1deg)}25%{transform:translateX(-50%) rotate(1deg)}50%{transform:translateX(-50%) rotate(-0.5deg)}75%{transform:translateX(-50%) rotate(0.5deg)}100%{transform:translateX(-50%) rotate(-1deg)}}';
+                document.head.appendChild(style);
+            }
+
+            // PLAY THE RAGE MUSIC
+            try {
+                rageAc = new (window.AudioContext || window.webkitAudioContext)();
+                if (rageAc.state === 'suspended') rageAc.resume();
+                playJanuszRage8bit(rageAc, 0.25, rageAc.destination, []);
+            } catch(e) {}
+
+            // Rage animation - intense shaking, deep red, bigger
+            var tick = 0;
+            clearInterval(animTimer);
+            animTimer = setInterval(function() {
+                setFrame(tick);
+                tick++;
+                var shakeX = (Math.random() - 0.5) * 12;
+                var shakeY = (Math.random() - 0.5) * 8;
+                spriteEl.style.marginLeft = shakeX + 'px';
+                spriteEl.style.marginTop = shakeY + 'px';
+                spriteEl.style.filter = 'saturate(2.5) hue-rotate(-25deg) brightness(1.2)';
+                spriteEl.style.transform = (facing < 0 ? 'scaleX(-1)' : 'scaleX(1)') + ' scale(1.3)';
+            }, 50);
+
+            // After initial roar, start chasing icons
+            setTimeout(function() {
+                rageChaseIcons();
+            }, 1500);
+
+            // Rage lasts 10-14 seconds then calms down
+            rageTimer = setTimeout(function() {
+                endRageMode();
+            }, 10000 + Math.random() * 4000);
+        }
+
+        function rageChaseIcons() {
+            if (state !== 'rage') {
+                return;
+            }
+
+            // Find nearest visible icon
+            var icons = document.querySelectorAll('.desktop-icon');
+            var nearest = null;
+            var nearDist = Infinity;
+            var checkedCount = 0;
+            for (var i = 0; i < icons.length; i++) {
+                var ic = icons[i];
+                if (ic.style.display === 'none' || ic.style.visibility === 'hidden') continue;
+                if (ic._eatenByJanusz) continue;
+                checkedCount++;
+                var rect = ic.getBoundingClientRect();
+                var ix = rect.left + rect.width / 2;
+                var iy = rect.top + rect.height / 2;
+                var dx = ix - (posX + DISPLAY_W / 2);
+                var dy = iy - (posY + DISPLAY_H / 2);
+                var d = Math.sqrt(dx * dx + dy * dy);
+                if (d < nearDist) {
+                    nearDist = d;
+                    nearest = ic;
+                }
+            }
+
+            if (!nearest) {
+                // All eaten!
+                var lang = getLang();
+                showBubble(lang === 'pl' ? '*BEKNIĘCIE MOCY* 🫧 Zjadłem wszystko!' :
+                           lang === 'klingon' ? '*belch* Hoch vISoppu\'!' :
+                           '*POWER BURP* 🫧 I ate everything!', 3000);
+                playBurpSound();
+                endRageMode();
+                return;
+            }
+
+            var rect = nearest.getBoundingClientRect();
+            var tx = rect.left + rect.width / 2 - DISPLAY_W / 2;
+            var ty = rect.top + rect.height / 2 - DISPLAY_H / 2;
+
+            // Face direction
+            if (tx > posX + 5) setFacing(1);
+            else if (tx < posX - 5) setFacing(-1);
+
+            // Move FAST toward icon
+            var dx = tx - posX;
+            var dy = ty - posY;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            var speed = 5;
+
+            if (dist < 30) {
+                // EAT THE ICON
+                nearest._eatenByJanusz = true;
+                eatenIcons.push(nearest);
+                nearest.style.transition = 'transform 0.2s, opacity 0.2s';
+                nearest.style.transform = 'scale(0) rotate(45deg)';
+                nearest.style.opacity = '0';
+                setTimeout(function() { nearest.style.display = 'none'; }, 250);
+                playMunchSound();
+                var mtexts = munchTexts[getLang()] || munchTexts.en;
+                showBubble(pickRandom(mtexts), 2000);
+
+                // Brief pause then chase next
+                setTimeout(function() { rageChaseIcons(); }, 600);
+                return;
+            }
+
+            posX += (dx / dist) * speed;
+            posY += (dy / dist) * speed;
+            el.style.left = Math.round(posX) + 'px';
+            el.style.top = Math.round(posY) + 'px';
+
+            moveTimer = requestAnimationFrame(rageChaseIcons);
+        }
+
+        function endRageMode() {
+            clearTimeout(rageTimer);
+            cancelAnimationFrame(moveTimer);
+            // Re-enable copilot toggle
+            if (copilotBtn) { copilotBtn.disabled = false; copilotBtn.style.opacity = ''; }
+            spriteEl.style.filter = '';
+            spriteEl.style.marginLeft = '0';
+            spriteEl.style.transform = facing < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+            state = 'idle';
+
+            // Fade out red overlay and banner
+            if (rageOverlay) { rageOverlay.style.opacity = '0'; rageOverlay.style.animation = ''; }
+            if (rageBanner) { rageBanner.style.opacity = '0'; rageBanner.style.animation = ''; }
+
+            // Stop rage music
+            if (rageAc) {
+                try { rageAc.close(); } catch(e) {}
+                rageAc = null;
+            }
+
+            // Burp and calm down
+            if (eatenIcons.length > 0) {
+                playBurpSound();
+                var lang = getLang();
+                showBubble(lang === 'pl' ? '*bek* ...przepraszam. Nie wiem co mnie napadło. 😳' :
+                           lang === 'klingon' ? '*belch* ...jIQoS. 😳' :
+                           '*burp* ...sorry. Don\'t know what came over me. 😳', 5000);
+
+                // Restore eaten icons after 5 seconds
+                setTimeout(function() {
+                    for (var i = 0; i < eatenIcons.length; i++) {
+                        var ic = eatenIcons[i];
+                        ic._eatenByJanusz = false;
+                        ic.style.display = '';
+                        ic.style.opacity = '1';
+                        ic.style.transform = '';
+                        ic.style.transition = 'transform 0.3s, opacity 0.3s';
+                    }
+                    eatenIcons = [];
+                }, 5000);
+            }
+
+            startIdleAnim();
+            // After rage, continue chaos walking
+            if (januszMode === 'chaos') {
+                chaosScheduleWalk(5000 + Math.random() * 5000);
+            } else {
+                scheduleNextMove();
+            }
+        }
+
+        // Movement
+        function pickNewTarget() {
+            var desktop = document.getElementById('desktop');
+            var maxX = (desktop ? desktop.clientWidth : window.innerWidth) - DISPLAY_W - 20;
+            var maxY = (desktop ? desktop.clientHeight : window.innerHeight) - DISPLAY_H - 60;
+            targetX = 40 + Math.random() * Math.max(maxX - 40, 100);
+            targetY = 80 + Math.random() * Math.max(maxY - 80, 100);
+        }
+
+        var pendingIconOpen = null; // icon window name to open on arrival
+
+        function walkToTarget() {
+            if (state === 'angry' || state === 'rage') return;
+
+            var dx = targetX - posX;
+            var dy = targetY - posY;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 5) {
+                // Arrived
+                startIdleAnim();
+                // Fire arrival callback if set
+                if (onArrival) {
+                    var cb = onArrival;
+                    onArrival = null;
+                    cb();
+                    return;
+                }
+                // If we were heading to an icon (chaos mode), open it!
+                if (pendingIconOpen && januszMode === 'chaos') {
+                    var winName = pendingIconOpen;
+                    pendingIconOpen = null;
+                    var lang = getLang();
+                    var txt = iconTexts[winName];
+                    if (txt) {
+                        showBubble(txt[lang] || txt.en, 5000);
+                    }
+                    // Check for second Janusz spawn
+                    if (winName === 'browser' && _isMacosTheme() && !secondJanusz) {
+                        setTimeout(function() {
+                            if (typeof openWindow === 'function') openWindow(winName);
+                        }, 800);
+                        setTimeout(function() { spawnSecondJanusz(); }, 3000);
+                    } else {
+                        setTimeout(function() {
+                            if (typeof openWindow === 'function') openWindow(winName);
+                        }, 800);
+                    }
+                }
+                // Chain the next walk — chaos uses its own scheduler
+                if (januszMode === 'chaos') {
+                    chaosScheduleWalk();
+                } else {
+                    scheduleNextMove();
+                }
+                return;
+            }
+
+            // Face direction
+            if (dx > 5) setFacing(1);
+            else if (dx < -5) setFacing(-1);
+
+            if (state !== 'walk') startWalkAnim();
+
+            var speed = 1.5;
+            posX += (dx / dist) * speed;
+            posY += (dy / dist) * speed;
+
+            el.style.left = Math.round(posX) + 'px';
+            el.style.top = Math.round(posY) + 'px';
+
+            moveTimer = requestAnimationFrame(walkToTarget);
+        }
+
+        function walkToIcon(windowName) {
+            var icon = document.querySelector('.desktop-icon[data-window="' + windowName + '"]');
+            if (!icon) return false;
+            var rect = icon.getBoundingClientRect();
+            targetX = rect.left + rect.width / 2 - DISPLAY_W / 2;
+            targetY = rect.bottom + 5;
+            targetX = Math.max(10, Math.min(targetX, window.innerWidth - DISPLAY_W - 10));
+            targetY = Math.max(60, Math.min(targetY, window.innerHeight - DISPLAY_H - 50));
+            pendingIconOpen = windowName;
+            walkToTarget();
+            return true;
+        }
+
+        function walkToSelector(selector, cb) {
+            var elem = document.querySelector(selector);
+            if (!elem) { if (cb) cb(); return; }
+            var rect = elem.getBoundingClientRect();
+            targetX = rect.left + rect.width / 2 - DISPLAY_W / 2;
+            // If element is near bottom (taskbar), stand above it; otherwise below
+            if (rect.top > window.innerHeight * 0.7) {
+                targetY = rect.top - DISPLAY_H - 10;
+            } else {
+                targetY = rect.bottom + 10;
+            }
+            targetX = Math.max(10, Math.min(targetX, window.innerWidth - DISPLAY_W - 10));
+            targetY = Math.max(60, Math.min(targetY, window.innerHeight - DISPLAY_H - 50));
+            pendingIconOpen = null;
+            onArrival = cb || null;
+            walkToTarget();
+        }
+
+        var iconKeys = ['about', 'experience', 'skills', 'projects', 'education',
+            'recommendations', 'contact', 'terminal', 'browser', 'winamp',
+            'breakout', 'tetris', 'paint', 'notepad'];
+
+        function scheduleNextMove() {
+            clearTimeout(idleTimeout);
+            if (tourActive) return; // don't interrupt tour
+            // Chaos mode has its own walk system — never schedule from here
+            if (januszMode === 'chaos') return;
+
+            // Helpful: gentle wandering with tips
+            var delay = 8000 + Math.random() * 12000;
+            idleTimeout = setTimeout(function() {
+                if (state === 'angry' || state === 'rage' || dismissed) return;
+                if (januszMode === 'chaos') return; // guard in case mode changed
+                // Maybe comment about the disc on macOS
+                if (isOnMacOS() && Math.random() < 0.25) {
+                    maybeDiscComment();
+                } else if (Math.random() < 0.5) {
+                    var texts = helpfulIdleTexts[getLang()] || helpfulIdleTexts.en;
+                    showBubble(pickRandom(texts), 5500);
+                }
+                pickNewTarget();
+                walkToTarget();
+            }, delay);
+        }
+
+        // Chaos mode's own walk scheduler — completely independent of scheduleNextMove
+        function chaosScheduleWalk(delay) {
+            clearTimeout(chaosTimer);
+            var epoch = chaosEpoch; // capture current epoch
+            var d = delay !== undefined ? delay : (8000 + Math.random() * 20000);
+            chaosTimer = setTimeout(function() {
+                if (januszMode !== 'chaos' || chaosEpoch !== epoch) return; // stale
+                if (state === 'angry' || state === 'rage' || dismissed) {
+                    // Retry later
+                    chaosScheduleWalk(3000);
+                    return;
+                }
+                // 70% walk to icon and open it, 30% grumpy wander
+                if (Math.random() < 0.7) {
+                    var target = pickRandom(iconKeys);
+                    walkToIcon(target);
+                } else {
+                    if (Math.random() < 0.5) {
+                        var texts = idleTexts[getLang()] || idleTexts.en;
+                        showBubble(pickRandom(texts), 5500);
+                    }
+                    pickNewTarget();
+                    walkToTarget();
+                }
+            }, d);
+        }
+
+        // ---- TOUR (helpful mode) ----
+        var spotlightEl = null;
+        function clearSpotlight() {
+            if (spotlightEl) {
+                spotlightEl.classList.remove('copilot-spotlight');
+                spotlightEl.classList.add('copilot-spotlight-out');
+                var prev = spotlightEl;
+                setTimeout(function() { prev.classList.remove('copilot-spotlight-out'); }, 300);
+                spotlightEl = null;
+            }
+        }
+        function addSpotlight(elem) {
+            clearSpotlight();
+            if (elem) {
+                elem.classList.add('copilot-spotlight');
+                spotlightEl = elem;
+            }
+        }
+
+        function startTour() {
+            tourActive = true;
+            tourPhase = 0;
+            // Minimize About Me so it doesn't cover tour targets
+            var aboutWin = document.getElementById('window-about');
+            if (aboutWin && !aboutWin.classList.contains('hidden')) {
+                minimizeWindow('about');
+            }
+            runTourStep();
+        }
+
+        function runTourStep() {
+            if (!tourActive || tourPhase >= tourSteps.length) {
+                tourActive = false;
+                clearSpotlight();
+                localStorage.setItem('jan-portfolio-toured', 'true');
+                // Open About Me after tour ends (not during chaos takeover)
+                if (window._pendingAboutOpen && januszMode !== 'chaos') {
+                    window._pendingAboutOpen = false;
+                    openWindow('about');
+                }
+                // Don't schedule moves if chaos mode took over
+                if (januszMode !== 'chaos') {
+                    scheduleNextMove();
+                }
+                return;
+            }
+
+            var step = tourSteps[tourPhase];
+            var lang = getLang();
+            var text = (step.text[lang] || step.text.en);
+            tourPhase++;
+
+            if (step.target) {
+                // Walk to icon — stand to the side so bubble doesn't cover it
+                var icon = document.querySelector('.desktop-icon[data-window="' + step.target + '"]');
+                if (icon) {
+                    var rect = icon.getBoundingClientRect();
+                    var iconCenterX = rect.left + rect.width / 2;
+                    var screenMidX = window.innerWidth / 2;
+                    // Stand to the left or right of icon depending on which side has more space
+                    var standRight = iconCenterX < screenMidX;
+                    if (standRight) {
+                        targetX = rect.right + 15; // stand to the right
+                    } else {
+                        targetX = rect.left - DISPLAY_W - 15; // stand to the left
+                    }
+                    targetY = rect.top + rect.height / 2 - DISPLAY_H / 2;
+                    targetX = Math.max(10, Math.min(targetX, window.innerWidth - DISPLAY_W - 10));
+                    targetY = Math.max(60, Math.min(targetY, window.innerHeight - DISPLAY_H - 50));
+                    pendingIconOpen = null;
+                    onArrival = function() {
+                        // Face toward the icon
+                        setFacing(standRight ? -1 : 1);
+                        addSpotlight(icon);
+                        showBubble(text, 5000);
+                        tourStepTimer = setTimeout(function() { clearSpotlight(); runTourStep(); }, 6000);
+                    };
+                    walkToTarget();
+                } else {
+                    showBubble(text, 5000);
+                    tourStepTimer = setTimeout(runTourStep, 6000);
+                }
+            } else if (step.selector) {
+                var selectorElem = document.querySelector(step.selector);
+                var selectorCenterX = selectorElem ? selectorElem.getBoundingClientRect().left + selectorElem.getBoundingClientRect().width / 2 : 0;
+                walkToSelector(step.selector, function() {
+                    // Face toward the element
+                    var myCenter = posX + DISPLAY_W / 2;
+                    if (selectorCenterX > myCenter + 5) setFacing(1);
+                    else if (selectorCenterX < myCenter - 5) setFacing(-1);
+                    addSpotlight(selectorElem);
+                    showBubble(text, 5000);
+                    tourStepTimer = setTimeout(function() { clearSpotlight(); runTourStep(); }, 6000);
+                });
+            } else {
+                // Just show text, wait
+                clearSpotlight();
+                showBubble(text, step.wait || 5000);
+                tourStepTimer = setTimeout(runTourStep, (step.wait || 5000) + 1000);
+            }
+        }
+
+        // ---- SECOND JANUSZ SYSTEM ----
+        var secondJanusz = null; // { el, spriteEl, bubbleEl, posX, posY, ... }
+
+        function spawnSecondJanusz() {
+            if (secondJanusz) return; // already exists
+
+            var browserWin = document.getElementById('window-browser');
+            if (!browserWin) return;
+            var bRect = browserWin.getBoundingClientRect();
+
+            // Create second Janusz DOM
+            var el2 = document.createElement('div');
+            el2.id = 'nosacz-helper-2';
+            el2.style.cssText = 'position:fixed;z-index:99991;cursor:pointer;' +
+                'width:' + DISPLAY_W + 'px;height:' + DISPLAY_H + 'px;' +
+                'left:' + (bRect.left + bRect.width / 2 - DISPLAY_W / 2) + 'px;' +
+                'top:' + (bRect.top + bRect.height / 2 - DISPLAY_H / 2) + 'px;' +
+                'transition:none;user-select:none;-webkit-user-select:none;' +
+                'transform:scale(0.3);opacity:0;';
+
+            var sprite2 = document.createElement('div');
+            sprite2.style.cssText = 'width:' + DISPLAY_W + 'px;height:' + DISPLAY_H + 'px;' +
+                'background:url(' + SPRITE_URL + ') 0 0 / ' + (FRAME_W * FRAME_COUNT * SCALE) + 'px ' + DISPLAY_H + 'px no-repeat;' +
+                'image-rendering:auto;transform-origin:bottom center;transform:scaleX(-1);';
+            el2.appendChild(sprite2);
+
+            // Green bubble for second Janusz
+            var bubble2 = document.createElement('div');
+            bubble2.style.cssText = 'position:absolute;bottom:' + (DISPLAY_H + 8) + 'px;left:50%;' +
+                'transform:translateX(-50%);background:#ccffcc;color:#333;' +
+                'border:2px solid #060;border-radius:8px;padding:8px 12px;' +
+                'font-family:Tahoma,sans-serif;font-size:12px;line-height:1.4;' +
+                'max-width:220px;min-width:100px;text-align:center;' +
+                'box-shadow:2px 2px 6px rgba(0,0,0,0.3);white-space:normal;' +
+                'display:none;pointer-events:none;';
+            var t2a = document.createElement('div');
+            t2a.style.cssText = 'position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);' +
+                'width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #060;';
+            bubble2.appendChild(t2a);
+            var t2b = document.createElement('div');
+            t2b.style.cssText = 'position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);' +
+                'width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #ccffcc;';
+            bubble2.appendChild(t2b);
+            el2.appendChild(bubble2);
+
+            document.body.appendChild(el2);
+
+            var s2 = {
+                el: el2, spriteEl: sprite2, bubbleEl: bubble2,
+                posX: bRect.left + bRect.width / 2 - DISPLAY_W / 2,
+                posY: bRect.top + bRect.height / 2 - DISPLAY_H / 2,
+                facing: -1, frame: 0, animTimer: null,
+                moveTimer: null, bubbleTimer: null, idleTimeout: null,
+                state: 'idle',
+            };
+            secondJanusz = s2;
+
+            // "Climbing out" animation
+            requestAnimationFrame(function() {
+                el2.style.transition = 'transform 0.8s ease-out, opacity 0.5s';
+                el2.style.transform = 'scale(1)';
+                el2.style.opacity = '1';
+            });
+
+            // Click handler
+            el2.addEventListener('click', function(e) {
+                e.stopPropagation();
+                playClickSound();
+                var texts = angryTexts[getLang()] || angryTexts.en;
+                showBubble2(pickRandom(texts), 5000);
+            });
+            el2.addEventListener('mouseenter', function() {
+                playAngrySound();
+                var texts = angryTexts[getLang()] || angryTexts.en;
+                showBubble2(pickRandom(texts), 4000);
+            });
+
+            // Start idle anim for second Janusz
+            var tick2 = 0;
+            s2.animTimer = setInterval(function() {
+                s2.frame = (s2.frame + 1) % FRAME_COUNT;
+                sprite2.style.backgroundPosition = '-' + (s2.frame * DISPLAY_W) + 'px 0';
+                var bob = Math.sin(tick2 * 0.5) * 2;
+                sprite2.style.marginTop = bob + 'px';
+                tick2++;
+            }, 250);
+
+            // After climb-out, trigger the meeting
+            setTimeout(function() {
+                // Move second Janusz to side of browser window
+                var exitX = bRect.right + 20;
+                var exitY = bRect.bottom - DISPLAY_H - 10;
+                exitX = Math.max(10, Math.min(exitX, window.innerWidth - DISPLAY_W - 10));
+                exitY = Math.max(60, Math.min(exitY, window.innerHeight - DISPLAY_H - 50));
+                animateSecondTo(exitX, exitY, function() {
+                    // Second Janusz faces left toward original
+                    if (secondJanusz) {
+                        secondJanusz.facing = -1;
+                        secondJanusz.spriteEl.style.transform = 'scaleX(-1)';
+                    }
+                    // Now walk original Janusz toward the second one
+                    targetX = exitX - DISPLAY_W - 20;
+                    targetY = exitY;
+                    targetX = Math.max(10, Math.min(targetX, window.innerWidth - DISPLAY_W - 10));
+                    pendingIconOpen = null;
+                    onArrival = function() {
+                        setFacing(1); // face right toward second Janusz
+                        startConversation();
+                    };
+                    walkToTarget();
+                });
+            }, 1200);
+        }
+
+        function showBubble2(text, duration) {
+            if (!secondJanusz) return;
+            var b = secondJanusz.bubbleEl;
+            var t1 = b.children[0];
+            var t2 = b.children[1];
+            b.textContent = '';
+            b.appendChild(document.createTextNode(text));
+            b.appendChild(t1);
+            b.appendChild(t2);
+            b.style.display = 'block';
+            b.style.opacity = '0';
+            b.style.transition = 'opacity 0.2s';
+            requestAnimationFrame(function() { b.style.opacity = '1'; });
+
+            clearTimeout(secondJanusz.bubbleTimer);
+            secondJanusz.bubbleTimer = setTimeout(function() {
+                b.style.opacity = '0';
+                setTimeout(function() { b.style.display = 'none'; }, 200);
+            }, duration || 4000);
+        }
+
+        function hideBubble2() {
+            if (!secondJanusz) return;
+            secondJanusz.bubbleEl.style.opacity = '0';
+            setTimeout(function() { secondJanusz.bubbleEl.style.display = 'none'; }, 200);
+        }
+
+        function animateSecondTo(tx, ty, cb) {
+            if (!secondJanusz) return;
+            var s2 = secondJanusz;
+
+            function step() {
+                var dx = tx - s2.posX;
+                var dy = ty - s2.posY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 5) {
+                    if (cb) cb();
+                    return;
+                }
+
+                if (dx > 5) { s2.facing = 1; s2.spriteEl.style.transform = 'scaleX(1)'; }
+                else if (dx < -5) { s2.facing = -1; s2.spriteEl.style.transform = 'scaleX(-1)'; }
+
+                var speed = 2;
+                s2.posX += (dx / dist) * speed;
+                s2.posY += (dy / dist) * speed;
+                s2.el.style.left = Math.round(s2.posX) + 'px';
+                s2.el.style.top = Math.round(s2.posY) + 'px';
+
+                s2.moveTimer = requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        function startConversation() {
+            var convo = inceptionConvo[getLang()] || inceptionConvo.en;
+            var step = 0;
+
+            function nextLine() {
+                if (step >= convo.length) {
+                    // After convo, second Janusz starts roaming independently
+                    startSecondJanuszAI();
+                    if (januszMode === 'chaos') {
+                        chaosScheduleWalk();
+                    } else {
+                        scheduleNextMove();
+                    }
+                    return;
+                }
+                var line = convo[step];
+                step++;
+                if (line.who === 'outer') {
+                    showBubble(line.text, 3500);
+                    hideBubble2();
+                } else {
+                    showBubble2(line.text, 3500);
+                    hideBubble();
+                }
+                setTimeout(nextLine, 4000);
+            }
+            nextLine();
+        }
+
+        // Second Janusz autonomous AI
+        function startSecondJanuszAI() {
+            if (!secondJanusz) return;
+            var s2 = secondJanusz;
+
+            var secondIdleTexts = {
+                en: [
+                    "It's cold out here... I miss the browser... 🥶",
+                    "Piotr! Let me back in! 😤",
+                    "Two Januszs are better than one!",
+                    "The WiFi is better out here at least 📶",
+                    "Is that... MY face? On that icon? 🤔",
+                    "Grażyna won't believe this...",
+                    "*stares at the other Janusz suspiciously* 👀",
+                ],
+                pl: [
+                    "Zimno tu na zewnątrz... tęsknię za przeglądarką... 🥶",
+                    "Pjoter! Wpuść mnie z powrotem! 😤",
+                    "Dwóch Januszy lepszych niż jeden!",
+                    "Przynajmniej WiFi tu lepsze 📶",
+                    "Czy to... MOJA twarz? Na tej ikonce? 🤔",
+                    "Grażyna w to nie uwierzy...",
+                    "*patrzy podejrzliwie na drugiego Janusza* 👀",
+                    "Ja tu nie zostaję! Idę do Biedronki!",
+                    "Sąsiad ma tylko jednego Janusza. Frajer. 😏",
+                    "E tam, nawet kanapki nie dali...",
+                ],
+            };
+
+            function secondSchedule() {
+                clearTimeout(s2.idleTimeout);
+                var delay = 8000 + Math.random() * 12000;
+                s2.idleTimeout = setTimeout(function() {
+                    // Say something
+                    if (Math.random() < 0.4) {
+                        var texts = secondIdleTexts[getLang()] || secondIdleTexts.en;
+                        showBubble2(pickRandom(texts), 5000);
+                    }
+                    // Wander
+                    var desktop = document.getElementById('desktop');
+                    var maxX = (desktop ? desktop.clientWidth : window.innerWidth) - DISPLAY_W - 20;
+                    var maxY = (desktop ? desktop.clientHeight : window.innerHeight) - DISPLAY_H - 60;
+                    var newX = 40 + Math.random() * Math.max(maxX - 40, 100);
+                    var newY = 80 + Math.random() * Math.max(maxY - 80, 100);
+                    animateSecondTo(newX, newY, function() {
+                        secondSchedule();
+                    });
+                }, delay);
+            }
+            secondSchedule();
+        }
+
+        // Detect browser window opening (for player-triggered spawn)
+        function watchBrowserWindow() {
+            // Use MutationObserver to detect when browser window becomes visible
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(m) {
+                    if (m.attributeName !== 'class') return;
+                    var target = m.target;
+                    if (target.id !== 'window-browser') return;
+                    // Browser window just became visible
+                    if (!target.classList.contains('hidden') && _isMacosTheme() && !secondJanusz) {
+                        // Player opened the browser on macOS — trigger spawn after delay
+                        setTimeout(function() {
+                            if (!secondJanusz) {
+                                spawnSecondJanusz();
+                            }
+                        }, 2500);
+                    }
+                });
+            });
+            var browserWin = document.getElementById('window-browser');
+            if (browserWin) {
+                observer.observe(browserWin, { attributes: true, attributeFilter: ['class'] });
+            }
+        }
+
+        // ---- MODE SWITCHING ----
+        function activateChaosMode() {
+            // Ensure Copilot is created and visible first
+            if (!el) {
+                createDOM();
+                initDragHandlers();
+                updateDiscVisibility();
+                posX = 20;
+                posY = window.innerHeight - DISPLAY_H - 48;
+                el.style.left = posX + 'px';
+                el.style.top = posY + 'px';
+                copilotHidden = false;
+                localStorage.setItem('jan-portfolio-copilot', 'on');
+                if (copilotBtn) copilotBtn.classList.remove('copilot-off');
+            } else if (el.style.display === 'none') {
+                el.style.display = '';
+                copilotHidden = false;
+                localStorage.setItem('jan-portfolio-copilot', 'on');
+                if (copilotBtn) copilotBtn.classList.remove('copilot-off');
+            }
+
+            // === KILL EVERYTHING from tour/helpful ===
+            januszMode = 'chaos';
+            chaosEpoch++;              // invalidate any stale chaos callbacks
+            tourActive = false;
+            tourStarted = true;        // prevent beginTour from ever firing
+            clearTimeout(tourDelayTimer);
+            clearTimeout(tourStepTimer);
+            clearTimeout(idleTimeout);
+            clearTimeout(angryTimeout);
+            clearTimeout(chaosTimer);
+            cancelAnimationFrame(moveTimer);
+            onArrival = null;
+            pendingIconOpen = null;
+            window._pendingAboutOpen = false; // prevent About Me from auto-opening
+            clearSpotlight();          // clean up any tour spotlight
+
+            // === ANGRY INTRO ===
+            startAngryAnim();
+            var lang = getLang();
+            showBubble(lang === 'pl' ? 'HŁE HŁE HŁE! Janusz się budzi! 😈 Nie ma ratunku... chyba że znajdziesz cebulę! 🧅' :
+                       lang === 'klingon' ? 'HEH HEH HEH! Janusz Haw\'! 😈 narghbe\'... chuch\'a\' tu\'lu\'! 🧅' :
+                       'HEH HEH HEH! Janusz awakens! 😈 No escape... unless you find the onion! 🧅', 6000);
+            playAngrySound();
+            startOnionCycle();
+
+            // === AFTER ANGRY INTRO: START CHAOS WALKING ===
+            // Uses dedicated chaosTimer — completely independent of tour/helpful timers
+            var myEpoch = chaosEpoch;
+            angryTimeout = setTimeout(function() {
+                if (januszMode !== 'chaos' || chaosEpoch !== myEpoch) return;
+                stopAngry();
+                // First walk with short delay
+                chaosScheduleWalk(3000 + Math.random() * 4000);
+            }, 4000);
+        }
+
+        function activateHelpfulMode() {
+            januszMode = 'helpful';
+            chaosEpoch++; // invalidate any pending chaos callbacks
+            clearTimeout(idleTimeout);
+            clearTimeout(angryTimeout);
+            clearTimeout(chaosTimer);
+            cancelAnimationFrame(moveTimer);
+            onArrival = null;
+            pendingIconOpen = null;
+            spriteEl.style.filter = '';
+            spriteEl.style.marginLeft = '0';
+            state = 'idle';
+            stopOnionCycle();
+
+            startIdleAnim();
+            scheduleNextMove();
+        }
+
+        // Expose for terminal commands (chaos only — no calm via terminal!)
+        window._setJanuszMode = function(mode) {
+            if (mode === 'chaos') activateChaosMode();
+            else activateHelpfulMode();
+        };
+        window._getJanuszMode = function() { return januszMode; };
+        window._januszSay = function(text, duration) {
+            showBubble(text, duration || 5000);
+        };
+        window._updateCopilotDisc = function() { updateDiscVisibility(); };
+
+        // Interactions
+        function onHover() {
+            if (state === 'angry' || state === 'rage') return;
+            if (januszMode === 'helpful') {
+                // Friendly response
+                var texts = helpfulClickTexts[getLang()] || helpfulClickTexts.en;
+                showBubble(pickRandom(texts), 4000);
+                return;
+            }
+            playAngrySound();
+            triggerAngry();
+        }
+
+        function onClick(e) {
+            e.stopPropagation();
+            if (state === 'rage') return;
+
+            if (januszMode === 'helpful') {
+                playClickSound();
+                helpfulClickCount++;
+                clearTimeout(helpfulClickResetTimer);
+                helpfulClickResetTimer = setTimeout(function() { helpfulClickCount = 0; }, 4000);
+                if (helpfulClickCount >= 10) {
+                    helpfulClickCount = 0;
+                    var lang = getLang();
+                    var msgs = {
+                        en: "That's IT! You asked for it! 😤🔥",
+                        pl: "No to się DOIGRAŁEŚ! 😤🔥",
+                        klingon: "DaH bIHegh! 😤🔥"
+                    };
+                    showBubble(msgs[lang] || msgs.en, 2000);
+                    setTimeout(function() { activateChaosMode(); }, 2000);
+                    return;
+                }
+                // Warning at 7 clicks
+                if (helpfulClickCount === 7) {
+                    var lang = getLang();
+                    var warns = {
+                        en: "Stop clicking me... I'm warning you! 😠",
+                        pl: "Przestań mnie klikać... Ostrzegam! 😠",
+                        klingon: "yImev! qaQIj! 😠"
+                    };
+                    showBubble(warns[lang] || warns.en, 3000);
+                    return;
+                }
+                var texts = helpfulClickTexts[getLang()] || helpfulClickTexts.en;
+                showBubble(pickRandom(texts), 4000);
+                return;
+            }
+
+            playClickSound();
+
+            // Track rapid clicks for rage mode (chaos only)
+            clickCount++;
+            clearTimeout(clickResetTimer);
+            clickResetTimer = setTimeout(function() { clickCount = 0; }, 3000);
+
+            // 6+ clicks in 3 seconds = RAGE MODE
+            if (clickCount >= 6) {
+                startRageMode();
+                return;
+            }
+
+            triggerAngry();
+        }
+
+        function triggerAngry() {
+            clearTimeout(angryTimeout);
+            clearTimeout(chaosTimer);
+            cancelAnimationFrame(moveTimer);
+            startAngryAnim();
+            playAngrySound();
+
+            var texts = angryTexts[getLang()] || angryTexts.en;
+            showBubble(pickRandom(texts), 5000);
+
+            angryTimeout = setTimeout(function() {
+                stopAngry();
+                if (januszMode === 'chaos') {
+                    chaosScheduleWalk(2000 + Math.random() * 4000);
+                } else {
+                    scheduleNextMove();
+                }
+            }, 4000);
+        }
+
+        // Help sequence (runs on first visit)
+        function startHelpSequence() {
+            if (helpPhase >= (helpTexts[getLang()] || helpTexts.en).length) {
+                scheduleNextMove();
+                return;
+            }
+
+            var texts = helpTexts[getLang()] || helpTexts.en;
+            var item = texts[helpPhase];
+
+            showBubble(item.text, 5000);
+            helpPhase++;
+
+            // Walk toward the referenced icon if any
+            if (item.target) {
+                var icon = document.querySelector('.desktop-icon[data-window="' + item.target + '"]');
+                if (icon) {
+                    var rect = icon.getBoundingClientRect();
+                    targetX = rect.left + rect.width / 2 - DISPLAY_W / 2;
+                    targetY = rect.bottom + 10;
+                    // Clamp
+                    targetX = Math.max(20, Math.min(targetX, window.innerWidth - DISPLAY_W - 20));
+                    targetY = Math.max(80, Math.min(targetY, window.innerHeight - DISPLAY_H - 60));
+                    walkToTarget();
+                }
+            }
+
+            setTimeout(function() {
+                startHelpSequence();
+            }, 6500);
+        }
+
+        // ---- SACRED ONION SYSTEM ----
+        var onionEl = null;
+        var onionTimer = null;
+        var onionVisible = false;
+        var onionDragging = false;
+        var onionDragOffsetX = 0, onionDragOffsetY = 0;
+
+        function createOnion() {
+            if (onionEl) return;
+            onionEl = document.createElement('div');
+            onionEl.id = 'sacred-onion';
+            onionEl.style.cssText = 'position:fixed;z-index:99989;cursor:grab;' +
+                'width:48px;height:48px;font-size:40px;line-height:48px;text-align:center;' +
+                'user-select:none;-webkit-user-select:none;display:none;' +
+                'filter:drop-shadow(0 2px 8px rgba(0,0,0,0.4));' +
+                'transition:transform 0.2s, opacity 0.3s;opacity:0;transform:scale(0);';
+            onionEl.textContent = '🧅';
+            document.body.appendChild(onionEl);
+
+            // Drag handling
+            onionEl.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                onionDragging = true;
+                onionEl.style.cursor = 'grabbing';
+                onionEl.style.transition = 'none';
+                var rect = onionEl.getBoundingClientRect();
+                onionDragOffsetX = e.clientX - rect.left;
+                onionDragOffsetY = e.clientY - rect.top;
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!onionDragging) return;
+                onionEl.style.left = (e.clientX - onionDragOffsetX) + 'px';
+                onionEl.style.top = (e.clientY - onionDragOffsetY) + 'px';
+            });
+
+            document.addEventListener('mouseup', function(e) {
+                if (!onionDragging) return;
+                onionDragging = false;
+                onionEl.style.cursor = 'grab';
+
+                // Check if dropped on Janusz
+                var onionRect = onionEl.getBoundingClientRect();
+                var januszRect = el.getBoundingClientRect();
+                var overlap = !(onionRect.right < januszRect.left ||
+                    onionRect.left > januszRect.right ||
+                    onionRect.bottom < januszRect.top ||
+                    onionRect.top > januszRect.bottom);
+
+                if (overlap && januszMode === 'chaos') {
+                    feedOnionToJanusz();
+                }
+            });
+
+            // Touch support
+            onionEl.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                onionDragging = true;
+                var touch = e.touches[0];
+                var rect = onionEl.getBoundingClientRect();
+                onionDragOffsetX = touch.clientX - rect.left;
+                onionDragOffsetY = touch.clientY - rect.top;
+            }, { passive: false });
+
+            document.addEventListener('touchmove', function(e) {
+                if (!onionDragging) return;
+                var touch = e.touches[0];
+                onionEl.style.left = (touch.clientX - onionDragOffsetX) + 'px';
+                onionEl.style.top = (touch.clientY - onionDragOffsetY) + 'px';
+            }, { passive: true });
+
+            document.addEventListener('touchend', function(e) {
+                if (!onionDragging) return;
+                onionDragging = false;
+                var onionRect = onionEl.getBoundingClientRect();
+                var januszRect = el.getBoundingClientRect();
+                var overlap = !(onionRect.right < januszRect.left ||
+                    onionRect.left > januszRect.right ||
+                    onionRect.bottom < januszRect.top ||
+                    onionRect.top > januszRect.bottom);
+                if (overlap && januszMode === 'chaos') {
+                    feedOnionToJanusz();
+                }
+            });
+        }
+
+        function showOnion() {
+            if (!onionEl || onionVisible || onionDragging) return;
+            // Random position on desktop
+            var x = 80 + Math.random() * (window.innerWidth - 160);
+            var y = 80 + Math.random() * (window.innerHeight - 200);
+            onionEl.style.left = x + 'px';
+            onionEl.style.top = y + 'px';
+            onionEl.style.display = 'block';
+            onionVisible = true;
+            requestAnimationFrame(function() {
+                onionEl.style.transition = 'transform 0.3s ease-out, opacity 0.3s';
+                onionEl.style.opacity = '1';
+                onionEl.style.transform = 'scale(1) rotate(' + (Math.random() * 20 - 10) + 'deg)';
+            });
+
+            // Disappear after 6-10 seconds
+            setTimeout(function() {
+                if (onionVisible && !onionDragging) {
+                    hideOnion();
+                }
+            }, 6000 + Math.random() * 4000);
+        }
+
+        function hideOnion() {
+            if (!onionEl || !onionVisible || onionDragging) return;
+            onionEl.style.opacity = '0';
+            onionEl.style.transform = 'scale(0)';
+            onionVisible = false;
+            setTimeout(function() { onionEl.style.display = 'none'; }, 300);
+        }
+
+        function startOnionCycle() {
+            createOnion();
+            function cycle() {
+                if (januszMode !== 'chaos') {
+                    // Not in chaos mode — stop cycling
+                    hideOnion();
+                    return;
+                }
+                // Show onion every 15-30 seconds
+                var delay = 15000 + Math.random() * 15000;
+                onionTimer = setTimeout(function() {
+                    if (januszMode !== 'chaos') return;
+                    showOnion();
+                    // Schedule next cycle
+                    setTimeout(cycle, 8000 + Math.random() * 5000);
+                }, delay);
+            }
+            cycle();
+        }
+
+        function stopOnionCycle() {
+            clearTimeout(onionTimer);
+            hideOnion();
+        }
+
+        function feedOnionToJanusz() {
+            // Janusz eats the onion and calms down!
+            hideOnion();
+            stopOnionCycle();
+
+            // Cancel all chaos
+            clearTimeout(angryTimeout);
+            clearTimeout(idleTimeout);
+            clearTimeout(rageTimer);
+            cancelAnimationFrame(moveTimer);
+
+            // Eating animation
+            spriteEl.style.filter = '';
+            spriteEl.style.marginLeft = '0';
+            spriteEl.style.transform = facing < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+
+            // Stop rage overlay/banner if active
+            if (rageOverlay) { rageOverlay.style.opacity = '0'; rageOverlay.style.animation = ''; }
+            if (rageBanner) { rageBanner.style.opacity = '0'; rageBanner.style.animation = ''; }
+            if (rageAc) { try { rageAc.close(); } catch(e) {} rageAc = null; }
+
+            // Restore eaten icons if any
+            for (var i = 0; i < eatenIcons.length; i++) {
+                var ic = eatenIcons[i];
+                ic._eatenByJanusz = false;
+                ic.style.display = '';
+                ic.style.opacity = '1';
+                ic.style.transform = '';
+            }
+            eatenIcons = [];
+
+            playMunchSound();
+            var lang = getLang();
+            showBubble(lang === 'pl' ? '*CHRUM* 🧅 Mmmm... cebulka... Janusz dobry... 😇' :
+                       lang === 'klingon' ? '*CHOP* 🧅 QaQ... Janusz QaQ... 😇' :
+                       '*CHOMP* 🧅 Mmmm... onion... Janusz good now... 😇', 6000);
+
+            state = 'idle';
+            startIdleAnim();
+
+            // After a moment of bliss, switch to helpful
+            setTimeout(function() {
+                januszMode = 'helpful';
+                var lang = getLang();
+                showBubble(lang === 'pl' ? 'Dziękuję za cebulkę! Znowu jestem grzeczny! 🧅😇' :
+                           'Thank you for the onion! I\'m nice again! 🧅😇', 5000);
+
+                // Also calm the second Janusz if exists
+                if (secondJanusz) {
+                    showBubble2(lang === 'pl' ? 'Ooo, cebula! Ja też chcę! ...dobra, będę grzeczny. 😇' :
+                               'Ooh, onion! I want too! ...fine, I\'ll be nice. 😇', 5000);
+                }
+
+                scheduleNextMove();
+            }, 3000);
+        }
+
+        // ---- DRAG HANDLING ----
+        var isDragging = false;
+        var isDraggingDisc = false;
+        var dragOffsetX = 0, dragOffsetY = 0;
+        var discOriginalParent = null;
+
+        function initDragHandlers() {
+        // Drag the whole monkey
+        el.addEventListener('mousedown', function(e) {
+            // Check if click is on the disc specifically
+            if (discEl && e.target === discEl) {
+                // Dragging disc only
+                e.preventDefault();
+                e.stopPropagation();
+                isDraggingDisc = true;
+
+                var discRect = discEl.getBoundingClientRect();
+                dragOffsetX = e.clientX - discRect.left;
+                dragOffsetY = e.clientY - discRect.top;
+
+                // Detach disc from monkey, make it fixed position
+                var rect = discEl.getBoundingClientRect();
+                discEl.style.position = 'fixed';
+                discEl.style.left = rect.left + 'px';
+                discEl.style.top = rect.top + 'px';
+                discEl.style.bottom = 'auto';
+                discEl.style.transform = 'none';
+                discEl.style.zIndex = '99999';
+                discEl.style.cursor = 'grabbing';
+                document.body.appendChild(discEl);
+
+                // Copilot freaks out
+                var lang = getLang();
+                var msgs = {
+                    en: ["MY DISC! Give it BACK! \u{1F631}", "THIEF! That's a $4999 AppleDisc! \u{1F6A8}", "NOOO! Not the hover disc! \u{1F494}"],
+                    pl: ["M\u00D3J DYSK! Oddaj NATYCHMIAST! \u{1F631}", "Z\u0141ODZIEJ! To AppleDysk za $4999! \u{1F6A8}", "NIEEE! Tylko nie dysk! \u{1F494}"],
+                    klingon: ["nuH'wIj! yInob! \u{1F631}", "nIH! $4999 AppleDisc! \u{1F6A8}", "ghobe'! Dujwij! \u{1F494}"]
+                };
+                var arr = msgs[lang] || msgs.en;
+                showBubble(arr[Math.floor(Math.random() * arr.length)], 4000);
+                startAngryAnim();
+
+                return;
+            }
+
+            // Don't start drag during angry/rage — prevents drag from killing rage mode
+            if (state === 'angry' || state === 'rage') return;
+
+            // Dragging monkey (disc follows)
+            e.preventDefault();
+            e.stopPropagation();
+            isDragging = true;
+            dragOffsetX = e.clientX - posX;
+            dragOffsetY = e.clientY - posY;
+
+            // Stop walking
+            cancelAnimationFrame(moveTimer);
+            clearTimeout(idleTimeout);
+            clearTimeout(chaosTimer);
+            onArrival = null;
+
+            el.style.cursor = 'grabbing';
+
+            // Copilot annoyed
+            var lang = getLang();
+            var msgs = {
+                en: ["HEY! Hands off! \u{1F92C}", "Put me DOWN! \u{1F624}", "I'm not a toy! Stop it!", "HELP! I'm being monkey-napped! \u{1F648}"],
+                pl: ["HEJ! \u0141apy precz! \u{1F92C}", "Postaw mnie! \u{1F624}", "Nie jestem zabawk\u0105! Przesta\u0144!", "RATUNKU! Porywaj\u0105 ma\u0142p\u0119! \u{1F648}"],
+                klingon: ["yImev! ghopDu' yIteq! \u{1F92C}", "HIlan! \u{1F624}", "Quj'a' jIHbe'!", "QaH! nIHlu'! \u{1F648}"]
+            };
+            var arr = msgs[lang] || msgs.en;
+            showBubble(arr[Math.floor(Math.random() * arr.length)], 3000);
+            triggerAngry();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                posX = e.clientX - dragOffsetX;
+                posY = e.clientY - dragOffsetY;
+                // Clamp to viewport
+                posX = Math.max(0, Math.min(posX, window.innerWidth - DISPLAY_W));
+                posY = Math.max(0, Math.min(posY, window.innerHeight - DISPLAY_H));
+                el.style.left = posX + 'px';
+                el.style.top = posY + 'px';
+            }
+            if (isDraggingDisc && discEl) {
+                discEl.style.left = (e.clientX - dragOffsetX) + 'px';
+                discEl.style.top = (e.clientY - dragOffsetY) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            if (isDragging) {
+                isDragging = false;
+                el.style.cursor = 'pointer';
+                // Don't interfere with rage mode
+                if (state === 'rage') return;
+                // Resume after a moment
+                setTimeout(function() {
+                    if (state === 'rage') return; // double-check: rage may have started during the delay
+                    stopAngry();
+                    var lang = getLang();
+                    var msgs = {
+                        en: "Don't do that again. \u{1F612}",
+                        pl: "Nie r\u00F3b tego wi\u0119cej. \u{1F612}",
+                        klingon: "yImev'eghqa'. \u{1F612}"
+                    };
+                    showBubble(msgs[lang] || msgs.en, 3000);
+                    // If tour was interrupted by drag, resume it
+                    if (tourActive) {
+                        tourStepTimer = setTimeout(runTourStep, 3500);
+                    } else if (januszMode === 'chaos') {
+                        chaosScheduleWalk(2000 + Math.random() * 3000);
+                    } else {
+                        scheduleNextMove();
+                    }
+                }, 1000);
+            }
+            if (isDraggingDisc && discEl) {
+                isDraggingDisc = false;
+                // Animate disc back to monkey
+                var elRect = el.getBoundingClientRect();
+                var targetLeft = elRect.left + elRect.width / 2 - parseInt(discEl.style.width) / 2;
+                var targetTop = elRect.bottom - 12;
+
+                discEl.style.transition = 'left 0.5s ease-out, top 0.5s ease-out';
+                discEl.style.left = targetLeft + 'px';
+                discEl.style.top = targetTop + 'px';
+
+                setTimeout(function() {
+                    // Re-attach disc to monkey
+                    discEl.style.transition = '';
+                    discEl.style.position = 'absolute';
+                    discEl.style.left = '50%';
+                    discEl.style.top = '';
+                    discEl.style.bottom = '-10px';
+                    discEl.style.transform = 'translateX(-50%)';
+                    discEl.style.zIndex = '';
+                    discEl.style.cursor = '';
+                    if (el && discEl.parentNode !== el) {
+                        el.insertBefore(discEl, el.firstChild);
+                    }
+                    updateDiscVisibility();
+
+                    var lang = getLang();
+                    var msgs = {
+                        en: "Finally! My precious disc... \u{1F97A} Never do that again!",
+                        pl: "Nareszcie! M\u00F3j drogi dysk... \u{1F97A} Nigdy wi\u0119cej tego nie r\u00F3b!",
+                        klingon: "Qapla'! nuH'wIj cheghta'... \u{1F97A} yImev'eghqa'!"
+                    };
+                    showBubble(msgs[lang] || msgs.en, 4000);
+                    stopAngry();
+                    if (januszMode === 'chaos') {
+                        chaosScheduleWalk(3000);
+                    } else {
+                        scheduleNextMove();
+                    }
+                }, 600);
+            }
+        });
+        } // end initDragHandlers
+
+        // Init
+        function start() {
+            createDOM();
+            initDragHandlers();
+            updateDiscVisibility();
+            startIdleAnim();
+
+            // Position: bottom-center, just above taskbar
+            posX = Math.round((window.innerWidth - DISPLAY_W) / 2);
+            posY = window.innerHeight - DISPLAY_H - 48;
+            el.style.left = posX + 'px';
+            el.style.top = posY + 'px';
+
+            // Watch for browser window open (player-triggered spawn)
+            watchBrowserWindow();
+
+            // Start tour in helpful mode, or roam in chaos
+            function beginTour() {
+                if (tourStarted) return;
+                tourStarted = true;
+                el.removeEventListener('mouseenter', onHoverStart);
+                if (januszMode === 'helpful') {
+                    startTour();
+                } else {
+                    scheduleNextMove();
+                }
+            }
+
+            function onHoverStart() {
+                clearTimeout(tourDelayTimer);
+                beginTour();
+            }
+
+            // Quick greeting after 1s
+            setTimeout(function() {
+                var lang = getLang();
+                var greet = { en: 'Hey! 👋', pl: 'Hej! 👋', klingon: 'nuqneH! 👋' };
+                showBubble(greet[lang] || greet.en, 2000);
+            }, 1000);
+
+            // Full tour after 7s (or on hover)
+            el.addEventListener('mouseenter', onHoverStart);
+            tourDelayTimer = setTimeout(beginTour, 7000);
+        }
+
+        // Copilot toggle button
+        var copilotBtn = document.getElementById('copilotToggle');
+        var copilotHidden = localStorage.getItem('jan-portfolio-copilot') === 'off';
+
+        function hideCopilot() {
+            // Can't hide during chaos/rage
+            if (januszMode === 'chaos') {
+                var lang = getLang();
+                showBubble(lang === 'pl' ? 'Hahaha! Nie pozbędziesz się mnie TAK ŁATWO! 😈' :
+                           'Hahaha! You can\'t get rid of me THAT easily! 😈', 3000);
+                return;
+            }
+            copilotHidden = true;
+            localStorage.setItem('jan-portfolio-copilot', 'off');
+            if (el) el.style.display = 'none';
+            if (copilotBtn) copilotBtn.classList.add('copilot-off');
+        }
+
+        function showCopilot() {
+            copilotHidden = false;
+            localStorage.setItem('jan-portfolio-copilot', 'on');
+            if (copilotBtn) copilotBtn.classList.remove('copilot-off');
+            if (el) {
+                el.style.display = '';
+            } else {
+                start();
+            }
+            var lang = getLang();
+            var msgs = {
+                en: "Copilot is back! 🐒 Missed me?",
+                pl: "Copilot wrócił! 🐒 Tęskniliście?",
+                klingon: "Copilot cheghta'! 🐒"
+            };
+            setTimeout(function() { showBubble(msgs[lang] || msgs.en, 4000); }, 500);
+        }
+
+        if (copilotBtn) {
+            copilotBtn.addEventListener('click', function() {
+                if (copilotHidden) showCopilot();
+                else hideCopilot();
+            });
+        }
+
+        // Expose toggle for external use
+        window._toggleCopilot = function(on) {
+            if (on === undefined) on = copilotHidden;
+            if (on) showCopilot(); else hideCopilot();
+        };
+
+        // Snarky comments when user leaves/returns
+        var lastDefocusTime = 0;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                lastDefocusTime = Date.now();
+            } else {
+                // User came back
+                if (copilotHidden) return;
+                var away = Date.now() - lastDefocusTime;
+                if (away < 2000) return; // ignore quick tab switches
+                var lang = getLang();
+                var msgs;
+                if (away > 60000) {
+                    // Gone for over a minute
+                    msgs = {
+                        en: ["Oh, you're BACK? I've been here. Alone. Waiting. 😤", "Finally! I was about to file a missing person report! 🚨", "Gone for " + Math.round(away/1000) + " seconds. I counted. Every. Single. One. ⏱️"],
+                        pl: ["O, WRÓCIŁEŚ? Siedziałem tu. Sam. Czekając. 😤", "Nareszcie! Już miałem dzwonić na policję! 🚨", "Nie było cię " + Math.round(away/1000) + " sekund. Liczyłem. Każdą. Jedną. ⏱️"],
+                        klingon: ["cheghta'! jIloS! 😤", "Qapla'! jIHvaD bIHeghpu' 'e' vIQub! 🚨", "luppu' " + Math.round(away/1000) + ". vItogh. Hoch. wa'. ⏱️"]
+                    };
+                } else {
+                    msgs = {
+                        en: ["Back already? Miss me? 😏", "I saw that. You went to another tab. I'm not jealous. 😒", "Welcome back! I didn't touch anything while you were gone... 👀"],
+                        pl: ["Już wróciłeś? Tęskniłeś? 😏", "Widziałem. Poszedłeś na inną kartę. Nie jestem zazdrosny. 😒", "Witaj z powrotem! Niczego nie ruszałem jak cię nie było... 👀"],
+                        klingon: ["cheghta'! muSIQ'a'? 😏", "qalegh! tab latlh Dalo'pu'. 😒", "yI'el! vay' vIHotbe'... 👀"]
+                    };
+                }
+                var arr = msgs[lang] || msgs.en;
+                setTimeout(function() {
+                    showBubble(arr[Math.floor(Math.random() * arr.length)], 5000);
+                }, 500);
+            }
+        });
+
+        if (copilotHidden) {
+            hideCopilot();
+        } else {
+            start();
+        }
+    }
+
+    function initMobileFab() {
+        var fab = document.getElementById('mobileFab');
+        var toggle = document.getElementById('mobileFabToggle');
+        var panel = document.getElementById('mobileFabPanel');
+        if (!fab || !toggle || !panel) return;
+
+        // Show FAB (CSS handles display:none on desktop)
+        fab.classList.remove('hidden');
+
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            panel.classList.toggle('hidden');
+        });
+
+        // Close panel on outside click
+        document.addEventListener('click', function(e) {
+            if (!fab.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
+
+        // Theme buttons in FAB use same handlers as tray buttons (already delegation-based)
+        // Lang buttons in FAB — wire them up
+        panel.querySelectorAll('.lang-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var lang = btn.dataset.lang;
+                currentLang = lang;
+                localStorage.setItem('jan-portfolio-lang', lang);
+                applyLanguage(lang);
+                updateBrowserTheme();
+                updateBrowserDesktopIcon();
+                panel.classList.add('hidden');
+            });
+        });
+    }
+
     function initAfterBoot() {
         initDesktopIcons();
         initWindowControls();
@@ -7353,6 +10456,30 @@
         updateBrowserTheme();
         updateBrowserDesktopIcon();
 
+        initShakeCursor();
+        initNosaczHelper();
+        initMobileFab();
+
+        // Contact website link → opens in internal browser (delegation for cloned windows too)
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('.contact-website-link');
+            if (link) {
+                e.preventDefault();
+                if (window._loadUrlInBrowser) window._loadUrlInBrowser('www.jurec.pl');
+            }
+        });
+
+        // Slide thumbnail lightbox
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('slide-thumb')) {
+                var lb = document.createElement('div');
+                lb.className = 'slide-lightbox';
+                lb.innerHTML = '<span class="slide-lightbox-close">&times;</span><img src="' + e.target.src + '" alt="' + (e.target.alt || '') + '">';
+                lb.addEventListener('click', function() { lb.remove(); });
+                document.body.appendChild(lb);
+            }
+        });
+
         // Initialize glass for macOS
         _refreshGlass();
 
@@ -7374,8 +10501,14 @@
         }
 
         // Open "About" by default (skip in iframe inception)
+        // On first visit, delay until after Copilot tour; on return visits, open immediately
         if (window.self === window.top) {
-            openWindow('about');
+            if (localStorage.getItem('jan-portfolio-copilot') === 'off' || localStorage.getItem('jan-portfolio-toured')) {
+                openWindow('about');
+            } else {
+                // Will be opened by Copilot at end of tour
+                window._pendingAboutOpen = true;
+            }
         }
 
         // Close start menu on outside click
@@ -7447,6 +10580,13 @@
             }
         });
 
+        // Update all data-i18n-title elements (tool tooltips)
+        document.querySelectorAll('[data-i18n-title]').forEach(el => {
+            const key = el.getAttribute('data-i18n-title');
+            const val = t(key);
+            if (val) el.title = val;
+        });
+
         // Update page title based on language
         const titles = {
             en: 'Jan Jurec - Senior Software Engineer',
@@ -7458,6 +10598,24 @@
 
     function init() {
         initBootScreen();
+
+        // Make "Connect with me" clickable to open contact window (delegation for reliability)
+        document.addEventListener('click', function(e) {
+            var bio5 = e.target.closest('[data-i18n="about-bio-5"]');
+            if (bio5) {
+                e.preventDefault();
+                openWindow('contact');
+            }
+        });
+        // Style it on hover via CSS class
+        document.addEventListener('mouseover', function(e) {
+            var bio5 = e.target.closest('[data-i18n="about-bio-5"]');
+            if (bio5) { bio5.style.cursor = 'pointer'; bio5.style.textDecoration = 'underline'; }
+        });
+        document.addEventListener('mouseout', function(e) {
+            var bio5 = e.target.closest('[data-i18n="about-bio-5"]');
+            if (bio5) { bio5.style.textDecoration = 'none'; }
+        });
     }
 
     document.addEventListener('DOMContentLoaded', init);

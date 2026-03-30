@@ -57,9 +57,9 @@
     --statusbar-color: rgba(0,0,0,0.5);
 
     /* Taskbar (Dock style) */
-    --taskbar-height: 58px;
-    --taskbar-bg: rgba(40, 40, 40, 0.35);
-    --taskbar-border: 1px solid rgba(255,255,255,0.18);
+    --taskbar-height: 36px;
+    --taskbar-bg: rgba(40, 40, 50, 0.55);
+    --taskbar-border: 1px solid rgba(255,255,255,0.2);
 
     /* Start button */
     --start-btn-bg: rgba(255,255,255,0.12);
@@ -324,34 +324,52 @@
     background: #fff;
 }
 
-/* Dock - floating liquid glass bar */
+/* Dock - smaller, frosted glass bar */
 [data-theme="macos"] .taskbar {
-    backdrop-filter: blur(80px) saturate(250%) brightness(1.08) contrast(1.02);
-    -webkit-backdrop-filter: blur(80px) saturate(250%) brightness(1.08) contrast(1.02);
-    border-radius: 18px 18px 0 0;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(120, 130, 160, 0.18) 0%,
-            rgba(60, 60, 80, 0.30) 30%,
-            rgba(30, 30, 40, 0.45) 100%
-        ),
-        linear-gradient(
-            90deg,
-            rgba(100, 140, 255, 0.04) 0%,
-            rgba(200, 160, 255, 0.06) 50%,
-            rgba(100, 200, 255, 0.04) 100%
-        );
-    border-top: 0.5px solid rgba(255,255,255,0.45);
-    border-left: 0.5px solid rgba(255,255,255,0.12);
-    border-right: 0.5px solid rgba(255,255,255,0.12);
-    box-shadow:
-        0 -4px 40px rgba(0,0,0,0.18),
-        0 -1px 8px rgba(0,0,0,0.08),
-        inset 0 1.5px 0 rgba(255,255,255,0.18),
-        inset 0 -1px 0 rgba(0,0,0,0.12),
-        inset 0 0 20px rgba(255,255,255,0.03);
+    height: 36px;
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    background: rgba(40, 40, 50, 0.55) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 0;
     position: relative;
+}
+
+[data-theme="macos"] .taskbar * {
+    font-size: 12px;
+}
+
+[data-theme="macos"] .taskbar-tray {
+    gap: 4px;
+    padding-right: 8px;
+}
+
+[data-theme="macos"] .start-btn {
+    padding: 2px 10px;
+    font-size: 13px;
+}
+
+[data-theme="macos"] .taskbar-windows .taskbar-btn {
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+/* Lens magnification effect on taskbar items */
+[data-theme="macos"] .start-btn,
+[data-theme="macos"] .taskbar-tray button,
+[data-theme="macos"] .taskbar-windows .taskbar-btn {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="macos"] .start-btn:hover,
+[data-theme="macos"] .taskbar-tray button:hover,
+[data-theme="macos"] .taskbar-windows .taskbar-btn:hover {
+    transform: scale(1.35) translateY(-6px);
+    z-index: 10;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 /* Specular highlight caustic on dock top edge */
 [data-theme="macos"] .taskbar::before {
@@ -408,16 +426,9 @@
     filter: brightness(0.92);
 }
 
-/* Start button - move to right side of dock, interactive brightness */
+/* Start button - nudge right so it's not cut off at the corner */
 [data-theme="macos"] .start-button {
-    order: 3;
-    margin-left: auto;
-}
-[data-theme="macos"] .taskbar-windows {
-    order: 1;
-}
-[data-theme="macos"] .taskbar-tray {
-    order: 2;
+    margin-left: 8px;
 }
 [data-theme="macos"] .start-btn {
     transition: filter 0.15s ease, background 0.15s ease;
@@ -434,29 +445,16 @@
     filter: brightness(1.2);
 }
 
-/* Start Menu - liquid glass panel */
+/* Start menu glass effect */
 [data-theme="macos"] .start-menu {
-    left: auto;
-    right: 0;
-    backdrop-filter: blur(60px) saturate(220%) brightness(1.04);
-    -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.04);
-    background:
-        linear-gradient(
-            170deg,
-            rgba(80, 80, 100, 0.18) 0%,
-            rgba(40, 40, 50, 0.50) 50%,
-            rgba(20, 20, 30, 0.60) 100%
-        ) !important;
-    box-shadow:
-        0 24px 80px rgba(0,0,0,0.4),
-        0 0 60px rgba(0,0,0,0.15),
-        inset 0 1px 0 rgba(255,255,255,0.25),
-        inset 0 -1px 0 rgba(0,0,0,0.15),
-        inset 1px 0 0 rgba(255,255,255,0.06),
-        inset -1px 0 0 rgba(0,0,0,0.06);
-    border-radius: 14px;
-    border-top: 0.5px solid rgba(255,255,255,0.35);
-    border-bottom: 0.5px solid rgba(0,0,0,0.2);
+    left: 8px;
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    background: rgba(40, 40, 50, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
 }
 /* Start menu specular top edge */
 [data-theme="macos"] .start-menu::before {
@@ -478,21 +476,22 @@
     border-radius: 14px 14px 0 0;
 }
 
-/* ---- Liquid Glass: Start Menu Item Hover (complementary to liquidGL) ---- */
+/* ---- Liquid Glass: Start Menu Item Hover - lens/magnify ---- */
 [data-theme="macos"] .start-menu-item {
     position: relative;
-    border-radius: 10px;
+    border-radius: 8px;
     margin: 2px 6px;
     padding: 8px 12px;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    transition: transform 0.18s ease, background 0.15s ease, box-shadow 0.18s ease;
+    transform-origin: center center;
 }
 [data-theme="macos"] .start-menu-item:hover {
-    background: rgba(255, 255, 255, 0.10);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.35),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
-        0 2px 12px rgba(0, 0, 0, 0.15);
-    transform: scale(1.01);
+    transform: scale(1.05);
+    backdrop-filter: blur(12px) saturate(1.6);
+    -webkit-backdrop-filter: blur(12px) saturate(1.6);
+    background: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25), inset 0 0.5px 0 rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
 }
 [data-theme="macos"] .start-menu-item:active {
     transform: scale(0.97);
@@ -651,4 +650,18 @@
     font-size: 12px;
     color: #86868b;
     letter-spacing: 0.02em;
+}
+
+/* Glass Combo windows — transparent children so backdrop refraction shows through */
+[data-theme="macos"] .window.dg-glass-window .window-body {
+    background: rgba(255,255,255,0.35) !important;
+}
+[data-theme="macos"] .window.dg-glass-window .titlebar {
+    background: rgba(232,232,232,0.35) !important;
+}
+[data-theme="macos"] .window.dg-glass-window .window-statusbar {
+    background: rgba(240,240,240,0.35) !important;
+}
+[data-theme="macos"] .window.dg-glass-window .window-menubar {
+    background: rgba(245,245,245,0.3) !important;
 }
