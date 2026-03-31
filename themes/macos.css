@@ -454,6 +454,14 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    overflow: visible;
+}
+[data-theme="macos"] .start-menu-header {
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+[data-theme="macos"] .start-menu-footer {
+    border-radius: 0 0 10px 10px;
     overflow: hidden;
 }
 /* Start menu specular top edge */
@@ -496,6 +504,16 @@
 [data-theme="macos"] .start-menu-item:active {
     transform: scale(0.97);
     background: rgba(255, 255, 255, 0.15);
+}
+
+/* ---- Liquid Glass: Games submenu ---- */
+[data-theme="macos"] .start-submenu {
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    background: rgba(40, 40, 50, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* ---- Liquid Glass: Desktop Icon Dragging (base) ---- */
