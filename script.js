@@ -232,13 +232,16 @@
                 }
             }
 
-            // Double click opens window
+            // Double click opens window (or action)
             icon.addEventListener('dblclick', function() {
+                if (icon.dataset.action === 'cv') { window.open('https://jan.jurec.pl', '_blank'); return; }
                 openWindow(icon.dataset.window);
             });
             // Mobile: single tap
             icon.addEventListener('click', function() {
-                if (isMobile()) openWindow(icon.dataset.window);
+                if (!isMobile()) return;
+                if (icon.dataset.action === 'cv') { window.open('https://jan.jurec.pl', '_blank'); return; }
+                openWindow(icon.dataset.window);
             });
 
             // Drag icons (desktop only)
@@ -391,6 +394,7 @@
             const win = document.getElementById('window-' + name);
             if (!win) return;
             win.classList.remove('hidden');
+            win.classList.remove('minimized');
             _applyGlass(win);
             bringToFront(win);
             updateTaskbarButtons();
@@ -610,6 +614,7 @@
             return;
         }
         win.classList.add('hidden');
+        win.classList.add('minimized');
         updateTaskbarButtons();
     }
 
@@ -838,6 +843,7 @@
         // Start menu items
         document.querySelectorAll('.start-menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
+                if (item.dataset.action === 'cv') { e.stopPropagation(); window.open('https://jan.jurec.pl', '_blank'); return; }
                 if (!item.dataset.window) return; // submenu parent — no direct action
                 e.stopPropagation();
                 openWindow(item.dataset.window);
@@ -868,22 +874,23 @@
             const isClone = !!win.dataset.baseName;
             const isSingleton = SINGLETON_WINDOWS.includes(name);
 
-            // Template windows that are hidden and not singletons: skip
-            if (!isClone && !isSingleton && win.classList.contains('hidden')) return;
-            // Singleton windows that are hidden: skip
-            if (isSingleton && win.classList.contains('hidden')) return;
+            // Template windows that are hidden (not minimized) and not singletons: skip
+            if (!isClone && !isSingleton && win.classList.contains('hidden') && !win.classList.contains('minimized')) return;
+            // Singleton windows that are hidden (not minimized): skip
+            if (isSingleton && win.classList.contains('hidden') && !win.classList.contains('minimized')) return;
 
             const title = win.querySelector('.window-title span:last-child');
             if (!title) return;
 
             const btn = document.createElement('button');
-            const isMinimized = win.classList.contains('hidden');
-            btn.className = 'taskbar-window-btn' + (!isMinimized && win.classList.contains('active') ? ' active' : '');
+            const isMinimized = win.classList.contains('minimized');
+            btn.className = 'taskbar-window-btn' + (isMinimized ? ' minimized' : '') + (!isMinimized && win.classList.contains('active') ? ' active' : '');
             btn.textContent = title.textContent;
 
             btn.addEventListener('click', () => {
-                if (win.classList.contains('hidden')) {
+                if (win.classList.contains('minimized')) {
                     win.classList.remove('hidden');
+                    win.classList.remove('minimized');
                     bringToFront(win);
                 } else if (win.classList.contains('active')) {
                     minimizeWindow(name);
@@ -3409,6 +3416,7 @@
                     addLine('  clear         - Clear terminal');
                     addLine('  exit          - Close terminal');
                     addLine('');
+                    addLine('  cv            - Open CV / Resume');
                     addLine('  neofetch      - System info');
                     addLine('  theme [name]  - Switch OS (winxp/macos/linux)');
                     addLine('  cowsay [msg]  - Moo');
@@ -3417,6 +3425,13 @@
                     addLine('  Tip: try ls, explore files with cat,', 'info');
                     addLine('  and look inside secrets/ for surprises.', 'info');
                     addLine('  Full command list: cat secrets/all-commands.txt', 'info');
+                    break;
+
+                case 'cv':
+                case 'resume':
+                    var lang = currentLang || 'en';
+                    addLine(lang === 'pl' ? 'Otwieram CV...' : 'Opening CV...', 'info');
+                    setTimeout(function() { window.open('https://jan.jurec.pl', '_blank'); }, 500);
                     break;
 
                 case 'whoami':
@@ -8492,10 +8507,10 @@
             { text: { en: "Hi! I'm Copilot 🐒 Let me show you around!", pl: "Cześć! Jestem Copilot 🐒 Oprowadzę Cię!" }, wait: 4000 },
             { selector: '#copilotToggle', text: { en: "See this 🐒 button? Click it to turn me off... or back on! But why would you? 😏", pl: "Widzisz ten przycisk 🐒? Kliknij go żeby mnie wyłączyć... albo włączyć! Ale po co byś chciał? 😏" } },
             { target: 'about', text: { en: "This is 'About Me' — click to learn about Jan!", pl: "To jest 'O mnie' — kliknij żeby poznać Janka!" } },
+            { target: 'terminal', text: { en: "The Terminal! Type commands, discover secrets... 🤫", pl: "Terminal! Wpisuj komendy, odkrywaj sekrety... 🤫" } },
             { target: 'experience', text: { en: "Here's Jan's experience — 9 positions, impressive!", pl: "Tu jest doświadczenie Janka — 9 stanowisk, nieźle!" } },
             { target: 'skills', text: { en: "Skills section — 40+ technologies! AI, cloud, the works!", pl: "Sekcja umiejętności — 40+ technologii! AI, chmura, pełen zestaw!" } },
             { target: 'projects', text: { en: "Projects — see what Jan has built!", pl: "Projekty — zobacz co Janek zbudował!" } },
-            { target: 'terminal', text: { en: "The Terminal! Type commands, discover secrets... 🤫", pl: "Terminal! Wpisuj komendy, odkrywaj sekrety... 🤫" } },
             { target: 'winamp', text: { en: "Winamp! 🎵 Unlock hidden tracks by playing games!", pl: "Winamp! 🎵 Odblokuj ukryte utwory grając w gry!" } },
             { target: 'tetris', text: { en: "Games! Tetris, Breakout, even a Copilot runner! 🎮", pl: "Gry! Tetris, Breakout, nawet bieg Copilota! 🎮" } },
             { target: 'browser', text: { en: "A web browser! Careful — it goes deep... 🌐", pl: "Przeglądarka! Uważaj — można się zagłębić... 🌐" } },
@@ -8783,6 +8798,7 @@
         }
 
         function stopAngry() {
+            if (state === 'rage') return; // never interrupt rage mode
             spriteEl.style.filter = '';
             spriteEl.style.marginLeft = '0';
             startIdleAnim();
@@ -9023,7 +9039,7 @@
 
             // After initial roar, start chasing icons
             setTimeout(function() {
-                rageChaseIcons();
+                if (state === 'rage') rageChaseIcons();
             }, 1500);
 
             // Rage lasts 10-14 seconds then calms down
@@ -9224,7 +9240,7 @@
 
             if (state !== 'walk') startWalkAnim();
 
-            var speed = 1.5;
+            var speed = 3;
             posX += (dx / dist) * speed;
             posY += (dy / dist) * speed;
 
@@ -9354,11 +9370,6 @@
                 tourActive = false;
                 clearSpotlight();
                 localStorage.setItem('jan-portfolio-toured', 'true');
-                // Open About Me after tour ends (not during chaos takeover)
-                if (window._pendingAboutOpen && januszMode !== 'chaos') {
-                    window._pendingAboutOpen = false;
-                    openWindow('about');
-                }
                 // Don't schedule moves if chaos mode took over
                 if (januszMode !== 'chaos') {
                     scheduleNextMove();
@@ -9367,9 +9378,13 @@
             }
 
             var step = tourSteps[tourPhase];
-            var lang = getLang();
-            var text = (step.text[lang] || step.text.en);
             tourPhase++;
+
+            // Helper: pick text in current language at moment of speaking
+            function getStepText() {
+                var lang = getLang();
+                return step.text[lang] || step.text.en;
+            }
 
             if (step.target) {
                 // Walk to icon — stand to the side so bubble doesn't cover it
@@ -9393,12 +9408,12 @@
                         // Face toward the icon
                         setFacing(standRight ? -1 : 1);
                         addSpotlight(icon);
-                        showBubble(text, 5000);
+                        showBubble(getStepText(), 5000);
                         tourStepTimer = setTimeout(function() { clearSpotlight(); runTourStep(); }, 6000);
                     };
                     walkToTarget();
                 } else {
-                    showBubble(text, 5000);
+                    showBubble(getStepText(), 5000);
                     tourStepTimer = setTimeout(runTourStep, 6000);
                 }
             } else if (step.selector) {
@@ -9410,13 +9425,13 @@
                     if (selectorCenterX > myCenter + 5) setFacing(1);
                     else if (selectorCenterX < myCenter - 5) setFacing(-1);
                     addSpotlight(selectorElem);
-                    showBubble(text, 5000);
+                    showBubble(getStepText(), 5000);
                     tourStepTimer = setTimeout(function() { clearSpotlight(); runTourStep(); }, 6000);
                 });
             } else {
                 // Just show text, wait
                 clearSpotlight();
-                showBubble(text, step.wait || 5000);
+                showBubble(getStepText(), step.wait || 5000);
                 tourStepTimer = setTimeout(runTourStep, (step.wait || 5000) + 1000);
             }
         }
@@ -9730,7 +9745,6 @@
             cancelAnimationFrame(moveTimer);
             onArrival = null;
             pendingIconOpen = null;
-            window._pendingAboutOpen = false; // prevent About Me from auto-opening
             clearSpotlight();          // clean up any tour spotlight
 
             // === ANGRY INTRO ===
@@ -10500,16 +10514,7 @@
             }
         }
 
-        // Open "About" by default (skip in iframe inception)
-        // On first visit, delay until after Copilot tour; on return visits, open immediately
-        if (window.self === window.top) {
-            if (localStorage.getItem('jan-portfolio-copilot') === 'off' || localStorage.getItem('jan-portfolio-toured')) {
-                openWindow('about');
-            } else {
-                // Will be opened by Copilot at end of tour
-                window._pendingAboutOpen = true;
-            }
-        }
+        // About Me no longer auto-opens
 
         // Close start menu on outside click
         document.addEventListener('click', (e) => {

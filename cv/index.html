@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jan Jurec — CV</title>
+  <meta name="description" content="Jan Jurec — Senior Software Engineer, MLOps, DevOps, AWS, Python">
+  <meta property="og:title" content="Jan Jurec | CV">
+  <meta property="og:description" content="Senior Software Engineer — MLOps, DevOps, AWS, Python">
+  <meta property="og:url" content="https://jan.jurec.pl/">
+  <meta property="og:type" content="website">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,300;1,400&display=swap">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <style>
+    @page { size: A4 portrait; margin: 12mm 14mm; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
+      background: #fff;
+    }
+
+    a { color: #477dca; text-decoration: none; }
+    a:hover { color: #2a5db0; text-decoration: underline; }
+
+    .page { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+    /* === HEADER === */
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+    .header-left h1 { font-size: 38px; font-weight: 500; line-height: 1.1; color: #111; }
+    .header-left h2 { font-size: 18px; font-weight: 300; color: #666; margin-top: 4px; }
+    .header-right { text-align: right; font-size: 14px; line-height: 1.8; color: #555; }
+    .header-right a { color: #555; font-weight: 400; }
+    .header-right a:hover { color: #477dca; }
+
+    .social-icons { list-style: none; display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 6px; }
+    .social-icons a {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #555;
+      color: #555; transition: all 0.2s; font-size: 16px;
+    }
+    .social-icons a:hover { color: #fff; background: #333; border-color: #333; text-decoration: none; }
+
+    /* === SECTIONS === */
+    .section { margin-bottom: 22px; }
+    .section-title {
+      font-size: 22px; font-weight: 300; color: #333; text-align: center;
+      border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 18px;
+    }
+
+    /* === INTRO === */
+    .intro { font-size: 14px; color: #555; line-height: 1.65; text-align: justify; }
+
+    /* === JOBS === */
+    .job { display: flex; gap: 24px; margin-bottom: 18px; }
+    .job-left { flex: 0 0 200px; min-width: 200px; }
+    .job-company { font-size: 17px; font-weight: 500; color: #222; margin-bottom: 2px; }
+    .job-role { font-size: 13px; font-weight: 500; color: #444; }
+    .job-meta { font-size: 12px; color: #888; margin-top: 2px; }
+    .job-right { flex: 1; }
+    .job-right ul { padding-left: 18px; margin: 0; }
+    .job-right li { font-size: 13px; color: #444; margin-bottom: 2px; line-height: 1.45; }
+    .job-highlight { font-size: 12px; font-style: italic; color: #777; margin-bottom: 6px; }
+    .job-sub { font-size: 12px; font-weight: 500; color: #555; margin: 8px 0 3px; }
+
+    /* === PROJECTS === */
+    .project { margin-bottom: 10px; }
+    .project-name { font-size: 14px; font-weight: 500; }
+    .project-name a { color: #333; }
+    .project-name a:hover { color: #477dca; }
+    .project-desc { font-size: 13px; color: #555; margin-top: 1px; }
+    .project ul { padding-left: 18px; margin: 2px 0 0; }
+    .project li { font-size: 13px; color: #555; }
+
+    /* === SKILLS === */
+    .skills-grid { display: flex; gap: 30px; }
+    .skills-col { flex: 1; }
+    .skill-group { margin-bottom: 12px; }
+    .skill-label { font-size: 13px; font-weight: 500; color: #333; margin-bottom: 4px; }
+    .skill-items { font-size: 13px; color: #555; line-height: 1.6; }
+
+    /* === EDUCATION === */
+    .edu { display: flex; gap: 24px; margin-bottom: 10px; }
+    .edu-left { flex: 0 0 200px; min-width: 200px; }
+    .edu-school { font-size: 15px; font-weight: 500; color: #222; }
+    .edu-degree { font-size: 13px; font-weight: 400; color: #444; }
+    .edu-year { font-size: 12px; color: #888; margin-top: 1px; }
+
+    /* === FOOTER === */
+    .footer { text-align: center; font-size: 12px; color: #aaa; font-style: italic; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; }
+    .footer a { color: #aaa; }
+    .footer a:hover { color: #477dca; }
+
+    /* === BACK LINK === */
+    .back-link {
+      position: fixed; top: 12px; right: 16px; z-index: 100;
+      font-size: 13px; background: #333; color: #fff;
+      padding: 6px 14px; border-radius: 16px;
+      transition: background 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .back-link:hover { background: #555; color: #fff; text-decoration: none; }
+
+    /* === MOBILE === */
+    @media screen and (max-width: 640px) {
+      .header { flex-direction: column; text-align: center; }
+      .header-right { text-align: center; margin-top: 10px; }
+      .social-icons { justify-content: center; }
+      .job, .edu { flex-direction: column; gap: 4px; }
+      .job-left, .edu-left { flex: none; min-width: auto; }
+      .skills-grid { flex-direction: column; gap: 10px; }
+    }
+
+    /* === PRINT === */
+    @media print {
+      body { font-size: 10px !important; line-height: 1.35 !important; color: #000 !important; }
+      .page { padding: 0; max-width: 100%; }
+      .no-print { display: none !important; }
+      a { color: #000 !important; }
+      a[href]:after { content: none !important; }
+
+      .header { margin-bottom: 12px; }
+      .header-left h1 { font-size: 24px !important; }
+      .header-left h2 { font-size: 12px !important; }
+      .header-right { font-size: 10px !important; line-height: 1.5 !important; }
+
+      .section { margin-bottom: 10px; }
+      .section-title { font-size: 14px !important; margin-bottom: 8px; padding-bottom: 4px; }
+
+      .intro { font-size: 10px !important; }
+
+      .job { margin-bottom: 8px; gap: 12px; }
+      .job-left { flex: 0 0 140px; min-width: 140px; }
+      .job-company { font-size: 11px !important; }
+      .job-role { font-size: 9px !important; }
+      .job-meta { font-size: 8px !important; }
+      .job-right li { font-size: 9px !important; margin-bottom: 0; }
+      .job-highlight { font-size: 8.5px !important; }
+      .job-sub { font-size: 9px !important; margin: 4px 0 1px; }
+
+      .project-name { font-size: 10px !important; }
+      .project-desc, .project li { font-size: 9px !important; }
+
+      .skill-label { font-size: 9.5px !important; }
+      .skill-items { font-size: 9px !important; line-height: 1.4 !important; }
+      .skill-group { margin-bottom: 5px; }
+      .skills-grid { gap: 15px; }
+
+      .edu { margin-bottom: 5px; gap: 12px; }
+      .edu-left { flex: 0 0 140px; min-width: 140px; }
+      .edu-school { font-size: 10px !important; }
+      .edu-degree { font-size: 9px !important; }
+      .edu-year { font-size: 8px !important; }
+
+      .footer { margin-top: 10px; padding-top: 6px; font-size: 8px !important; }
+
+      .job, .edu, .project { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="https://jurec.pl" class="back-link no-print">&#8592; jurec.pl</a>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Jan Jurec</h1>
+      <h2>Senior Software Engineer &middot; MLOps &middot; DevOps</h2>
+    </div>
+    <div class="header-right">
+      <ul class="social-icons no-print">
+        <li><a href="https://github.com/janjur" target="_blank" title="GitHub"><i class="fab fa-github"></i></a></li>
+        <li><a href="https://www.linkedin.com/in/janjur/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+        <li><a href="javascript:window.print()" title="Print / Save as PDF"><i class="far fa-file-pdf"></i></a></li>
+      </ul>
+      <div>Email: <a href="mailto:jan@jurec.pl">jan@jurec.pl</a></div>
+      <div>Web: <a href="https://jurec.pl" target="_blank">jurec.pl</a></div>
+      <div>Poland &middot; Remote</div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section">
+    <div class="section-title">Intro</div>
+    <div class="intro">
+      Versatile senior engineer with 10+ years of experience across DevOps, software engineering, and MLOps.
+      Primary skills include AWS, Python, and Infrastructure as Code (Terraform&nbsp;+&nbsp;CDK).
+      Working remotely since 2018. Passionate about solving complex problems through an analytical approach.
+      Thrives in smaller teams where autonomy matters. BSc&nbsp;&amp;&nbsp;MSc in Computer Science from Wroc&#322;aw University of Science and Technology.
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="section">
+    <div class="section-title">Experience</div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Santander Bank Polska</div>
+        <div class="job-role">Senior Software Engineer w/ MLOps &amp; Agents Mentor</div>
+        <div class="job-meta">Jul 2025 &#8212; Present<br>Contract &middot; Remote</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Modernized a core AI platform: decomposed a monolithic solution into microservices with clearer ownership and better scalability</li>
+          <li>Delivered AI-powered SDLC tools across the org &#8212; LLM chatbot workflows, document analysis, Jira ticket analysis, test generation, image classification</li>
+          <li>Improved platform reliability through better performance, logging, observability, and deep code reviews</li>
+          <li>Created multiple MCP servers, subagent specifications and internal Python package for database communication</li>
+          <li>Key technical contributor: resolving production issues, reducing code complexity, Unix and platform troubleshooting</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Nordea</div>
+        <div class="job-role">Senior MLOps Engineer</div>
+        <div class="job-meta">Sep 2024 &#8212; Aug 2025 &middot; 1 yr<br>Contract &middot; Hybrid</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Contributed to MLOps, RAG, and AI platform solutions supporting ML workflows and scalable AI/ML adoption</li>
+          <li>Set up infrastructure-as-code foundations for structured, repeatable cloud provisioning</li>
+          <li>Designed reliable data pipelines &#8212; efficient, well orchestrated, and production ready</li>
+          <li>Helped define foundations for teams to build, deploy, and operate AI/ML solutions in a compliant, scalable way</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">TUI</div>
+        <div class="job-role">Senior DevOps Engineer w/ MLOps &amp; Backend</div>
+        <div class="job-meta">May 2021 &#8212; Aug 2024 &middot; 3 yrs 4 mos<br>Freelance &middot; Remote</div>
+      </div>
+      <div class="job-right">
+        <div class="job-highlight">Foundational member of Machine Learning Lab created by Principal ML Engineer at TUI</div>
+        <div class="job-sub">ML Projects &amp; Pipelines</div>
+        <ul>
+          <li>Implementing and maintaining ML-specific pipelines (StepFunctions, SageMaker, Glue, ECS)</li>
+          <li>Designing projects using AI solutions (SageMaker) with added API logic</li>
+          <li>Improving self-hosted MLflow server &#8212; security fixes + automated upgrades</li>
+          <li>Supporting the first AI assistant and RAG pipeline at TUI</li>
+        </ul>
+        <div class="job-sub">Internal Tools &amp; Infrastructure</div>
+        <ul>
+          <li>Created internal tools package (bash, boto3, threading, docker)</li>
+          <li>Deployed endpoint handling millions of requests/day</li>
+          <li>Designed multi-env deployments (Terraform, CDK, CloudFormation)</li>
+          <li>Rolled out code quality steps into dozens of pipelines (black, pylint, SonarQube, tests)</li>
+        </ul>
+        <div class="job-sub">External Collaboration &amp; API Design</div>
+        <ul>
+          <li>Collaborating with external teams (FastAPI, Lambda, ECR, SQS, SNS, SageMaker)</li>
+          <li>Enhancing API performance and stability</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">3e9 Systems</div>
+        <div class="job-role">Remote Software Engineer</div>
+        <div class="job-meta">Sep 2019 &#8212; Aug 2024 &middot; 5 yrs<br>Freelance &middot; Remote</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Python GUI for distributed IoT system (websockets, PyQt5, AWS Lambda, Greengrass)</li>
+          <li>Backend service for real-time communication (MS and Google mail APIs)</li>
+          <li>Odoo ERP/CRM features for Take&amp;Go autonomous stores</li>
+          <li>Dockerized FastAPI project template for microservices</li>
+          <li>Async microservices for debit card payment (idempotency)</li>
+          <li>Migration from bare-metal to AWS (ECS + Lambda Python)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Zdrowa, tylko ma bia&#322;aczk&#281;</div>
+        <div class="job-role">Infrastructure Specialist</div>
+        <div class="job-meta">May 2023 &#8212; Jul 2025 &middot; 2 yrs 3 mos<br>Charity &middot; Hybrid</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Set up and manage custom WordPress instance with data retention and high availability using EC2 and LAMP</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Kodilla</div>
+        <div class="job-role">Python Mentor</div>
+        <div class="job-meta">Jul 2020 &#8212; Oct 2022 &middot; 2 yrs 4 mos<br>Contract</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Backend, Big Data, Data Science, Machine Learning, Automated Testing</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Xebia Poland</div>
+        <div class="job-role">Software Engineer</div>
+        <div class="job-meta">Aug 2018 &#8212; Aug 2019 &middot; 1 yr 1 mo<br>Full-time</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Migrating client&#8217;s infrastructure to AWS using Terraform, Puppet, Packer</li>
+          <li>Designing CI/CD solution for AWS microservices</li>
+          <li>Developing and peer-reviewing Python3 code for AWS Lambda</li>
+          <li>Running AWS practical workshops for certification prep</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Clearcode (Avenga)</div>
+        <div class="job-role">Software Engineer</div>
+        <div class="job-meta">Jun 2017 &#8212; Aug 2018 &middot; 1 yr 3 mos<br>Part-time</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Designing DMP and exchange (AdTech) systems on AWS</li>
+          <li>Hamburg&#8211;Wroc&#322;aw 10-person team, infra/dev focus</li>
+          <li>Project: &lt;20ms @ 30k rps modular AWS system</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-left">
+        <div class="job-company">Nokia</div>
+        <div class="job-role">Working Student &#8594; Summer Trainee</div>
+        <div class="job-meta">Jul 2016 &#8212; Jun 2017 &middot; 1 yr<br>Part-time</div>
+      </div>
+      <div class="job-right">
+        <ul>
+          <li>Telco data analysis with Jupyter, bokeh, pandas</li>
+          <li>Machine learning team (numpy, sklearn)</li>
+          <li>CI and Docker for existing codebase (Jenkins, GitLab CI)</li>
+          <li>Python 2&#8594;3 migration, unit and functional tests</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section">
+    <div class="section-title">Projects</div>
+
+    <div class="project">
+      <div class="project-name"><a href="https://github.com/janjur/readable-pylint-messages" target="_blank">readable-pylint-messages</a> &#8212; 148&#9733; on GitHub</div>
+      <ul><li>List of pylint human readable message IDs and dev readable codes</li></ul>
+    </div>
+
+    <div class="project">
+      <div class="project-name">Workshops &amp; Presentations @ TUI</div>
+      <ul>
+        <li><b>MLOps Workshop</b> &#8212; Hackathon for ML Lab: customer segmentation &amp; end-to-end MLOps workflow</li>
+        <li><b>Bedrock Agents</b> &#8212; Building AI bots with Amazon Bedrock</li>
+        <li><b>Stable Diffusion</b> &#8212; Deploying Stable Diffusion for text-to-image generation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section">
+    <div class="section-title">Skills</div>
+    <div class="skills-grid">
+      <div class="skills-col">
+        <div class="skill-group">
+          <div class="skill-label">Cloud &amp; Infrastructure</div>
+          <div class="skill-items">AWS (Certified), Azure, Terraform, AWS CDK, CloudFormation, EC2, Lambda, SageMaker, Step Functions</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-label">Languages &amp; Frameworks</div>
+          <div class="skill-items">Python, FastAPI, Django/DRF, Flask, Bash, REST APIs, PHP/WordPress</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-label">AI, Data &amp; ML</div>
+          <div class="skill-items">MCP Servers &amp; Agents, RAG, LLMs (Claude, GPT), MLOps, Data Engineering, SQL/Vector DBs/NoSQL, MLflow</div>
+        </div>
+      </div>
+      <div class="skills-col">
+        <div class="skill-group">
+          <div class="skill-label">DevOps &amp; Tools</div>
+          <div class="skill-items">Docker, Kubernetes, CI/CD (GitLab, Jenkins), Git, Linux, Datadog, SonarQube, Ansible</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-label">Testing &amp; Quality</div>
+          <div class="skill-items">Unit Testing, E2E/Smoke/Performance, pytest, pylint/black/pre-commit</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-label">Languages</div>
+          <div class="skill-items">Polish &#8212; Native, English &#8212; Professional Working</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="section">
+    <div class="section-title">Education &amp; Certifications</div>
+
+    <div class="edu">
+      <div class="edu-left">
+        <div class="edu-school">Wroc&#322;aw University of Science and Technology</div>
+        <div class="edu-year">2018 &#8212; 2019</div>
+      </div>
+      <div class="edu-degree">MSc Computer Science</div>
+    </div>
+
+    <div class="edu">
+      <div class="edu-left">
+        <div class="edu-school">Wroc&#322;aw University of Science and Technology</div>
+        <div class="edu-year">2012 &#8212; 2017</div>
+      </div>
+      <div class="edu-degree">BSc Engineering, Computer Science</div>
+    </div>
+
+    <div class="edu">
+      <div class="edu-left">
+        <div class="edu-school">Amazon Web Services</div>
+        <div class="edu-year">Issued Jan 2019</div>
+      </div>
+      <div class="edu-degree">AWS Certified Solutions Architect &#8212; Associate</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Jan Jurec &middot; <a href="mailto:jan@jurec.pl">jan@jurec.pl</a> &middot; Last updated April 2026 &middot; Interactive version at <a href="https://jurec.pl">jurec.pl</a>
+  </div>
+
+</div>
+
+</body>
+</html>
