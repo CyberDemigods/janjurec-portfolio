@@ -1258,6 +1258,26 @@
         var secretsUnlocked = localStorage.getItem('jan-portfolio-secrets') === 'true';
         var currentDir = '~';
 
+        // === DELETED DIRECTORIES STATE (persisted) ===
+        var _deletedDirsRaw = localStorage.getItem('jan-portfolio-deleted-dirs');
+        var deletedDirs = _deletedDirsRaw ? JSON.parse(_deletedDirsRaw) : {};
+        function markDirDeleted(dir) {
+            deletedDirs[dir] = true;
+            localStorage.setItem('jan-portfolio-deleted-dirs', JSON.stringify(deletedDirs));
+        }
+        function isDirDeleted(dir) {
+            return !!deletedDirs[dir];
+        }
+        function isFileDeleted(filePath) {
+            // Check if the parent directory has been wiped
+            var parentPath = filePath.substring(0, filePath.lastIndexOf('/')) || '~';
+            return isDirDeleted(parentPath);
+        }
+        function nukeAllDirs() {
+            for (var dir in vfs) deletedDirs[dir] = true;
+            localStorage.setItem('jan-portfolio-deleted-dirs', JSON.stringify(deletedDirs));
+        }
+
         // === VIRTUAL FILESYSTEM ===
         var vfs = {
             '~': {
@@ -1660,19 +1680,34 @@
             });
             var resolved = targetPath ? resolvePath(targetPath) : currentDir;
             var node = vfs[resolved];
-            if (!node) {
-                addLine('ls: cannot access \'' + (targetPath || '.') + '\': No such file or directory', 'error');
+            if (!node || isDirDeleted(resolved)) {
+                if (isDirDeleted(resolved)) {
+                    addLine('0 files in directory');
+                } else {
+                    addLine('ls: cannot access \'' + (targetPath || '.') + '\': No such file or directory', 'error');
+                }
                 return;
             }
             if (node.locked && !secretsUnlocked) {
                 showPinPrompt();
                 return;
             }
-            var entries = (node.entries || []).slice();
+            // Filter out entries whose child dirs are deleted
+            var entries = (node.entries || []).filter(function(e) {
+                if (e.endsWith('/')) {
+                    var childDir = (resolved === '~' ? '~/' : resolved + '/') + e.replace(/\/$/, '');
+                    return !isDirDeleted(childDir);
+                }
+                return true;
+            });
             if (showHidden) {
                 var hidden = (node.hidden || []).slice();
                 if (resolved === '~' && !glitchRemoved) hidden.push('.glitch.exe');
                 entries = ['.', '..'].concat(hidden).concat(entries);
+            }
+            if (entries.length === 0) {
+                addLine('0 files in directory');
+                return;
             }
             formatLsOutput(entries);
         }
@@ -1720,7 +1755,7 @@
                 return;
             }
             var resolved = resolvePath(target);
-            if (vfs[resolved]) {
+            if (vfs[resolved] && !isDirDeleted(resolved)) {
                 if (vfs[resolved].locked && !secretsUnlocked) {
                     showPinPrompt();
                     return;
@@ -1739,8 +1774,13 @@
                 return;
             }
             var resolved = resolvePath(target);
+            // Check if file's parent directory was deleted
+            if (isFileDeleted(resolved)) {
+                addLine('cat: ' + target + ': No such file or directory', 'error');
+                return;
+            }
             // Is it a directory?
-            if (vfs[resolved]) {
+            if (vfs[resolved] && !isDirDeleted(resolved)) {
                 addLine('cat: ' + target + ': Is a directory', 'error');
                 return;
             }
@@ -3333,49 +3373,95 @@
             var rawArgs = spaceIdx > -1 ? cmd.trim().substring(spaceIdx + 1).trim() : '';
             var argsLower = rawArgs.toLowerCase();
 
-            // === Special multi-word exact matches ===
-            if (lower === 'rm -rf /' || lower === 'rm -rf' || lower === 'sudo rm -rf /' || lower === 'sudo rm -rf' || lower === 'rm -rf *' || lower === 'rm -rf .' || lower === 'rm -rf ./' || lower === 'rm -rf ./*' || lower === 'sudo rm -rf *' || lower === 'sudo rm -rf .' || lower === 'sudo rm -rf ./' || lower === 'sudo rm -rf ./*') {
-                addLine('Initiating selective destruction...', 'error');
+            // === rm -rf / — NUCLEAR: full system destruction ===
+            if (lower === 'rm -rf /' || lower === 'rm -rf' || lower === 'sudo rm -rf /' || lower === 'sudo rm -rf') {
+                var lang = currentLang || 'en';
+                addLine(lang === 'pl' ? 'Inicjuję formatowanie systemu...' : 'Initiating full system format...', 'error');
                 addLine('');
-                var windowsToClose = ['about', 'experience', 'secrets'];
-                var windowNames = ['about_me.exe', 'experience.dll', 'secrets.dat'];
+                var allFiles = [];
+                for (var dir in vfs) {
+                    (vfs[dir].entries || []).forEach(function(e) { allFiles.push(e); });
+                }
                 var delay = 300;
-                windowNames.forEach(function(name, i) {
+                allFiles.forEach(function(name, i) {
                     setTimeout(function() {
                         addLine('Deleting ' + name + '...', 'error');
                         scrollTerminal();
-                    }, delay + i * 400);
+                    }, delay + i * 150);
                 });
                 setTimeout(function() {
+                    nukeAllDirs();
                     addLine('');
-                    var lang = currentLang || 'en';
-                    addLine(lang === 'pl' ? '💥 Pliki usunięte! (ale i tak wrócą po odświeżeniu 😏)' :
-                            '💥 Files deleted! (they\'ll be back after refresh though 😏)', 'error');
+                    addLine(lang === 'pl' ? '💥 System sformatowany. Wszystkie pliki usunięte.' :
+                            '💥 System formatted. All files deleted.', 'error');
                     scrollTerminal();
-                    // Close the windows with animation
-                    windowsToClose.forEach(function(winId) {
-                        var win = document.getElementById(winId + 'Window') || document.getElementById(winId);
-                        if (win && !win.classList.contains('hidden')) {
-                            win.classList.add('hidden');
+                    if (window._januszSay) {
+                        var jmsg = lang === 'pl' ? 'CO TY ZROBIŁEŚ?! Cały system!!! 😱💀' :
+                                   'WHAT HAVE YOU DONE?! The entire system!!! 😱💀';
+                        window._januszSay(jmsg, 5000);
+                    }
+                    // Show BSOD / death screen after a beat
+                    setTimeout(function() {
+                        var deathOverlay = document.createElement('div');
+                        deathOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:monospace;cursor:not-allowed;';
+                        var theme = getCurrentTheme();
+                        if (theme === 'macos') {
+                            deathOverlay.style.background = '#1a1a1a';
+                            deathOverlay.innerHTML = '<div style="text-align:center;color:#fff;"><div style="font-size:80px;margin-bottom:20px;">🚫</div><div style="font-size:22px;font-weight:300;">You need to restart your computer.</div><div style="font-size:14px;color:#888;margin-top:15px;">Hold the power button for several seconds or<br>press the Restart button.</div><div style="font-size:12px;color:#555;margin-top:30px;">(refresh the page to restore the system)</div></div>';
+                        } else if (theme === 'linux') {
+                            deathOverlay.style.background = '#000';
+                            deathOverlay.innerHTML = '<pre style="font-size:14px;color:#ff4444;text-align:left;padding:40px;">Kernel panic - not syncing: Attempted to kill init!\n\nPID: 1  Comm: systemd Tainted: G      D\nCall Trace:\n  do_exit+0x6c0/0xb80\n  do_group_exit+0x33/0xa0\n  __x64_sys_exit_group+0x14/0x20\n\n---[ end Kernel panic - not syncing: Attempted to kill init! ]---\n\n\n<span style="color:#666;font-size:12px;">(refresh the page to restore the system)</span></pre>';
+                        } else {
+                            deathOverlay.style.background = '#0000aa';
+                            deathOverlay.innerHTML = '<pre style="font-size:16px;text-align:center;color:#fff;">A problem has been detected and Windows has been\nshut down to prevent damage to your computer.\n\nUNMOUNTABLE_BOOT_VOLUME\n\nIf this is the first time you\'ve seen this error screen,\nrestart your computer. If this screen appears again, follow\nthese steps:\n\nCheck to make sure you didn\'t run rm -rf /\nlike an absolute maniac.\n\nTechnical information:\n\n*** STOP: 0x000000ED (0xDEADBEEF, 0xC0FFEE42)\n\n\n<span style="color:#aaa;font-size:12px;">(refresh the page to restore the system)</span></pre>';
                         }
+                        document.body.appendChild(deathOverlay);
+                    }, 2000);
+                }, delay + allFiles.length * 150);
+                return;
+            }
+
+            // === rm -rf . / rm -rf * — wipe current directory ===
+            if (lower === 'rm -rf *' || lower === 'rm -rf .' || lower === 'rm -rf ./' || lower === 'rm -rf ./*' || lower === 'sudo rm -rf *' || lower === 'sudo rm -rf .' || lower === 'sudo rm -rf ./' || lower === 'sudo rm -rf ./*') {
+                var lang = currentLang || 'en';
+                // Already wiped?
+                if (isDirDeleted(currentDir)) {
+                    addLine('0 files in directory');
+                    return;
+                }
+                var node = vfs[currentDir];
+                if (!node) { addLine('0 files in directory'); return; }
+                var entries = (node.entries || []).slice();
+                if (entries.length === 0) { addLine('0 files in directory'); return; }
+
+                addLine(lang === 'pl' ? 'Usuwanie plików...' : 'Deleting files...', 'error');
+                addLine('');
+                var delay = 300;
+                entries.forEach(function(name, i) {
+                    setTimeout(function() {
+                        addLine('Deleting ' + name + '...', 'error');
+                        scrollTerminal();
+                    }, delay + i * 250);
+                });
+                // Also mark child dirs as deleted
+                var childDirs = entries.filter(function(e) { return e.endsWith('/'); });
+                setTimeout(function() {
+                    markDirDeleted(currentDir);
+                    childDirs.forEach(function(d) {
+                        var childPath = (currentDir === '~' ? '~/' : currentDir + '/') + d.replace(/\/$/, '');
+                        markDirDeleted(childPath);
                     });
-                    // Also hide corresponding desktop icons briefly
-                    windowsToClose.forEach(function(winId) {
-                        var icon = document.querySelector('.desktop-icon[data-window="' + winId + '"]');
-                        if (icon) {
-                            icon.style.transition = 'opacity 0.5s';
-                            icon.style.opacity = '0';
-                            setTimeout(function() {
-                                icon.style.opacity = '1';
-                            }, 5000);
-                        }
-                    });
+                    addLine('');
+                    addLine(lang === 'pl' ? '💥 Pliki usunięte!' : '💥 Files deleted!', 'error');
+                    addLine(lang === 'pl' ? 'Użyj rm -rf / żeby rozjebać cały system.' :
+                            'Use rm -rf / to destroy the entire system.', 'info');
+                    scrollTerminal();
                     if (window._januszSay) {
                         var jmsg = lang === 'pl' ? 'Ej! Moje pliki! Przestań grzebać! 😱' :
                                    'Hey! My files! Stop messing around! 😱';
                         window._januszSay(jmsg, 4000);
                     }
-                }, delay + windowNames.length * 400);
+                }, delay + entries.length * 250);
                 return;
             }
 
