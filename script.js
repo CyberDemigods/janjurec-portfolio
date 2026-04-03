@@ -6,6 +6,29 @@
 (function () {
     'use strict';
 
+    // ===== SHARED AUDIO CONTEXT (Safari fix) =====
+    // Safari limits concurrent AudioContexts (~6) and suspends those not
+    // created inside a user-gesture handler.  We keep ONE shared context
+    // for the entire app and resume it on every interaction.
+    var _sharedAc = null;
+    function getAudioCtx() {
+        if (!_sharedAc || _sharedAc.state === 'closed') {
+            _sharedAc = getAudioCtx();
+        }
+        if (_sharedAc.state === 'suspended') {
+            _sharedAc.resume();
+        }
+        return _sharedAc;
+    }
+    // Resume on any user interaction (Safari requirement)
+    ['click', 'touchstart', 'keydown'].forEach(function(evt) {
+        document.addEventListener(evt, function() {
+            if (_sharedAc && _sharedAc.state === 'suspended') {
+                _sharedAc.resume();
+            }
+        }, { passive: true });
+    });
+
     let zIndex = 10;
     let activeWindow = null;
     const windowStates = {};
@@ -526,7 +549,7 @@
 
     function playCloseSound() {
         try {
-            var ac = new (window.AudioContext || window.webkitAudioContext)();
+            var ac = getAudioCtx();
             // Quick "click" sound - descending blip
             var osc = ac.createOscillator();
             osc.type = 'square';
@@ -539,7 +562,6 @@
             g.connect(ac.destination);
             osc.start();
             osc.stop(ac.currentTime + 0.08);
-            setTimeout(function() { ac.close(); }, 200);
         } catch(e) {}
     }
 
@@ -587,10 +609,7 @@
             try { winampScheduledOscs[j].stop(); } catch(ex){}
         }
         winampScheduledOscs = [];
-        if (winampAc) {
-            try { winampAc.close(); } catch(ex){}
-            winampAc = null;
-        }
+        winampAc = null;
         if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
         winampAnimFrame = null;
         var timeDisplay = document.getElementById('winampTime');
@@ -2048,7 +2067,7 @@
             // Buzzy glitch audio
             var glitchAc = null;
             try {
-                glitchAc = new (window.AudioContext || window.webkitAudioContext)();
+                glitchAc = getAudioCtx();
                 // White noise via buffer
                 var bufSize = glitchAc.sampleRate * 8;
                 var noiseBuf = glitchAc.createBuffer(1, bufSize, glitchAc.sampleRate);
@@ -2095,7 +2114,7 @@
                 // Remove glitch styles
                 glitchStyle.remove();
                 // Stop audio
-                if (glitchAc) { try { glitchAc.close(); } catch(e) {} }
+                glitchAc = null;
                 // Terminal recovery message
                 addLine('');
                 addLine('System recovered. File quarantined.', 'success');
@@ -2146,7 +2165,7 @@
             // Hypnotic droning buzz sound
             var hypnoAc = null;
             try {
-                hypnoAc = new (window.AudioContext || window.webkitAudioContext)();
+                hypnoAc = getAudioCtx();
                 // Base drone
                 var drone = hypnoAc.createOscillator();
                 drone.type = 'sawtooth';
@@ -2186,7 +2205,7 @@
             // Remove after duration
             setTimeout(function() {
                 if (hypnoAc) {
-                    try { hypnoAc.close(); } catch(e) {}
+                    hypnoAc = null;
                 }
                 if (isFinal) {
                     // Hypnotoad consumed everything - wipe and freeze
@@ -2327,7 +2346,7 @@
 
         function playSuccessJingle() {
             try {
-                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                var ac = getAudioCtx();
                 if (ac.state === 'suspended') ac.resume();
                 var notes = [
                     {f:523.25,s:0,d:0.12},{f:659.25,s:0.12,d:0.12},
@@ -2344,7 +2363,6 @@
                     osc.start(ac.currentTime + n.s);
                     osc.stop(ac.currentTime + n.s + n.d + 0.02);
                 });
-                setTimeout(function() { ac.close(); }, 1000);
             } catch(e) {}
         }
 
@@ -2422,7 +2440,7 @@
         function startVimDrone() {
             if (window._janArmageddonActive) return;
             try {
-                vimAc = new (window.AudioContext || window.webkitAudioContext)();
+                vimAc = getAudioCtx();
                 if (vimAc.state === 'suspended') vimAc.resume();
 
                 // Deep ominous drone
@@ -2484,7 +2502,7 @@
             }
             vimOscillators = [];
             setTimeout(function() {
-                if (vimAc) { try { vimAc.close(); } catch(e) {} vimAc = null; }
+                vimAc = null;
             }, 800);
         }
 
@@ -3138,7 +3156,7 @@
 
         function playSawBuzz() {
             try {
-                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                var ac = getAudioCtx();
                 var osc = ac.createOscillator();
                 osc.type = 'square';
                 osc.frequency.value = 150;
@@ -3149,13 +3167,12 @@
                 g.connect(ac.destination);
                 osc.start();
                 osc.stop(ac.currentTime + 0.3);
-                setTimeout(function() { ac.close(); }, 500);
             } catch(e) {}
         }
 
         function playChainsawSound() {
             try {
-                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                var ac = getAudioCtx();
                 var bufSize = ac.sampleRate * 3;
                 var buf = ac.createBuffer(1, bufSize, ac.sampleRate);
                 var data = buf.getChannelData(0);
@@ -3196,7 +3213,6 @@
                 osc.start();
                 noise.stop(ac.currentTime + 3);
                 osc.stop(ac.currentTime + 3);
-                setTimeout(function() { ac.close(); }, 4000);
             } catch(e) {}
         }
 
@@ -4749,7 +4765,7 @@
 
     function playStartupSound(theme) {
         try {
-            const ac = new (window.AudioContext || window.webkitAudioContext)();
+            const ac = getAudioCtx();
 
             function playNotes(notes, wave, filterFreq) {
                 notes.forEach(function(n) {
@@ -4827,7 +4843,7 @@
 
     function playBarka() {
         try {
-            const ac = new (window.AudioContext || window.webkitAudioContext)();
+            const ac = getAudioCtx();
 
             // "Barka" (Pan kiedyś stanął nad brzegiem)
             // Melody from sheet music, key of C major
@@ -5103,10 +5119,7 @@
                 try { winampScheduledOscs[j].stop(); } catch(ex){}
             }
             winampScheduledOscs = [];
-            if (winampAc) {
-                try { winampAc.close(); } catch(ex){}
-                winampAc = null;
-            }
+            winampAc = null;
             if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
             winampAnimFrame = null;
             if (playBtn) playBtn.textContent = '\u25B6';
@@ -5146,7 +5159,7 @@
             var trackEl = playlistEl.querySelector('[data-track="' + trackId + '"]');
             if (trackEl) trackEl.classList.add('active');
 
-            winampAc = new (window.AudioContext || window.webkitAudioContext)();
+            winampAc = getAudioCtx();
             if (winampAc.state === 'suspended') winampAc.resume();
             winampMasterGain = winampAc.createGain();
             winampMasterGain.connect(winampAc.destination);
@@ -6227,7 +6240,7 @@
 
         function initGameAudio() {
             if (gameAc) return;
-            gameAc = new (window.AudioContext || window.webkitAudioContext)();
+            gameAc = getAudioCtx();
             if (gameAc.state === 'suspended') gameAc.resume();
         }
 
@@ -6734,7 +6747,7 @@
         resetNosaczGame = function() {
             if (frameId) { cancelAnimationFrame(frameId); frameId = null; }
             stopGameAudio();
-            if (gameAc) { try { gameAc.close(); } catch(e) {} gameAc = null; }
+            gameAc = null;
             running = false;
             gameOver = false;
             canvasSized = false;
@@ -6820,7 +6833,7 @@
         let paintAc = null;
         function getPaintAc() {
             if (!paintAc || paintAc.state === 'closed') {
-                try { paintAc = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+                try { paintAc = getAudioCtx(); } catch(e) {}
             }
             return paintAc;
         }
@@ -7617,13 +7630,13 @@
         function startGame() {
             // Clean up previous session
             stopBreakoutMusic();
-            if (breakoutAc) { try { breakoutAc.close(); } catch(e) {} breakoutAc = null; }
+            breakoutAc = null;
             score = 0; lives = 3; gameOver = false;
             initBricks();
             paddle.x = (W - paddle.w) / 2;
             resetBall();
             gameRunning = true;
-            try { breakoutAc = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+            try { breakoutAc = getAudioCtx(); } catch(e) {}
             startBreakoutMusic();
             frameId = requestAnimationFrame(loop);
         }
@@ -7640,7 +7653,7 @@
                     gameRunning = false;
                     if (frameId) cancelAnimationFrame(frameId);
                     stopBreakoutMusic();
-                    if (breakoutAc) { try { breakoutAc.close(); } catch(e) {} breakoutAc = null; }
+                    breakoutAc = null;
                 }
             });
             obs.observe(bWin, { attributes: true, attributeFilter: ['class'] });
@@ -8052,7 +8065,7 @@
         function startSynth() {
             if (tetrisAc) return;
             try {
-                tetrisAc = new (window.AudioContext || window.webkitAudioContext)();
+                tetrisAc = getAudioCtx();
                 playSynthLoop();
             } catch(e) {}
         }
@@ -8061,7 +8074,7 @@
             if (synthLoop) { clearTimeout(synthLoop); synthLoop = null; }
             synthNodes.forEach(function(n) { try { n.stop(); } catch(e) {} });
             synthNodes = [];
-            if (tetrisAc) { try { tetrisAc.close(); } catch(e) {} tetrisAc = null; }
+            tetrisAc = null;
         }
 
         function playSynthLoop() {
@@ -8154,7 +8167,7 @@
 
         function playLineClearSound(numLines) {
             try {
-                var ac = tetrisAc || new (window.AudioContext || window.webkitAudioContext)();
+                var ac = tetrisAc || getAudioCtx();
                 for (var i = 0; i < numLines; i++) {
                     var osc = ac.createOscillator();
                     var gain = ac.createGain();
@@ -8172,7 +8185,7 @@
 
         function playGameOverSound() {
             try {
-                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                var ac = getAudioCtx();
                 var notes = [440, 415, 392, 370, 349, 330, 311, 294, 277, 261];
                 notes.forEach(function(freq, i) {
                     var osc = ac.createOscillator();
@@ -8185,7 +8198,6 @@
                     osc.start(ac.currentTime + i * 0.12);
                     osc.stop(ac.currentTime + i * 0.12 + 0.2);
                 });
-                setTimeout(function() { ac.close(); }, 2000);
             } catch(e) {}
         }
     }
@@ -8807,7 +8819,7 @@
         // ---- Audio ----
         function getAudioCtx() {
             if (!nosaczAc) {
-                nosaczAc = new (window.AudioContext || window.webkitAudioContext)();
+                nosaczAc = getAudioCtx();
             }
             if (nosaczAc.state === 'suspended') nosaczAc.resume();
             return nosaczAc;
@@ -9018,7 +9030,7 @@
 
             // PLAY THE RAGE MUSIC
             try {
-                rageAc = new (window.AudioContext || window.webkitAudioContext)();
+                rageAc = getAudioCtx();
                 if (rageAc.state === 'suspended') rageAc.resume();
                 playJanuszRage8bit(rageAc, 0.25, rageAc.destination, []);
             } catch(e) {}
@@ -9140,10 +9152,7 @@
             if (rageBanner) { rageBanner.style.opacity = '0'; rageBanner.style.animation = ''; }
 
             // Stop rage music
-            if (rageAc) {
-                try { rageAc.close(); } catch(e) {}
-                rageAc = null;
-            }
+            rageAc = null;
 
             // Burp and calm down
             if (eatenIcons.length > 0) {
@@ -10077,7 +10086,7 @@
             // Stop rage overlay/banner if active
             if (rageOverlay) { rageOverlay.style.opacity = '0'; rageOverlay.style.animation = ''; }
             if (rageBanner) { rageBanner.style.opacity = '0'; rageBanner.style.animation = ''; }
-            if (rageAc) { try { rageAc.close(); } catch(e) {} rageAc = null; }
+            rageAc = null;
 
             // Restore eaten icons if any
             for (var i = 0; i < eatenIcons.length; i++) {
