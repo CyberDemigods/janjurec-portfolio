@@ -609,7 +609,8 @@
             try { winampScheduledOscs[j].stop(); } catch(ex){}
         }
         winampScheduledOscs = [];
-        winampAc = null;
+        // Keep winampAc alive — resume if suspended (from pause)
+        if (winampAc && winampAc.state === 'suspended') winampAc.resume();
         if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
         winampAnimFrame = null;
         var timeDisplay = document.getElementById('winampTime');
@@ -5205,7 +5206,7 @@
                 try { winampScheduledOscs[j].stop(); } catch(ex){}
             }
             winampScheduledOscs = [];
-            winampAc = null;
+            // Keep winampAc alive for reuse (don't null/close)
             if (winampAnimFrame) cancelAnimationFrame(winampAnimFrame);
             winampAnimFrame = null;
             if (playBtn) playBtn.textContent = '\u25B6';
@@ -5245,7 +5246,11 @@
             var trackEl = playlistEl.querySelector('[data-track="' + trackId + '"]');
             if (trackEl) trackEl.classList.add('active');
 
-            winampAc = getAudioCtx();
+            // Winamp uses its own AudioContext (separate from shared)
+            // so that pause/suspend doesn't kill all app audio
+            if (!winampAc || winampAc.state === 'closed') {
+                winampAc = new (window.AudioContext || window.webkitAudioContext)();
+            }
             if (winampAc.state === 'suspended') winampAc.resume();
             winampMasterGain = winampAc.createGain();
             winampMasterGain.connect(winampAc.destination);
