@@ -2,165 +2,211 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jan Jurec — CV</title>
-  <meta name="description" content="Jan Jurec — Senior Software Engineer, MLOps, DevOps, AWS, Python">
+  <title>Jan Jurec | Senior Software Engineer</title>
+  <meta name="description" content="Senior Software Engineer | MLOps, DevOps, Backend | 10+ years | AWS, Python">
   <meta property="og:title" content="Jan Jurec | CV">
   <meta property="og:description" content="Senior Software Engineer — MLOps, DevOps, AWS, Python">
   <meta property="og:url" content="https://jan.jurec.pl/">
   <meta property="og:type" content="website">
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,300;1,400&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
   <style>
-    @page { size: A4 portrait; margin: 12mm 14mm; }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
+      background: #ffffff;
       font-family: Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
       color: #333;
-      font-size: 15px;
+      font-size: 1rem;
       line-height: 1.5;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: Roboto, sans-serif;
+      line-height: 1.2;
+      margin: 0 0 0.75rem;
+    }
+    h1 { font-size: 4rem; margin-bottom: 0.1rem; font-weight: 500; }
+    h2 { font-weight: 300; font-size: 2rem; }
+    h3 {
+      font-weight: 300;
+      font-size: 3rem;
+      text-align: center;
+      border-bottom: dashed 2px #CCCCCC;
+      padding-bottom: 10px;
+      margin-bottom: 40px;
+    }
+    h4 { font-weight: 300; font-size: 2.5rem; margin-bottom: 3px; }
+    p, ul { font-size: 1.6rem; text-align: justify; }
+    a { color: #477dca; transition: color 150ms ease; }
+    a:active, a:focus, a:hover { color: #355e98; }
+
+    .container { margin-top: 20px; }
+    .header-container { margin-top: 50px; }
+    .header-left { margin-top: 30px; }
+    .header-right { text-align: right; }
+    .header-right p { font-size: 1.6rem; text-align: right; margin-bottom: 3px; }
+    .header-right a { color: inherit; font-weight: 500; }
+
+    .profile-img {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    ul.icons { padding: 0; font-size: 1rem; margin-bottom: 20px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+    ul.icons li { display: inline-block; }
+    .icons i { font-size: 30px; line-height: 60px; }
+
+    .button {
+      min-width: 150px; border: none; background: none; color: inherit;
+      vertical-align: middle; position: relative; z-index: 1;
+      border-radius: 0; margin: 0 auto; padding: 5px 20px;
+      display: inline-block; font-weight: 400; max-width: 400px;
+    }
+    .button--round-l { border-radius: 40px; }
+    .button.button--sacnite {
+      width: 60px; height: 60px; min-width: 0; padding: 0;
+      color: #fff; transition: color 0.3s;
+    }
+    .button--sacnite::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; border-radius: inherit; z-index: -1;
+      box-shadow: inset 0 0 0 35px #333;
+      transform: scale3d(0.9, 0.9, 1);
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .button--sacnite:hover { color: #333; }
+    .button--sacnite:hover::before {
+      box-shadow: inset 0 0 0 2px #333;
+      transform: scale3d(1, 1, 1);
+    }
+
+    .list-container h3 { margin-bottom: 0; }
+    .layout {
+      margin-top: 3rem; display: flex; flex-direction: row;
+    }
+    .layout .details {
+      display: flex; flex-direction: column; text-align: left;
+      justify-content: center;
+    }
+    .layout .details p {
+      margin-bottom: 3px; font-size: 1.6rem; text-align: inherit; font-weight: 300;
+    }
+    .layout .details p b { font-weight: 500; }
+    .layout .details h4 { margin-bottom: 0.1rem; font-weight: 500; }
+    .layout-top-middle { flex-direction: column; }
+    .layout-top-middle .details, .layout-top-middle .content { width: 100%; }
+    .layout-top-middle .details { text-align: center; }
+
+    /* Show more toggle */
+    .collapsible-section .layout.hidden-item { display: none; }
+    .collapsible-section.expanded .layout.hidden-item { display: flex; }
+    .show-more-btn {
+      display: block;
+      margin: 2rem auto 0;
+      background: none;
+      border: none;
+      color: #999;
+      font-family: Roboto, sans-serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      cursor: pointer;
+      padding: 8px 24px;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
+    .show-more-btn:hover { color: #555; }
+    .show-more-btn .arrow {
+      display: inline-block;
+      margin-left: 6px;
+      transition: transform 0.3s;
+    }
+    .collapsible-section.expanded .show-more-btn .arrow {
+      transform: rotate(180deg);
+    }
+
+    /* AI highlight */
+    .ai-highlight {
+      background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+      border-left: 3px solid #477dca;
+      border-radius: 0 6px 6px 0;
+      padding: 1.5rem 2rem;
+      margin-top: 2rem;
+    }
+    .ai-highlight h4 {
+      color: #477dca;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+    .ai-highlight .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .ai-highlight .tags li {
       background: #fff;
+      border: 1px solid #d0d7e8;
+      border-radius: 4px;
+      padding: 4px 14px;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: #444;
     }
 
-    a { color: #477dca; text-decoration: none; }
-    a:hover { color: #2a5db0; text-decoration: underline; }
+    /* Projects */
+    .project-item { margin-top: 2rem; }
+    .project-item h4 { font-weight: 500; margin-bottom: 0.3rem; }
+    .project-item h4 a { color: #333; }
+    .project-item h4 a:hover { color: #477dca; }
+    .project-item p, .project-item li { font-size: 1.5rem; }
 
-    .page { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    .footer-container { margin-top: 80px; margin-bottom: 40px; }
+    .footer-container p { text-align: center; font-style: italic; font-weight: 300; font-size: 1.3rem; color: #999; }
+    .footer-container a { color: #999; font-style: italic; font-weight: 400; }
+    .footer-container a:hover { color: #555; }
 
-    /* === HEADER === */
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
-    .header-left h1 { font-size: 38px; font-weight: 500; line-height: 1.1; color: #111; }
-    .header-left h2 { font-size: 18px; font-weight: 300; color: #666; margin-top: 4px; }
-    .header-right { text-align: right; font-size: 14px; line-height: 1.8; color: #555; }
-    .header-right a { color: #555; font-weight: 400; }
-    .header-right a:hover { color: #477dca; }
-
-    .social-icons { list-style: none; display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 6px; }
-    .social-icons a {
-      display: flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #555;
-      color: #555; transition: all 0.2s; font-size: 16px;
-    }
-    .social-icons a:hover { color: #fff; background: #333; border-color: #333; text-decoration: none; }
-
-    /* === SECTIONS === */
-    .section { margin-bottom: 22px; }
-    .section-title {
-      font-size: 22px; font-weight: 300; color: #333; text-align: center;
-      border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 18px;
-    }
-
-    /* === INTRO === */
-    .intro { font-size: 14px; color: #555; line-height: 1.65; text-align: justify; }
-
-    /* === JOBS === */
-    .job { display: flex; gap: 24px; margin-bottom: 18px; }
-    .job-left { flex: 0 0 200px; min-width: 200px; }
-    .job-company { font-size: 17px; font-weight: 500; color: #222; margin-bottom: 2px; }
-    .job-role { font-size: 13px; font-weight: 500; color: #444; }
-    .job-meta { font-size: 12px; color: #888; margin-top: 2px; }
-    .job-right { flex: 1; }
-    .job-right ul { padding-left: 18px; margin: 0; }
-    .job-right li { font-size: 13px; color: #444; margin-bottom: 2px; line-height: 1.45; }
-    .job-highlight { font-size: 12px; font-style: italic; color: #777; margin-bottom: 6px; }
-    .job-sub { font-size: 12px; font-weight: 500; color: #555; margin: 8px 0 3px; }
-
-    /* === PROJECTS === */
-    .project { margin-bottom: 10px; }
-    .project-name { font-size: 14px; font-weight: 500; }
-    .project-name a { color: #333; }
-    .project-name a:hover { color: #477dca; }
-    .project-desc { font-size: 13px; color: #555; margin-top: 1px; }
-    .project ul { padding-left: 18px; margin: 2px 0 0; }
-    .project li { font-size: 13px; color: #555; }
-
-    /* === SKILLS === */
-    .skills-grid { display: flex; gap: 30px; }
-    .skills-col { flex: 1; }
-    .skill-group { margin-bottom: 12px; }
-    .skill-label { font-size: 13px; font-weight: 500; color: #333; margin-bottom: 4px; }
-    .skill-items { font-size: 13px; color: #555; line-height: 1.6; }
-
-    /* === EDUCATION === */
-    .edu { display: flex; gap: 24px; margin-bottom: 10px; }
-    .edu-left { flex: 0 0 200px; min-width: 200px; }
-    .edu-school { font-size: 15px; font-weight: 500; color: #222; }
-    .edu-degree { font-size: 13px; font-weight: 400; color: #444; }
-    .edu-year { font-size: 12px; color: #888; margin-top: 1px; }
-
-    /* === FOOTER === */
-    .footer { text-align: center; font-size: 12px; color: #aaa; font-style: italic; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; }
-    .footer a { color: #aaa; }
-    .footer a:hover { color: #477dca; }
-
-    /* === BACK LINK === */
+    /* Back link */
     .back-link {
       position: fixed; top: 12px; right: 16px; z-index: 100;
       font-size: 13px; background: #333; color: #fff;
       padding: 6px 14px; border-radius: 16px;
       transition: background 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      text-decoration: none;
     }
     .back-link:hover { background: #555; color: #fff; text-decoration: none; }
 
-    /* === MOBILE === */
-    @media screen and (max-width: 640px) {
-      .header { flex-direction: column; text-align: center; }
-      .header-right { text-align: center; margin-top: 10px; }
-      .social-icons { justify-content: center; }
-      .job, .edu { flex-direction: column; gap: 4px; }
-      .job-left, .edu-left { flex: none; min-width: auto; }
-      .skills-grid { flex-direction: column; gap: 10px; }
+    @media screen and (max-width: 767px) {
+      .header-container div { text-align: center; }
+      .header-right p { text-align: center; }
+      .header-left { margin-top: 0; }
+      .icons { text-align: center; }
+      .layout .details { text-align: center !important; }
+      .layout .details p { text-align: center !important; }
     }
 
-    /* === PRINT === */
     @media print {
-      body { font-size: 10px !important; line-height: 1.35 !important; color: #000 !important; }
-      .page { padding: 0; max-width: 100%; }
-      .no-print { display: none !important; }
-      a { color: #000 !important; }
+      @page { size: A4 portrait; margin: 12mm 14mm; }
+      .container { margin-top: 20px; }
+      .header-left { margin-top: 0; }
+      body { font-size: 0.9rem; }
+      h3 { margin-bottom: 20px; }
       a[href]:after { content: none !important; }
-
-      .header { margin-bottom: 12px; }
-      .header-left h1 { font-size: 24px !important; }
-      .header-left h2 { font-size: 12px !important; }
-      .header-right { font-size: 10px !important; line-height: 1.5 !important; }
-
-      .section { margin-bottom: 10px; }
-      .section-title { font-size: 14px !important; margin-bottom: 8px; padding-bottom: 4px; }
-
-      .intro { font-size: 10px !important; }
-
-      .job { margin-bottom: 8px; gap: 12px; }
-      .job-left { flex: 0 0 140px; min-width: 140px; }
-      .job-company { font-size: 11px !important; }
-      .job-role { font-size: 9px !important; }
-      .job-meta { font-size: 8px !important; }
-      .job-right li { font-size: 9px !important; margin-bottom: 0; }
-      .job-highlight { font-size: 8.5px !important; }
-      .job-sub { font-size: 9px !important; margin: 4px 0 1px; }
-
-      .project-name { font-size: 10px !important; }
-      .project-desc, .project li { font-size: 9px !important; }
-
-      .skill-label { font-size: 9.5px !important; }
-      .skill-items { font-size: 9px !important; line-height: 1.4 !important; }
-      .skill-group { margin-bottom: 5px; }
-      .skills-grid { gap: 15px; }
-
-      .edu { margin-bottom: 5px; gap: 12px; }
-      .edu-left { flex: 0 0 140px; min-width: 140px; }
-      .edu-school { font-size: 10px !important; }
-      .edu-degree { font-size: 9px !important; }
-      .edu-year { font-size: 8px !important; }
-
-      .footer { margin-top: 10px; padding-top: 6px; font-size: 8px !important; }
-
-      .job, .edu, .project { page-break-inside: avoid; }
+      .no-print, .no-print * { display: none !important; }
+      .show-more-btn { display: none !important; }
+      .collapsible-section .layout.hidden-item { display: flex !important; }
+      .col-sm-12 { width: 100%; }
+      .col-sm-8 { width: 66.66666667%; }
+      .col-sm-4 { width: 33.33333333%; }
+      .col-sm-3 { width: 25%; }
+      .col-sm-9 { width: 75%; }
+      .col-print-12 { width: 100%; }
     }
   </style>
 </head>
@@ -168,285 +214,377 @@
 
 <a href="https://jurec.pl" class="back-link no-print">&#8592; jurec.pl</a>
 
-<div class="page">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-left">
+<div class="container header-container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-8 header-left">
       <h1>Jan Jurec</h1>
-      <h2>Senior Software Engineer &middot; MLOps &middot; DevOps</h2>
+      <h2>Senior Software Engineer</h2>
+      <p style="font-weight: 300; font-size: 1.3rem; color: #888; margin-top: -0.5rem;">w/ MLOps &amp; Agents Mentor</p>
     </div>
-    <div class="header-right">
-      <ul class="social-icons no-print">
-        <li><a href="https://github.com/janjur" target="_blank" title="GitHub"><i class="fab fa-github"></i></a></li>
-        <li><a href="https://www.linkedin.com/in/janjur/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
-        <li><a href="javascript:window.print()" title="Print / Save as PDF"><i class="far fa-file-pdf"></i></a></li>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 header-right">
+      <ul class="icons no-print">
+        <li>
+          <a target="_blank" href="https://www.linkedin.com/in/janjur" class="button button--sacnite button--round-l" style="overflow: hidden;">
+            <img class="profile-img" src="data:image/jpeg;base64,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" alt="Jan Jurec" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+          </a>
+        </li>
+        <li><a target="_blank" href="https://github.com/janjur" class="button button--sacnite button--round-l"><i class="fab fa-github-alt"></i></a></li>
+        <li><a target="_blank" href="https://www.linkedin.com/in/janjur" class="button button--sacnite button--round-l"><i class="fab fa-linkedin-in"></i></a></li>
+        <li><a href="javascript:window.print()" class="button button--sacnite button--round-l" title="Print / Save as PDF"><i class="far fa-file-pdf"></i></a></li>
       </ul>
-      <div>Email: <a href="mailto:jan@jurec.pl">jan@jurec.pl</a></div>
-      <div>Web: <a href="https://jurec.pl" target="_blank">jurec.pl</a></div>
-      <div>Poland &middot; Remote</div>
+      <p>Email: <a href="mailto:jan@jurec.pl">jan@jurec.pl</a></p>
+      <p>Phone: +48 663 524 707</p>
+      <p>Location: Poland</p>
+      <p>Web: <a href="https://jurec.pl" target="_blank">jurec.pl</a></p>
     </div>
   </div>
-
-  <!-- INTRO -->
-  <div class="section">
-    <div class="section-title">Intro</div>
-    <div class="intro">
-      Versatile senior engineer with 10+ years of experience across DevOps, software engineering, and MLOps.
-      Primary skills include AWS, Python, and Infrastructure as Code (Terraform&nbsp;+&nbsp;CDK).
-      Working remotely since 2018. Passionate about solving complex problems through an analytical approach.
-      Thrives in smaller teams where autonomy matters. BSc&nbsp;&amp;&nbsp;MSc in Computer Science from Wroc&#322;aw University of Science and Technology.
-    </div>
-  </div>
-
-  <!-- EXPERIENCE -->
-  <div class="section">
-    <div class="section-title">Experience</div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Santander Bank Polska</div>
-        <div class="job-role">Senior Software Engineer w/ MLOps &amp; Agents Mentor</div>
-        <div class="job-meta">Jul 2025 &#8212; Present<br>Contract &middot; Remote</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Modernized a core AI platform: decomposed a monolithic solution into microservices with clearer ownership and better scalability</li>
-          <li>Delivered AI-powered SDLC tools across the org &#8212; LLM chatbot workflows, document analysis, Jira ticket analysis, test generation, image classification</li>
-          <li>Improved platform reliability through better performance, logging, observability, and deep code reviews</li>
-          <li>Created multiple MCP servers, subagent specifications and internal Python package for database communication</li>
-          <li>Key technical contributor: resolving production issues, reducing code complexity, Unix and platform troubleshooting</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Nordea</div>
-        <div class="job-role">Senior MLOps Engineer</div>
-        <div class="job-meta">Sep 2024 &#8212; Aug 2025 &middot; 1 yr<br>Contract &middot; Hybrid</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Contributed to MLOps, RAG, and AI platform solutions supporting ML workflows and scalable AI/ML adoption</li>
-          <li>Set up infrastructure-as-code foundations for structured, repeatable cloud provisioning</li>
-          <li>Designed reliable data pipelines &#8212; efficient, well orchestrated, and production ready</li>
-          <li>Helped define foundations for teams to build, deploy, and operate AI/ML solutions in a compliant, scalable way</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">TUI</div>
-        <div class="job-role">Senior DevOps Engineer w/ MLOps &amp; Backend</div>
-        <div class="job-meta">May 2021 &#8212; Aug 2024 &middot; 3 yrs 4 mos<br>Freelance &middot; Remote</div>
-      </div>
-      <div class="job-right">
-        <div class="job-highlight">Foundational member of Machine Learning Lab created by Principal ML Engineer at TUI</div>
-        <div class="job-sub">ML Projects &amp; Pipelines</div>
-        <ul>
-          <li>Implementing and maintaining ML-specific pipelines (StepFunctions, SageMaker, Glue, ECS)</li>
-          <li>Designing projects using AI solutions (SageMaker) with added API logic</li>
-          <li>Improving self-hosted MLflow server &#8212; security fixes + automated upgrades</li>
-          <li>Supporting the first AI assistant and RAG pipeline at TUI</li>
-        </ul>
-        <div class="job-sub">Internal Tools &amp; Infrastructure</div>
-        <ul>
-          <li>Created internal tools package (bash, boto3, threading, docker)</li>
-          <li>Deployed endpoint handling millions of requests/day</li>
-          <li>Designed multi-env deployments (Terraform, CDK, CloudFormation)</li>
-          <li>Rolled out code quality steps into dozens of pipelines (black, pylint, SonarQube, tests)</li>
-        </ul>
-        <div class="job-sub">External Collaboration &amp; API Design</div>
-        <ul>
-          <li>Collaborating with external teams (FastAPI, Lambda, ECR, SQS, SNS, SageMaker)</li>
-          <li>Enhancing API performance and stability</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">3e9 Systems</div>
-        <div class="job-role">Remote Software Engineer</div>
-        <div class="job-meta">Sep 2019 &#8212; Aug 2024 &middot; 5 yrs<br>Freelance &middot; Remote</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Python GUI for distributed IoT system (websockets, PyQt5, AWS Lambda, Greengrass)</li>
-          <li>Backend service for real-time communication (MS and Google mail APIs)</li>
-          <li>Odoo ERP/CRM features for Take&amp;Go autonomous stores</li>
-          <li>Dockerized FastAPI project template for microservices</li>
-          <li>Async microservices for debit card payment (idempotency)</li>
-          <li>Migration from bare-metal to AWS (ECS + Lambda Python)</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Zdrowa, tylko ma bia&#322;aczk&#281;</div>
-        <div class="job-role">Infrastructure Specialist</div>
-        <div class="job-meta">May 2023 &#8212; Jul 2025 &middot; 2 yrs 3 mos<br>Charity &middot; Hybrid</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Set up and manage custom WordPress instance with data retention and high availability using EC2 and LAMP</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Kodilla</div>
-        <div class="job-role">Python Mentor</div>
-        <div class="job-meta">Jul 2020 &#8212; Oct 2022 &middot; 2 yrs 4 mos<br>Contract</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Backend, Big Data, Data Science, Machine Learning, Automated Testing</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Xebia Poland</div>
-        <div class="job-role">Software Engineer</div>
-        <div class="job-meta">Aug 2018 &#8212; Aug 2019 &middot; 1 yr 1 mo<br>Full-time</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Migrating client&#8217;s infrastructure to AWS using Terraform, Puppet, Packer</li>
-          <li>Designing CI/CD solution for AWS microservices</li>
-          <li>Developing and peer-reviewing Python3 code for AWS Lambda</li>
-          <li>Running AWS practical workshops for certification prep</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Clearcode (Avenga)</div>
-        <div class="job-role">Software Engineer</div>
-        <div class="job-meta">Jun 2017 &#8212; Aug 2018 &middot; 1 yr 3 mos<br>Part-time</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Designing DMP and exchange (AdTech) systems on AWS</li>
-          <li>Hamburg&#8211;Wroc&#322;aw 10-person team, infra/dev focus</li>
-          <li>Project: &lt;20ms @ 30k rps modular AWS system</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="job">
-      <div class="job-left">
-        <div class="job-company">Nokia</div>
-        <div class="job-role">Working Student &#8594; Summer Trainee</div>
-        <div class="job-meta">Jul 2016 &#8212; Jun 2017 &middot; 1 yr<br>Part-time</div>
-      </div>
-      <div class="job-right">
-        <ul>
-          <li>Telco data analysis with Jupyter, bokeh, pandas</li>
-          <li>Machine learning team (numpy, sklearn)</li>
-          <li>CI and Docker for existing codebase (Jenkins, GitLab CI)</li>
-          <li>Python 2&#8594;3 migration, unit and functional tests</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROJECTS -->
-  <div class="section">
-    <div class="section-title">Projects</div>
-
-    <div class="project">
-      <div class="project-name"><a href="https://github.com/janjur/readable-pylint-messages" target="_blank">readable-pylint-messages</a> &#8212; 148&#9733; on GitHub</div>
-      <ul><li>List of pylint human readable message IDs and dev readable codes</li></ul>
-    </div>
-
-    <div class="project">
-      <div class="project-name">Workshops &amp; Presentations @ TUI</div>
-      <ul>
-        <li><b>MLOps Workshop</b> &#8212; Hackathon for ML Lab: customer segmentation &amp; end-to-end MLOps workflow</li>
-        <li><b>Bedrock Agents</b> &#8212; Building AI bots with Amazon Bedrock</li>
-        <li><b>Stable Diffusion</b> &#8212; Deploying Stable Diffusion for text-to-image generation</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- SKILLS -->
-  <div class="section">
-    <div class="section-title">Skills</div>
-    <div class="skills-grid">
-      <div class="skills-col">
-        <div class="skill-group">
-          <div class="skill-label">Cloud &amp; Infrastructure</div>
-          <div class="skill-items">AWS (Certified), Azure, Terraform, AWS CDK, CloudFormation, EC2, Lambda, SageMaker, Step Functions</div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">Languages &amp; Frameworks</div>
-          <div class="skill-items">Python, FastAPI, Django/DRF, Flask, Bash, REST APIs, PHP/WordPress</div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">AI, Data &amp; ML</div>
-          <div class="skill-items">MCP Servers &amp; Agents, RAG, LLMs (Claude, GPT), MLOps, Data Engineering, SQL/Vector DBs/NoSQL, MLflow</div>
-        </div>
-      </div>
-      <div class="skills-col">
-        <div class="skill-group">
-          <div class="skill-label">DevOps &amp; Tools</div>
-          <div class="skill-items">Docker, Kubernetes, CI/CD (GitLab, Jenkins), Git, Linux, Datadog, SonarQube, Ansible</div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">Testing &amp; Quality</div>
-          <div class="skill-items">Unit Testing, E2E/Smoke/Performance, pytest, pylint/black/pre-commit</div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">Languages</div>
-          <div class="skill-items">Polish &#8212; Native, English &#8212; Professional Working</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- EDUCATION -->
-  <div class="section">
-    <div class="section-title">Education &amp; Certifications</div>
-
-    <div class="edu">
-      <div class="edu-left">
-        <div class="edu-school">Wroc&#322;aw University of Science and Technology</div>
-        <div class="edu-year">2018 &#8212; 2019</div>
-      </div>
-      <div class="edu-degree">MSc Computer Science</div>
-    </div>
-
-    <div class="edu">
-      <div class="edu-left">
-        <div class="edu-school">Wroc&#322;aw University of Science and Technology</div>
-        <div class="edu-year">2012 &#8212; 2017</div>
-      </div>
-      <div class="edu-degree">BSc Engineering, Computer Science</div>
-    </div>
-
-    <div class="edu">
-      <div class="edu-left">
-        <div class="edu-school">Amazon Web Services</div>
-        <div class="edu-year">Issued Jan 2019</div>
-      </div>
-      <div class="edu-degree">AWS Certified Solutions Architect &#8212; Associate</div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    Jan Jurec &middot; <a href="mailto:jan@jurec.pl">jan@jurec.pl</a> &middot; Last updated April 2026 &middot; Interactive version at <a href="https://jurec.pl">jurec.pl</a>
-  </div>
-
 </div>
+
+<main class="page-content">
+  <div class="wrapper">
+
+    <!-- Intro -->
+    <div class="container intro-container">
+      <h3>Intro</h3>
+      <div class="row clearfix">
+        <div class="col-xs-12">
+          <p>Versatile and experienced professional with 10+ years in software engineering, excelling in DevOps, MLOps, and backend roles. Primary skills include AWS, Python, and Infrastructure as Code. Passionate about solving complex problems through an analytical approach, with strong time management and collaborative spirit. Thriving in smaller teams with high autonomy.</p>
+          <p>Recent stack: AWS, Azure, pure metal, Python, Bash, Claude, MCPs, agents, RAGs, SQL/vector/noSQL.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs -->
+    <div class="container list-container collapsible-section" data-visible="3">
+      <h3>Jobs</h3>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Santander Bank Polska</h4>
+          <p><b>Senior Software Engineer w/ MLOps &amp; Agents Mentor (2025 - Present)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Modernized a core AI platform: decomposed a monolithic solution into microservices with clearer ownership and better scalability</li>
+            <li>Delivered and improved AI-powered SDLC tools used across the organization, including domain-specific LLM applications for chatbot workflows, document analysis, Jira ticket analysis, test generation, and image classification</li>
+            <li>Improved platform reliability through better performance, logging, observability, production debugging, and deep code reviews</li>
+            <li>Created multiple MCP servers, subagent specifications, and internal Python packages for database communication</li>
+            <li>Served as a key technical contributor resolving production and infrastructure issues, reducing code complexity, and bringing strong Unix and platform troubleshooting expertise</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Nordea</h4>
+          <p><b>Senior MLOps Engineer (2024 - 2025)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Contributed to MLOps, RAG, and AI platform solutions supporting machine learning workflows and scalable AI/ML adoption</li>
+            <li>Set up infrastructure-as-code foundations for structured, repeatable cloud provisioning (AWS, Terraform)</li>
+            <li>Designed reliable data pipelines ensuring efficient, well-orchestrated, production-ready data flows</li>
+            <li>Helped define foundations for teams to build, deploy, and operate AI/ML solutions in a compliant and scalable way</li>
+            <li>Reduced manual effort and operational risk while improving scalability and delivery consistency</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>TUI</h4>
+          <p><b>Senior DevOps Engineer w/ MLOps &amp; Backend (2021 - 2024)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Foundational member of Machine Learning Lab created by Principal ML Engineer at TUI</li>
+            <li>Implemented and maintained ML-specific pipelines (StepFunctions, SageMaker, Glue, ECS)</li>
+            <li>Designed and maintained projects using team's AI solutions with added API logic</li>
+            <li>Supported the implementation of the first AI assistant in TUI and the first RAG pipeline</li>
+            <li>Created and maintained internal tools package (Bash, boto3, threading, Docker)</li>
+            <li>Autonomously deployed endpoint and infrastructure handling millions of requests per day</li>
+            <li>Designed multi-environmental deployment processes (Terraform, CDK, CloudFormation)</li>
+            <li>Rolled out code quality steps into dozens of CI/CD pipelines (black, pre-commit, pylint, SonarQube, tests)</li>
+            <li>Integrated systems with Datadog, created dashboards for app performance monitoring</li>
+            <li>Collaborated with multiple external teams to align products and interfaces (FastAPI, Lambda, SQS, SNS)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Zdrowa, tylko ma bialaczke</h4>
+          <p><b>Infrastructure Specialist &amp; WordPress Wizard (2023 - 2025)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Set up and managed custom WordPress instance with data retention and high availability using EC2 and LAMP</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>3e9 Systems</h4>
+          <p><b>Remote Software Engineer (2019 - 2024)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Created Python GUI component for distributed IoT system using websockets, PyQt5, AWS Lambda, AWS Greengrass</li>
+            <li>Designed and implemented backend service for real-time communication application relying on external mail APIs (MS, Google)</li>
+            <li>Developed features for Odoo ERP and CRM framework for autonomous stores</li>
+            <li>Introduced dockerized FastAPI project template for future microservices</li>
+            <li>Designed and implemented asynchronous microservices for debit card payment (idempotency)</li>
+            <li>Migrated on-premise application to AWS cloud: from bare-metal to ECS and Lambda (Python)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Kodilla</h4>
+          <p><b>Python Mentor (2020 - 2022)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Mentored students across Backend, Big Data, Data Science, Machine Learning, and Automated Testing</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Xebia Poland</h4>
+          <p><b>Software Engineer (2018 - 2019)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Migrated client infrastructure to AWS using Terraform, Puppet, and Packer</li>
+            <li>Designed and implemented CI/CD solution for AWS microservices</li>
+            <li>Developed and peer-reviewed Python 3 code for AWS Lambda</li>
+            <li>Ran AWS practical workshops preparing for certification</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Clearcode</h4>
+          <p><b>Software Engineer (2017 - 2018)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Designed DMP and exchange (AdTech) systems run on AWS (ECS, VPC, ASG, LB, R53, Lambda, EMR)</li>
+            <li>Part of Hamburg-Wroclaw 10-person team with infra/dev focus</li>
+            <li>Built &lt;20ms @ 30k rps modular AWS system</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Clearcode</h4>
+          <p><b>Python Developer (2017 - 2018)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Designed and built DMP systems on AWS</li>
+            <li>Wrote Python 3.6 JSON-juggling, machine-learning, API-calling code in a SCRUM framework</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Nokia</h4>
+          <p><b>Working Student, Big Data &amp; Network Engineering (2016 - 2017)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Telco data analysis and interactive presentation (Jupyter, Bokeh, Pandas)</li>
+            <li>Part of machine learning team (NumPy, scikit-learn)</li>
+            <li>CI and dockerization of existing codebase (Jenkins, GitLab CI, S3, Sphinx)</li>
+            <li>Testing, documenting, and maintaining web tools (requests, pytest, Flask)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Nokia</h4>
+          <p><b>Summer Trainee, Software Configuration Management (2016)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <ul>
+            <li>Migrated codebase from Python 2 to Python 3, created unit and functional tests using GitLab CI</li>
+            <li>Designed new system from scratch with CI/CD using Docker Compose (Redmine, Redis, Flask, Celery, S3)</li>
+          </ul>
+        </div>
+      </div>
+
+      <button class="show-more-btn no-print" onclick="toggleSection(this)">
+        show more <span class="arrow">&#9662;</span>
+      </button>
+    </div>
+
+    <!-- AI / ML (prominent) -->
+    <div class="container">
+      <h3>AI &amp; Machine Learning</h3>
+      <div class="ai-highlight">
+        <h4>Current Focus</h4>
+        <ul class="tags">
+          <li>Agentic AI</li>
+          <li>MCP Servers</li>
+          <li>RAG Pipelines</li>
+          <li>LLM Applications</li>
+          <li>Claude</li>
+          <li>AI Agents</li>
+          <li>SageMaker</li>
+          <li>MLflow</li>
+          <li>MLOps</li>
+          <li>Vector DBs</li>
+        </ul>
+      </div>
+      <div class="ai-highlight" style="margin-top: 1rem; border-left-color: #999;">
+        <h4 style="color: #666;">Applied Experience</h4>
+        <p style="font-size: 1.4rem; margin: 0;">Built MCP servers and subagent specs at Santander. First RAG pipeline and AI assistant at TUI. MLOps platforms at Nordea. AI-powered SDLC tools for chatbot workflows, document analysis, test generation, and image classification.</p>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="container">
+      <h3>Projects</h3>
+
+      <div class="project-item">
+        <h4><a href="https://github.com/janjur/readable-pylint-messages" target="_blank">readable-pylint-messages</a> &#8212; 148&#9733; on GitHub</h4>
+        <ul><li>List of pylint human readable message IDs and dev readable codes</li></ul>
+      </div>
+
+      <div class="project-item">
+        <h4>Workshops &amp; Presentations @ TUI</h4>
+        <ul>
+          <li><b>MLOps Workshop</b> &#8212; Hackathon for ML Lab: customer segmentation &amp; end-to-end MLOps workflow</li>
+          <li><b>Bedrock Agents</b> &#8212; Building AI bots with Amazon Bedrock</li>
+          <li><b>Stable Diffusion</b> &#8212; Deploying Stable Diffusion for text-to-image generation</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="container list-container collapsible-section">
+      <h3>Skills</h3>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Primary</h4>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <p>AWS, Python, Bash, Terraform, CDK, Docker, CI/CD, Infrastructure as Code, MLOps, DevOps</p>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Cloud &amp; Infra</h4>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <p>AWS (ECS, Lambda, StepFunctions, Glue, SQS, SNS, S3, R53, VPC), Azure, Terraform, CloudFormation, Datadog, SonarQube</p>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Backend</h4>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <p>Python, FastAPI, Flask, SQL, NoSQL, Vector DBs, REST APIs, Microservices</p>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle hidden-item">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Soft Skills</h4>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <p>Mentoring, Technical Leadership, Cross-functional Collaboration, Remote Work, Time Management</p>
+        </div>
+      </div>
+
+      <button class="show-more-btn no-print" onclick="toggleSection(this)">
+        show more <span class="arrow">&#9662;</span>
+      </button>
+    </div>
+
+    <!-- Languages -->
+    <div class="container list-container">
+      <h3>Languages</h3>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Polish</h4>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <p>Native or Bilingual</p>
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>English</h4>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+          <p>Professional Working</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div class="container list-container">
+      <h3>Education</h3>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Wroclaw University of Science and Technology</h4>
+          <p><b>Master's degree, Computer Science (2018 - 2019)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Wroclaw University of Science and Technology</h4>
+          <p><b>Bachelor of Science in Engineering, Computer Science (2012 - 2017)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+        </div>
+      </div>
+
+      <div class="row clearfix layout layout-top-middle">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-print-12 details">
+          <h4>Amazon Web Services</h4>
+          <p><b>AWS Certified Solutions Architect &#8212; Associate (Issued Jan 2019)</b></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-print-12 content">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="container footer-container">
+      <p>Updated April 2026. For the current version visit <a href="https://jan.jurec.pl">jan.jurec.pl</a></p>
+    </div>
+
+  </div>
+</main>
+
+<script>
+function toggleSection(btn) {
+  var section = btn.closest('.collapsible-section');
+  var expanded = section.classList.toggle('expanded');
+  btn.firstChild.textContent = expanded ? 'show less ' : 'show more ';
+}
+</script>
 
 </body>
 </html>
