@@ -13,7 +13,7 @@
     var _sharedAc = null;
     function getAudioCtx() {
         if (!_sharedAc || _sharedAc.state === 'closed') {
-            _sharedAc = getAudioCtx();
+            _sharedAc = new (window.AudioContext || window.webkitAudioContext)();
         }
         if (_sharedAc.state === 'suspended') {
             _sharedAc.resume();
@@ -8910,7 +8910,7 @@
         // ---- Audio ----
         function getAudioCtx() {
             if (!nosaczAc) {
-                nosaczAc = getAudioCtx();
+                nosaczAc = new (window.AudioContext || window.webkitAudioContext)();
             }
             if (nosaczAc.state === 'suspended') nosaczAc.resume();
             return nosaczAc;
